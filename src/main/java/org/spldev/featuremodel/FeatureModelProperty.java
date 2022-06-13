@@ -18,17 +18,12 @@
  *
  * See http://featureide.cs.ovgu.de/ for further information.
  */
-package org.spldev.featuremodel.impl;
+package org.spldev.featuremodel;
 
 import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Objects;
-
-import org.spldev.featuremodel.Feature;
-import org.spldev.featuremodel.FeatureModel;
-import org.spldev.featuremodel.IFeatureModelProperty;
-import org.spldev.featuremodel.IPropertyContainer;
 
 /**
  * All additional properties of one {@link Feature} instance.

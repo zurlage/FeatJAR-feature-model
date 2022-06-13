@@ -18,24 +18,22 @@
  *
  * See http://featureide.cs.ovgu.de/ for further information.
  */
-package org.spldev.featuremodel.impl;
+package org.spldev.featuremodel;
 
-import java.nio.file.Path;
+import org.spldev.util.io.format.FormatManager;
 
 /**
- * Provides a {@link FactoryWorkspace} for given path.<br> The purpose of this class is to associate a certain factory workspace with a certain project /
- * folder.
+ * Manages all formats for {@link FeatureModel feature models}.
  *
  * @author Sebastian Krieter
  */
-public interface IFactoryWorkspaceLoader {
+public class FeatureModelFormatManager extends FormatManager<FeatureModel> {
+	private static FeatureModelFormatManager INSTANCE = new FeatureModelFormatManager();
 
-	Path getDistinctPath(Path path);
+	public static FeatureModelFormatManager getInstance() {
+		return INSTANCE;
+	}
 
-	void save(FactoryManager<?> manager);
-
-	boolean load(FactoryManager<?> manager);
-
-	void setSubNode(String subNode);
-
+	private FeatureModelFormatManager() {
+	}
 }

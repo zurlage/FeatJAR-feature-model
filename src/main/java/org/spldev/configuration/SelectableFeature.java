@@ -30,6 +30,7 @@ import de.ovgu.featureide.fm.core.Logger;
 import de.ovgu.featureide.fm.core.analysis.cnf.IVariables;
 import de.ovgu.featureide.fm.core.analysis.cnf.LiteralSet;
 import de.ovgu.featureide.fm.core.base.IFeature;
+import org.spldev.featuremodel.Feature;
 
 /**
  * A representation of a selectable feature for the configuration process.
@@ -56,7 +57,7 @@ public class SelectableFeature extends TreeElement implements Cloneable {
 		this.name = name;
 	}
 
-	public SelectableFeature(IFeature feature) {
+	public SelectableFeature(Feature feature) {
 		this.feature = feature;
 	}
 

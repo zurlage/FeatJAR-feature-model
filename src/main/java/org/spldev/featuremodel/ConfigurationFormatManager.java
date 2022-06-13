@@ -21,14 +21,20 @@
 package org.spldev.featuremodel;
 
 import org.spldev.configuration.Configuration;
+import org.spldev.util.io.format.FormatManager;
 
 /**
- * Factory to create an instance of {@link SelectableFeature} and {@link Configuration}.
+ * Manages all formats for {@link de.ovgu.featureide.fm.core.configuration.Configuration configurations}.
  *
  * @author Sebastian Krieter
  */
-public interface IConfigurationFactory extends IFactory<Configuration> {
+public final class ConfigurationFormatManager extends FormatManager<Configuration> {
+    private static ConfigurationFormatManager INSTANCE = new ConfigurationFormatManager();
 
-	//SelectableFeature createSelectableFeature(IFeature feature);
+    public static ConfigurationFormatManager getInstance() {
+        return INSTANCE;
+    }
 
+    private ConfigurationFormatManager() {
+    }
 }

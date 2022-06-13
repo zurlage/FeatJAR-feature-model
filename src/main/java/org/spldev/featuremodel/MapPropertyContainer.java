@@ -18,7 +18,7 @@
  *
  * See http://featureide.cs.ovgu.de/ for further information.
  */
-package org.spldev.featuremodel.impl;
+package org.spldev.featuremodel;
 
 import java.util.Collection;
 import java.util.HashMap;
@@ -26,8 +26,6 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
-
-import org.spldev.featuremodel.IPropertyContainer;
 
 /**
  * @author Marcus Pinnecke

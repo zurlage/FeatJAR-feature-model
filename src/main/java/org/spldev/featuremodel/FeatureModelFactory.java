@@ -18,68 +18,45 @@
  *
  * See http://featureide.cs.ovgu.de/ for further information.
  */
-package org.spldev.featuremodel.impl;
+package org.spldev.featuremodel;
 
-import org.prop4j.Node;
-
-import de.ovgu.featureide.fm.core.PluginID;
-import org.spldev.featuremodel.Constraint;
-import org.spldev.featuremodel.Feature;
-import org.spldev.featuremodel.FeatureModel;
-import org.spldev.featuremodel.IFeatureModelFactory;
-import de.ovgu.featureide.fm.core.editing.FeatureModelObfuscator;
-import de.ovgu.featureide.fm.core.job.LongRunningWrapper;
+import org.spldev.formula.structure.Formula;
+import org.spldev.util.data.Factory;
 
 /**
+ * Factory to create or copy instances of {@link Feature}, {@link FeatureModel}, {@link Constraint}, and to obfuscate {@link FeatureModel}s.
  *
  * @author Sebastian Krieter
+ * @author Rahel Arens
+ * @author Benedikt Jutz
  */
-public class DefaultFeatureModelFactory implements IFeatureModelFactory {
-
-	public static final String ID = PluginID.PLUGIN_ID + ".DefaultFeatureModelFactory";
-
-	public static DefaultFeatureModelFactory getInstance() {
-		return new DefaultFeatureModelFactory();
+public class FeatureModelFactory implements Factory<FeatureModel> {
+	public static FeatureModelFactory getInstance() {
+	return new FeatureModelFactory();
 	}
 
-	@Override
-	public String getId() {
-		return ID;
-	}
-
-	@Override
-	public boolean initExtension() {
-		return true;
-	}
-
-	@Override
-	public Constraint createConstraint(FeatureModel featureModel, Node propNode) {
+	public Constraint createConstraint(FeatureModel featureModel, Formula propNode) {
 		return new Constraint(featureModel, propNode);
 	}
 
-	@Override
 	public Feature createFeature(FeatureModel featureModel, String name) {
 		return new Feature(featureModel, name);
 	}
 
 	@Override
-	public FeatureModel create() {
-		return new FeatureModel(ID);
+	public FeatureModel get() {
+		return new FeatureModel(getIdentifier());
 	}
 
-	@Override
 	public Feature copyFeature(FeatureModel featureModel, Feature oldFeature) {
 		return oldFeature.getStructure().clone(featureModel).getFeature();
 	}
 
-	@Override
 	public Constraint copyConstraint(FeatureModel featureModel, Constraint oldConstraint) {
 		return oldConstraint.clone(featureModel);
 	}
 
-	@Override
-	public FeatureModel createObfuscatedFeatureModel(FeatureModel featureModel, String salt) {
-		return LongRunningWrapper.runMethod(new FeatureModelObfuscator(featureModel, salt));
-	}
-
+//	public FeatureModel createObfuscatedFeatureModel(FeatureModel featureModel, String salt) {
+//		return LongRunningWrapper.runMethod(new FeatureModelObfuscator(featureModel, salt));
+//	}
 }

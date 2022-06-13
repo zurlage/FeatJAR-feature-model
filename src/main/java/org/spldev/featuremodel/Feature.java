@@ -21,7 +21,6 @@
 package org.spldev.featuremodel;
 
 import org.spldev.featuremodel.event.FeatureIDEEvent;
-import org.spldev.featuremodel.impl.*;
 
 /**
  * The feature interface represents any class that acts in the sense of a <i>feature</i> in FeatureIDE. A feature contains both <ul> <li>certain fixed

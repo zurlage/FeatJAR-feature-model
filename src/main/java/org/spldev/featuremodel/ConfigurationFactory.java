@@ -18,30 +18,27 @@
  *
  * See http://featureide.cs.ovgu.de/ for further information.
  */
-package org.spldev.featuremodel.impl;
+package org.spldev.featuremodel;
 
 import org.spldev.configuration.Configuration;
+import org.spldev.util.data.Factory;
 
 /**
- * Manages all formats for {@link de.ovgu.featureide.fm.core.configuration.Configuration configurations}.
+ * Factory to create an instance of {@link SelectableFeature} and {@link Configuration}.
  *
  * @author Sebastian Krieter
  */
-public final class ConfigFormatManager extends FormatManager<Configuration> {
+public class ConfigurationFactory implements Factory<Configuration> {
+    public static ConfigurationFactory getInstance() {
+        return new ConfigurationFactory();
+    }
 
-	/*private static ConfigFormatManager instance = new ConfigFormatManager();
+    @Override
+    public Configuration get() {
+        return new Configuration();
+    }
 
-	public static ConfigFormatManager getInstance() {
-		return instance;
-	}
-
-	public static IConfigurationFormat getDefaultFormat() {
-		return new XMLConfFormat();
-	}
-
-	@Override
-	public boolean addExtension(IPersistentFormat<Configuration> extension) {
-		return (extension instanceof IPersistentFormat) ? super.addExtension(extension) : false;
-	}*/
-
+    public de.ovgu.featureide.fm.core.configuration.SelectableFeature createSelectableFeature(Feature feature) {
+        return new de.ovgu.featureide.fm.core.configuration.SelectableFeature(feature);
+    }
 }

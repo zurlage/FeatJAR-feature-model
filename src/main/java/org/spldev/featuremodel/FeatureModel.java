@@ -24,9 +24,6 @@ import org.spldev.featuremodel.event.DefaultEventManager;
 import org.spldev.featuremodel.event.FeatureIDEEvent;
 import org.spldev.featuremodel.event.IEventListener;
 import org.spldev.featuremodel.event.IEventManager;
-import org.spldev.featuremodel.impl.FMFactoryManager;
-import org.spldev.featuremodel.impl.FeatureModelProperty;
-import org.spldev.featuremodel.impl.ModelFileIdMap;
 import org.spldev.formula.io.textual.NodeWriter;
 import org.spldev.util.tree.Trees;
 
@@ -1086,7 +1083,7 @@ public class FeatureModel implements Cloneable, IEventManager {
 	}
 
 	/**
-	 * A feature model is created via a feature model {@link IFeatureModelFactory factory}. This methods returns the identifier of the factory used to create
+	 * A feature model is created via a feature model {@link FeatureModelFactory factory}. This methods returns the identifier of the factory used to create
 	 * this feature model. The factory can be used to create more feature models, features, or constraint from the same type as this feature model.
 	 *
 	 * @return the feature model factory ID.

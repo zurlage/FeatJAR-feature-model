@@ -1,3 +1,7 @@
 <?xml version="1.0"?>
 <extensions>
+    <point id="org.spldev.featuremodel.FeatureModelFormatManager">
+    </point>
+    <point id="org.spldev.featuremodel.ConfigurationFormatManager">
+    </point>
 </extensions>

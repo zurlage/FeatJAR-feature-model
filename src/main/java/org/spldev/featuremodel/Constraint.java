@@ -22,7 +22,6 @@ package org.spldev.featuremodel;
 
 import java.util.*;
 
-import org.spldev.featuremodel.impl.MapPropertyContainer;
 import org.spldev.formula.structure.Formula;
 import org.spldev.formula.structure.Formulas;
 import org.spldev.util.tree.Trees;
