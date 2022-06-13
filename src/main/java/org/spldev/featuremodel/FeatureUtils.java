@@ -279,10 +279,10 @@ public final class FeatureUtils {
 //		return Functional.map(feature.getStructure().getChildren(), IFeatureStructure::getFeature);
 //	}
 //
-//	public static final int getChildrenCount(IFeature feature) {
+//	public static final int getNumberOfChildren(IFeature feature) {
 //		requireNonNull(feature);
 //
-//		return feature.getStructure().getChildrenCount();
+//		return feature.getStructure().getNumberOfChildren();
 //	}
 //
 //	public static final List<String> getComments(IFeatureModel featureModel) {

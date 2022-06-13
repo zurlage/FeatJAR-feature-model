@@ -53,18 +53,18 @@ public class DefaultFeatureModelFactory implements IFeatureModelFactory {
 	}
 
 	@Override
-	public org.spldev.featuremodel.impl.Constraint createConstraint(FeatureModel featureModel, Node propNode) {
-		return new org.spldev.featuremodel.impl.Constraint(featureModel, propNode);
+	public Constraint createConstraint(FeatureModel featureModel, Node propNode) {
+		return new Constraint(featureModel, propNode);
 	}
 
 	@Override
-	public org.spldev.featuremodel.impl.Feature createFeature(FeatureModel featureModel, String name) {
-		return new org.spldev.featuremodel.impl.Feature(featureModel, name);
+	public Feature createFeature(FeatureModel featureModel, String name) {
+		return new Feature(featureModel, name);
 	}
 
 	@Override
-	public org.spldev.featuremodel.impl.FeatureModel create() {
-		return new org.spldev.featuremodel.impl.FeatureModel(ID);
+	public FeatureModel create() {
+		return new FeatureModel(ID);
 	}
 
 	@Override

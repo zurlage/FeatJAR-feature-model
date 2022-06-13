@@ -20,10 +20,7 @@
  */
 package org.spldev.featuremodel;
 
-import java.util.Collection;
-import java.util.Collections;
-import java.util.LinkedList;
-import java.util.List;
+import java.util.*;
 
 /**
  * Manages all structural information of a feature model. Intended for tree structures (features are represented by tree nodes).
@@ -71,7 +68,7 @@ public class FeatureModelStructure {
 
 	protected final FeatureModel correspondingFeatureModel;
 
-	protected FeatureStructure rootFeature;
+	protected FeatureTree rootFeature;
 
 	protected boolean showHiddenFeatures = false;
 
@@ -101,14 +98,14 @@ public class FeatureModelStructure {
 		return Collections.unmodifiableCollection(preorderFeatures);
 	}
 
-	protected void getFeaturesPreorder(FeatureStructure featureStructure, List<Feature> preorderFeatures) {
-		preorderFeatures.add(featureStructure.getFeature());
-		for (final FeatureStructure child : featureStructure.getChildren()) {
+	protected void getFeaturesPreorder(FeatureTree featureTree, List<Feature> preorderFeatures) {
+		preorderFeatures.add(featureTree.getFeature());
+		for (final FeatureTree child : featureTree.getChildren()) {
 			getFeaturesPreorder(child, preorderFeatures);
 		}
 	}
 
-	public FeatureStructure getRoot() {
+	public FeatureTree getRoot() {
 		return rootFeature;
 	}
 
@@ -123,7 +120,7 @@ public class FeatureModelStructure {
 
 	public boolean hasAlternativeGroup() {
 		for (final Feature f : correspondingFeatureModel.getVisibleFeatures()) {
-			if ((f.getStructure().getChildrenCount() > 1) && f.getStructure().isAlternative()) {
+			if ((f.getStructure().getNumberOfChildren() > 1) && f.getStructure().isAlternative()) {
 				return true;
 			}
 		}
@@ -132,7 +129,7 @@ public class FeatureModelStructure {
 
 	public boolean hasAndGroup() {
 		for (final Feature f : correspondingFeatureModel.getVisibleFeatures()) {
-			if ((f.getStructure().getChildrenCount() > 1) && f.getStructure().isAnd()) {
+			if ((f.getStructure().getNumberOfChildren() > 1) && f.getStructure().isAnd()) {
 				return true;
 			}
 		}
@@ -159,8 +156,8 @@ public class FeatureModelStructure {
 
 	public boolean hasMandatoryFeatures() {
 		for (final Feature f : correspondingFeatureModel.getVisibleFeatures()) {
-			final FeatureStructure parent = f.getStructure().getParent();
-			if ((parent != null) && parent.isAnd() && f.getStructure().isMandatory()) {
+			final Optional<FeatureTree> parent = f.getStructure().getParent();
+			if (parent.isPresent() && parent.get().isAnd() && f.getStructure().isMandatory()) {
 				return true;
 			}
 		}
@@ -169,7 +166,7 @@ public class FeatureModelStructure {
 
 	public boolean hasOptionalFeatures() {
 		for (final Feature f : correspondingFeatureModel.getVisibleFeatures()) {
-			if (!f.equals(rootFeature.getFeature()) && (f.getStructure().getParent() != null) && f.getStructure().getParent().isAnd()
+			if (!f.equals(rootFeature.getFeature()) && f.getStructure().getParent().isPresent() && f.getStructure().getParent().get().isAnd()
 					&& !f.getStructure().isMandatory()) {
 				return true;
 			}
@@ -179,7 +176,7 @@ public class FeatureModelStructure {
 
 	public boolean hasOrGroup() {
 		for (final Feature f : correspondingFeatureModel.getVisibleFeatures()) {
-			if ((f.getStructure().getChildrenCount() > 1) && f.getStructure().isOr()) {
+			if ((f.getStructure().getNumberOfChildren() > 1) && f.getStructure().isOr()) {
 				return true;
 			}
 		}
@@ -189,7 +186,7 @@ public class FeatureModelStructure {
 	public int numAlternativeGroup() {
 		int count = 0;
 		for (final Feature f : correspondingFeatureModel.getVisibleFeatures()) {
-			if ((f.getStructure().getChildrenCount() > 1) && f.getStructure().isAlternative()) {
+			if ((f.getStructure().getNumberOfChildren() > 1) && f.getStructure().isAlternative()) {
 				count++;
 			}
 		}
@@ -199,14 +196,14 @@ public class FeatureModelStructure {
 	public int numOrGroup() {
 		int count = 0;
 		for (final Feature f : correspondingFeatureModel.getVisibleFeatures()) {
-			if ((f.getStructure().getChildrenCount() > 1) && f.getStructure().isOr()) {
+			if ((f.getStructure().getNumberOfChildren() > 1) && f.getStructure().isOr()) {
 				count++;
 			}
 		}
 		return count;
 	}
 
-	public void replaceRoot(FeatureStructure feature) {
+	public void replaceRoot(FeatureTree feature) {
 		// TODO remove all features that are no children of the new root (part of a different sub tree)
 		correspondingFeatureModel.deleteFeatureFromTable(rootFeature.getFeature());
 
@@ -214,7 +211,7 @@ public class FeatureModelStructure {
 		rootFeature = feature;
 	}
 
-	public void setRoot(FeatureStructure root) {
+	public void setRoot(FeatureTree root) {
 		rootFeature = root;
 	}
 }

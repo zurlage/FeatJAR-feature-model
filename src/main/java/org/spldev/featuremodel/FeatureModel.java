@@ -20,22 +20,26 @@
  */
 package org.spldev.featuremodel;
 
-import java.nio.file.Path;
-import java.util.*;
-import java.util.stream.Collectors;
-
 import org.spldev.featuremodel.event.DefaultEventManager;
 import org.spldev.featuremodel.event.FeatureIDEEvent;
 import org.spldev.featuremodel.event.IEventListener;
 import org.spldev.featuremodel.event.IEventManager;
-import org.spldev.featuremodel.impl.*;
+import org.spldev.featuremodel.impl.FMFactoryManager;
+import org.spldev.featuremodel.impl.FeatureModelProperty;
+import org.spldev.featuremodel.impl.ModelFileIdMap;
+import org.spldev.formula.io.textual.NodeWriter;
+import org.spldev.util.tree.Trees;
+
+import java.nio.file.Path;
+import java.util.*;
+import java.util.stream.Collectors;
 
 /**
  * The feature model interface represents any class that acts in the sense of a <i>feature model</i> in FeatureIDE. <br> <br> A feature model contains of a
  * modifiable collection of <ul> <li>{@link Feature Features}, and</li> <li>{@link Constraint
  * Constraints of features}</li> </ul> <br> Each <i>feature</i> in a feature model has a unique identifier and is related to other features over some
  * expressions and relations which forms the feature model (such as parent-children relation with implication expression from one feature to another).
- * Additional to the structure of features (see {@link Feature} and {@link org.spldev.featuremodel.FeatureStructure}
+ * Additional to the structure of features (see {@link Feature} and {@link org.spldev.featuremodel.FeatureTree}
  * for more details) inside the feature models tree, features relationships can be further expressed using <i>constraints</i>. While the feature structure is
  * bound to the actual feature model tree, constraints can be state restrictions and relations to arbitrary features inside the feature model. <br> <br>
  * Features inside a feature model can by analyzed in order to determine feature properties which are implicated by the structure, the statements, and the
@@ -174,7 +178,7 @@ public class FeatureModel implements Cloneable, IEventManager {
 		sourceFile = oldFeatureModel.sourceFile;
 
 		if (newRoot == null) {
-			final FeatureStructure root = oldFeatureModel.getStructure().getRoot();
+			final FeatureTree root = oldFeatureModel.getStructure().getRoot();
 			if (root != null) {
 				structure.setRoot(root.cloneSubtree(this));// structure.getRoot().cloneSubtree(this));
 				for (final Constraint constraint : oldFeatureModel.constraints) {
@@ -196,7 +200,7 @@ public class FeatureModel implements Cloneable, IEventManager {
 	}
 
 	protected FeatureModelStructure createStructure() {
-		return new org.spldev.featuremodel.impl.FeatureModelStructure(this);
+		return new FeatureModelStructure(this);
 	}
 
 	/**
@@ -305,7 +309,7 @@ public class FeatureModel implements Cloneable, IEventManager {
 	 * @since 3.0
 	 */
 	public org.spldev.featuremodel.FeatureModel clone(Feature newRoot) {
-		return new org.spldev.featuremodel.impl.FeatureModel(this, newRoot);
+		return new FeatureModel(this, newRoot);
 	}
 
 	/**
@@ -372,9 +376,9 @@ public class FeatureModel implements Cloneable, IEventManager {
 		}
 
 		// use the group type of the feature to delete
-		final FeatureStructure parent = feature.getStructure().getParent();
+		final FeatureTree parent = feature.getStructure().getParent().orElseThrow();
 
-		if (parent.getChildrenCount() == 1) {
+		if (parent.getNumberOfChildren() == 1) {
 			if (feature.getStructure().isAnd()) {
 				parent.setAnd();
 			} else if (feature.getStructure().isAlternative()) {
@@ -387,7 +391,7 @@ public class FeatureModel implements Cloneable, IEventManager {
 		// add children to parent
 		final int index = parent.getChildIndex(feature.getStructure());
 		while (feature.getStructure().hasChildren()) {
-			parent.addChildAtPosition(index, feature.getStructure().removeLastChild());
+			parent.addChild(index, feature.getStructure().removeChild(feature.getStructure().getNumberOfChildren() - 1));
 		}
 
 		// delete feature
@@ -544,7 +548,11 @@ public class FeatureModel implements Cloneable, IEventManager {
 	 */
 	public List<String> getFeatureOrderList() {
 		if (featureOrderList.isEmpty()) {
-			return Functional.mapToStringList(Functional.filter(new FeaturePreOrderIterator(this), new ConcreteFeatureFilter()));
+			return Trees.preOrderStream(getStructure().getRoot())
+					.filter(FeatureTree::isConcrete)
+					.map(FeatureTree::getFeature)
+					.map(Feature::getName)
+					.collect(Collectors.toList());
 		}
 		return Collections.unmodifiableList(featureOrderList);
 	}
@@ -838,7 +846,11 @@ public class FeatureModel implements Cloneable, IEventManager {
 	 * @since 3.0
 	 */
 	public void setFeatureOrderList(List<String> featureOrderList) {
-		final List<String> basicSet = Functional.mapToList(new FeaturePreOrder(this), new ConcreteFeatureFilter(), Feature::getName);
+		List<String> basicSet = Trees.preOrderStream(getStructure().getRoot())
+				.filter(FeatureTree::isConcrete)
+				.map(FeatureTree::getFeature)
+				.map(Feature::getName)
+				.collect(Collectors.toList());
 		// TODO optimize performance
 		basicSet.removeAll(featureOrderList);
 		this.featureOrderList.clear();
@@ -925,7 +937,7 @@ public class FeatureModel implements Cloneable, IEventManager {
 		final StringBuilder sb = new StringBuilder("FeatureModel(");
 		if (getStructure().getRoot() != null) {
 			sb.append("Structure=[");
-			FeatureUtils.print(getStructure().getRoot().getFeature(), sb);
+			sb.append(Trees.print(getStructure().getRoot()));
 			sb.append("], Constraints=[");
 			print(getConstraints(), sb);
 			sb.append("], ");
@@ -948,7 +960,7 @@ public class FeatureModel implements Cloneable, IEventManager {
 	protected void print(List<Constraint> constraints, StringBuilder sb) {
 		for (int i = 0; i < constraints.size(); i++) {
 			sb.append("[");
-			sb.append(new NodeWriter(constraints.get(i).getNode()).nodeToString());
+			sb.append(new NodeWriter().write(constraints.get(i).getNode()));
 			sb.append("]");
 			if ((i + 1) < constraints.size()) {
 				sb.append(", ");
@@ -1019,7 +1031,7 @@ public class FeatureModel implements Cloneable, IEventManager {
 		if ((obj == null) || (getClass() != obj.getClass())) {
 			return false;
 		}
-		final org.spldev.featuremodel.impl.FeatureModel other = (org.spldev.featuremodel.impl.FeatureModel) obj;
+		final FeatureModel other = (FeatureModel) obj;
 		return id == other.id;
 	}
 
@@ -1069,8 +1081,8 @@ public class FeatureModel implements Cloneable, IEventManager {
 	 *
 	 * @return cloned instance of this model, such that the new instance is equal to this feature model but their references aren't identical
 	 */
-	public org.spldev.featuremodel.impl.FeatureModel clone() {
-		return new org.spldev.featuremodel.impl.FeatureModel(this, null);
+	public FeatureModel clone() {
+		return new FeatureModel(this, null);
 	}
 
 	/**

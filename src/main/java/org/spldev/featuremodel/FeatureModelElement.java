@@ -44,7 +44,7 @@ public abstract class FeatureModelElement implements IEventManager {
 	protected FeatureModelElement(FeatureModelElement oldElement, FeatureModel featureModel) {
 		this.featureModel = featureModel != null ? featureModel : oldElement.featureModel;
 		id = oldElement.id;
-		name = (oldElement.name == null) ? null : new String(oldElement.name);
+		name = oldElement.name;
 	}
 
 	public FeatureModelElement(FeatureModel featureModel) {

@@ -25,34 +25,34 @@ import org.spldev.featuremodel.impl.*;
 
 /**
  * The feature interface represents any class that acts in the sense of a <i>feature</i> in FeatureIDE. A feature contains both <ul> <li>certain fixed
- * properties (e.g., its name) which are available by the features implementation of {@link org.spldev.featuremodel.IFeatureProperty IFeatureProperty},
+ * properties (e.g., its name) which are available by the features implementation of {@link org.spldev.featuremodel.FeatureProperty FeatureProperty},
  * and</li> <li>custom properties which can be stored and received in a key-value store like fashion without the need of modifying existing code</li> </ul> Each
  * feature belongs to other features where statements between features form a <i>feature model</i>. Hence, a feature is related to a <i>structure</i> which
  * connects the feature to, e.g., it's <i>children</i>, or it's <i>parent</i> feature in terms of these statements. Any feature is highly related to it's name
  * and identified by it's internal <i>identifier</i>. The last both properties are mixed-in with the {@link FeatureModelElement} interface. An instance of
- * <code>IFeature</code> intended to be instantiated by a {@link IFeatureModelFactory}. <br> <br> FeatureIDE provides an adapter implementation
+ * <code>Feature</code> intended to be instantiated by a {@link FeatureModelFactory}. <br> <br> FeatureIDE provides an adapter implementation
  * {@link org.spldev.featuremodel.impl.AFeature AFeature} which is a abstract base class and which should be prefered as starting point for custom
- * implementations. This base class contains ready-to-use implementations for both <code>IFeature</code> and {@link FeatureModelElement}. <br> <br>
- * <b>Example</b><br> The following example demonstrate the creation of a new feature called <i>FeatureA</i> using FeatureIDE's default <code>IFeature</code>
+ * implementations. This base class contains ready-to-use implementations for both <code>Feature</code> and {@link FeatureModelElement}. <br> <br>
+ * <b>Example</b><br> The following example demonstrate the creation of a new feature called <i>FeatureA</i> using FeatureIDE's default <code>Feature</code>
  * implementation {@link org.spldev.featuremodel.impl.Feature Feature}, and the corresponding default factory
  * {@link org.spldev.featuremodel.impl.DefaultFeatureModelFactory DefaultFeatureModelFactory} over the conviennent factory class
- * {@link FMFactoryManager}: <code> IFeatureModel model = FMFactoryManager.getFactory().createFeatureModel(); IFeature feature =
- * FMFactoryManager.getFactory().createFeature(model, "FeatureA"); </code> A unified handling of certain <code>IFeature</code> implementations (in terms of
+ * {@link FMFactoryManager}: <code> FeatureModel model = FMFactoryManager.getFactory().createFeatureModel(); Feature feature =
+ * FMFactoryManager.getFactory().createFeature(model, "FeatureA"); </code> A unified handling of certain <code>Feature</code> implementations (in terms of
  * conviennent methods) can be achieved with the use of {@link org.spldev.featuremodel.FeatureUtils FeatureUtils} helper class. <br> <br> <b>API
  * notes</b>: The classes internal structure has heavily changed compared to older FeatureIDE version. A bridge to the old-fashioned handling is available in
  * {@link org.spldev.featuremodel.FeatureUtils FeatureUtils} as static methods. <br> <br> <b>Notes on equals method</b>: Any implementation have to
  * provide a {@link Object#equals(Object)} implementation when the feature implementation should be fully useable in the FeatureIDE system (and therefore, have
  * to be an instance of {@link FeatureModelElement}), which at least returns <b>true</b> when the internal identifier of two features are the same, and
  * otherwise <b>false</b>. <br> <br> <b>Compatibility Notes</b>: To provide compatibility to earlier versions of FeatureIDE, the <i>out-dated</i> class
- * {@link org.spldev.featuremodel.impl.Feature Feature} also implements the <code>IFeature</code> interface. Developers should neither use nor extend this obsolete class since it is
+ * {@link org.spldev.featuremodel.impl.Feature Feature} also implements the <code>Feature</code> interface. Developers should neither use nor extend this obsolete class since it is
  * deprecated and will be removed in one of the next versions.
  *
- * @see org.spldev.featuremodel.impl.AFeature Default implementation of <code>IFeature</code> (as starting point for custom implementations)
+ * @see org.spldev.featuremodel.impl.AFeature Default implementation of <code>Feature</code> (as starting point for custom implementations)
  *
  * @see Constraint Interface for feature constraints (<code>IConstraint</code>)
- * @see FeatureModel Interface for feature models (<code>IFeatureModel</code>)
- * @see IFeatureProperty Interface for feature properties (<code>IFeatureProperty</code>)
- * @see FeatureStructure Interface for a feature's structure (<code>IFeatureStructure</code>)
+ * @see FeatureModel Interface for feature models (<code>FeatureModel</code>)
+ * @see FeatureProperty Interface for feature properties (<code>FeatureProperty</code>)
+ * @see FeatureTree Interface for a feature's structure (<code>FeatureStructure</code>)
  *
  * @see org.spldev.featuremodel.impl.AConstraint Default implementation for feature constraints (<code>AConstraint</code>)
  * @see org.spldev.featuremodel.impl.FeatureModel Default implementation for feature models (<code>FeatureModel</code>)
@@ -66,22 +66,22 @@ import org.spldev.featuremodel.impl.*;
 
  * Implementation of {@link AFeature} used as default implementation inside FeatureIDE. <br> <br> This class implements the functionality required by
  * {@link org.spldev.featuremodel.Feature} and a {@link AFeatureModelElement}, specified in {@link AFeature}. <br> <br> This class is intended to be the default implementation for
- * regular use-cases of feature management. Further specialization for other use-cases is available in the sub classes {@link MultiFeature} and inside
- * {@link SXFMFormat}. <br> <br> An instance of a <code>Feature</code> is intended to be instantiated by a {@link IFeatureModelFactory}. <br> <br>
- * <b>Example</b><br> The following example demonstrate the creation of a new feature called <i>FeatureA</i> using FeatureIDE's default <code>IFeature</code> (
+ * regular use-cases of feature management. Further specialization for other use-cases is available in the sub classes {@link MultFeature} and inside
+ * {@link SXFMFormat}. <br> <br> An instance of a <code>Feature</code> is intended to be instantiated by a {@link FeatureModelFactory}. <br> <br>
+ * <b>Example</b><br> The following example demonstrate the creation of a new feature called <i>FeatureA</i> using FeatureIDE's default <code>Feature</code> (
  * <code>AFeature</code>) implementation {@link org.spldev.featuremodel.impl.Feature Feature}, and the corresponding default factory
  * {@link org.spldev.featuremodel.impl.DefaultFeatureModelFactory DefaultFeatureModelFactory} over the convenient factory class
- * {@link FMFactoryManager}. The instance is stored against the <code>IFeature</code> interface: <code> IFeatureModel model =
- * FMFactoryManager.getFactory().createFeatureModel(); IFeature feature = FMFactoryManager.getFactory().createFeature(model, "FeatureA"); </code> A unified
- * handling of certain <code>Feature</code> (<code>AFeature</code>, <code>IFeature</code>) implementations (in terms of conviennent methods) can be achieved
+ * {@link FMFactoryManager}. The instance is stored against the <code>Feature</code> interface: <code> FeatureModel model =
+ * FMFactoryManager.getFactory().createFeatureModel(); Feature feature = FMFactoryManager.getFactory().createFeature(model, "FeatureA"); </code> A unified
+ * handling of certain <code>Feature</code> (<code>AFeature</code>, <code>Feature</code>) implementations (in terms of conviennent methods) can be achieved
  * with the use of {@link org.spldev.featuremodel.FeatureUtils FeatureUtils} helper class.
  *
  * @see org.spldev.featuremodel.impl.AFeature Default implementation of the interface for feature in FeatureIDE (<code>AFeature</code>)
  *
  * @see Constraint Interface for feature constraints (<code>IConstraint</code>)
- * @see FeatureModel Interface for feature models (<code>IFeatureModel</code>)
- * @see IFeatureProperty Interface for feature properties (<code>IFeatureProperty</code>)
- * @see FeatureStructure Interface for a feature's structure (<code>IFeatureStructure</code>)
+ * @see FeatureModel Interface for feature models (<code>FeatureModel</code>)
+ * @see FeatureProperty Interface for feature properties (<code>FeatureProperty</code>)
+ * @see FeatureTree Interface for a feature's structure (<code>FeatureStructure</code>)
  *
  * @see org.spldev.featuremodel.impl.AConstraint Default implementation for feature constraints (<code>AConstraint</code>)
  * @see org.spldev.featuremodel.impl.FeatureModel Default implementation for feature models (<code>FeatureModel</code>)
@@ -93,25 +93,25 @@ import org.spldev.featuremodel.impl.*;
  * feature's <i>properties</i>, <i>custom properties</i>, and the feature's <i>structure</i> (for more information, see {@link org.spldev.featuremodel.Feature} documentation). The
  * second implements FeatureIDE's internal functionality to identify a given feature inside a feature model, and to provide event listening capabilities with
  * the listener/observer pattern. <br> <br> This class is intended to be a starting point for user-defined implementation, such that a subclass of
- * <code>AFeature</code> only have to provide an implementation of {@link org.spldev.featuremodel.Feature#clone(FeatureModel, FeatureStructure)}. FeatureIDE provides a default
+ * <code>AFeature</code> only have to provide an implementation of {@link org.spldev.featuremodel.Feature#clone(FeatureModel, FeatureTree)}. FeatureIDE provides a default
  * non-abstract implementation {@link org.spldev.featuremodel.impl.Feature Feature} which extends <code>AFeature</code> in this sense. <br> <br> An
- * instance of a subclass of <code>AFeature</code> is intended to be instantiated by a {@link IFeatureModelFactory}. <br> <br> <b>Example</b><br> The following
+ * instance of a subclass of <code>AFeature</code> is intended to be instantiated by a {@link FeatureModelFactory}. <br> <br> <b>Example</b><br> The following
  * example demonstrate the creation of a new feature called <i>FeatureA</i> using FeatureIDE's default <code>AFeature</code> implementation
  * {@link org.spldev.featuremodel.impl.Feature Feature}, and the corresponding default factory
  * {@link org.spldev.featuremodel.impl.DefaultFeatureModelFactory DefaultFeatureModelFactory} over the conviennent factory class
- * {@link FMFactoryManager}. The instance is stored against the <code>IFeature</code> interface: <code> IFeatureModel model =
- * FMFactoryManager.getFactory().createFeatureModel(); IFeature feature = FMFactoryManager.getFactory().createFeature(model, "FeatureA"); </code> A unified
- * handling of certain <code>AFeature</code> (<code>IFeature</code>) implementations (in terms of conviennent methods) can be achieved with the use of
+ * {@link FMFactoryManager}. The instance is stored against the <code>Feature</code> interface: <code> FeatureModel model =
+ * FMFactoryManager.getFactory().createFeatureModel(); Feature feature = FMFactoryManager.getFactory().createFeature(model, "FeatureA"); </code> A unified
+ * handling of certain <code>AFeature</code> (<code>Feature</code>) implementations (in terms of conviennent methods) can be achieved with the use of
  * {@link org.spldev.featuremodel.FeatureUtils FeatureUtils} helper class. <br> <br> <b>Notes on equals method</b>: The <code>AFeature</code>
  * implementation inherits the {@link Object#equals(Object)} capability from {@link AFeatureModelElement}. The feature equality is defined as the equality of
  * the underlying internal identifiers per feature. <br> <br>
  *
- * @see org.spldev.featuremodel.Feature Interface for feature in FeatureIDE (<code>IFeature</code>)
+ * @see org.spldev.featuremodel.Feature Interface for feature in FeatureIDE (<code>Feature</code>)
  *
  * @see Constraint Interface for feature constraints (<code>IConstraint</code>)
- * @see FeatureModel Interface for feature models (<code>IFeatureModel</code>)
- * @see IFeatureProperty Interface for feature properties (<code>IFeatureProperty</code>)
- * @see FeatureStructure Interface for a feature's structure (<code>IFeatureStructure</code>)
+ * @see FeatureModel Interface for feature models (<code>FeatureModel</code>)
+ * @see FeatureProperty Interface for feature properties (<code>FeatureProperty</code>)
+ * @see FeatureTree Interface for a feature's structure (<code>FeatureStructure</code>)
  *
  * @see org.spldev.featuremodel.impl.AConstraint Default implementation for feature constraints (<code>AConstraint</code>)
  * @see org.spldev.featuremodel.impl.FeatureModel Default implementation for feature models (<code>FeatureModel</code>)
@@ -125,8 +125,8 @@ import org.spldev.featuremodel.impl.*;
  * @author Marcus Pinnecke
  */
 public class Feature extends FeatureModelElement {
-	protected final IFeatureProperty property;
-	protected final FeatureStructure structure;
+	protected final FeatureProperty property;
+	protected final FeatureTree structure;
 	protected final IPropertyContainer propertyContainer;
 
 	/**
@@ -144,7 +144,7 @@ public class Feature extends FeatureModelElement {
 	 *
 	 * @since 3.0
 	 */
-	protected Feature(Feature oldFeature, FeatureModel featureModel, FeatureStructure newFeatrureStructure) {
+	protected Feature(Feature oldFeature, FeatureModel featureModel, FeatureTree newFeatrureStructure) {
 		super(oldFeature, featureModel);
 
 		property = oldFeature.property.clone(this);
@@ -167,7 +167,7 @@ public class Feature extends FeatureModelElement {
 		this.name = name;
 
 		property = createProperty();
-		structure = createStructure();
+		structure = createTree();
 		propertyContainer = createPropertyContainer();
 	}
 
@@ -179,25 +179,25 @@ public class Feature extends FeatureModelElement {
 		return new MapPropertyContainer(other.propertyContainer);
 	}
 
-	protected IFeatureProperty createProperty() {
+	protected FeatureProperty createProperty() {
 		return new FeatureProperty(this);
 	}
 
-	protected FeatureStructure createStructure() {
-		return new org.spldev.featuremodel.impl.FeatureStructure(this);
+	protected FeatureTree createTree() {
+		return new FeatureTree(this);
 	}
 
 	/**
-	 * Returns the feature's properties. These properties depend on the {@link IFeatureProperty} implementation, but contain at least getters and setters for
+	 * Returns the feature's properties. These properties depend on the {@link FeatureProperty} implementation, but contain at least getters and setters for
 	 * <ul> <li>a custom-defined description of the feature</li> <li>a string-representation of the feature which is intended for display purposes</li>
 	 * <li>information about the feature status (dead, false-optional,...)</li> <li>the state of the feature's selection in the GUI</li> </ul> For user-defined
-	 * properties, the {@link IFeatureProperty} implementation must be changed, or the method {@link #getCustomProperties()} can be used.
+	 * properties, the {@link FeatureProperty} implementation must be changed, or the method {@link #getCustomProperties()} can be used.
 	 *
 	 * @since 3.0
 	 *
 	 * @return Implementation-specific feature properties.
 	 */
-	public IFeatureProperty getProperty() {
+	public FeatureProperty getProperty() {
 		return property;
 	}
 
@@ -210,7 +210,7 @@ public class Feature extends FeatureModelElement {
 	 *
 	 * @return The features structure properties.
 	 */
-	public FeatureStructure getStructure() {
+	public FeatureTree getStructure() {
 		return structure;
 	}
 
@@ -246,7 +246,7 @@ public class Feature extends FeatureModelElement {
 	/*
 	public String createTooltip(Object... objects) {
 		final StringBuilder toolTip = new StringBuilder();
-		final IFeatureStructure structure = getStructure();
+		final FeatureStructure structure = getStructure();
 		toolTip.append(structure.isConcrete() ? CONCRETE : TOOLTIP_ABSTRACT);
 
 		if (structure.hasHiddenParent()) {
@@ -311,7 +311,7 @@ public class Feature extends FeatureModelElement {
 	 *
 	 * @return New instance <code>f'</code> of this feature <code>f</code> such that <code>f != f'</code> but <code>f.equals(f')</code> holds.
 	 */
-	public Feature clone(FeatureModel newFeatureModel, FeatureStructure newStructure) {
+	public Feature clone(FeatureModel newFeatureModel, FeatureTree newStructure) {
 		return new Feature(this, newFeatureModel, newStructure);
 	}
 }
