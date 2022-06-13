@@ -33,13 +33,13 @@ public interface IFeatureModelProperty extends IPropertyContainer {
 
 	void addComment(CharSequence comment);
 
-	IFeatureModelProperty clone(IFeatureModel newFeatureNodel);
+	IFeatureModelProperty clone(FeatureModel newFeatureNodel);
 
 	Collection<String> getAnnotations();
 
 	Collection<String> getComments();
 
-	IFeatureModel getFeatureModel();
+	FeatureModel getFeatureModel();
 
 	boolean isFeatureOrderInXML();
 

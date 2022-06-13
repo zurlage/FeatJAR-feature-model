@@ -20,8 +20,6 @@
  */
 package org.spldev.featuremodel.event;
 
-import org.spldev.featuremodel.impl.FeatureModel;
-
 /**
  * Event triggered by changes to a feature model or its elements. <br> <br> Each event contains the following information: <ul> <li>an event type which
  * determine the kind of event</li> <li>the sender (source) of this event, i.e., which object fired this event</li> <li>the old value (if available), and the

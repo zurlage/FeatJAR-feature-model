@@ -23,23 +23,23 @@ package org.spldev.featuremodel.impl;
 import java.nio.file.Path;
 
 import de.ovgu.featureide.fm.core.Logger;
-import org.spldev.featuremodel.IConstraint;
+import org.spldev.featuremodel.Constraint;
 import org.spldev.featuremodel.IFactory;
-import org.spldev.featuremodel.IFeature;
-import org.spldev.featuremodel.IFeatureModel;
+import org.spldev.featuremodel.Feature;
+import org.spldev.featuremodel.FeatureModel;
 import org.spldev.featuremodel.IFeatureModelFactory;
 import de.ovgu.featureide.fm.core.io.IPersistentFormat;
 
 /**
- * Returns custom factories to create {@link IFeatureModel}, {@link IFeature}, and {@link IConstraint} instances.
+ * Returns custom factories to create {@link FeatureModel}, {@link Feature}, and {@link Constraint} instances.
  *
  * @author Sebastian Krieter
  */
-public final class FMFactoryManager extends FactoryManager<IFeatureModel> {
+public final class FMFactoryManager extends FactoryManager<FeatureModel> {
 
 	/**
 	 * Return the currently set default factory (if not changed, it is an instance of the built-in {@link DefaultFeatureModelFactory}).<br> <br> <b>Important
-	 * Note:</b> If possible, use {@link #getFactory(Path, IPersistentFormat)} or {@link #getFactory(IFeatureModel)} instead to ensure that the correct
+	 * Note:</b> If possible, use {@link #getFactory(Path, IPersistentFormat)} or {@link #getFactory(FeatureModel)} instead to ensure that the correct
 	 * factory is used for the underlying feature model file.
 	 *
 	 * @return Returns the ID of the default feature model factory.
@@ -63,7 +63,7 @@ public final class FMFactoryManager extends FactoryManager<IFeatureModel> {
 	 * @return Returns the feature model factory for the given feature model.
 	 */
 	@Override
-	public IFeatureModelFactory getFactory(IFeatureModel object) {
+	public IFeatureModelFactory getFactory(FeatureModel object) {
 		try {
 			return getFactory(object.getFactoryID());
 		} catch (final NoSuchExtensionException e) {
@@ -78,17 +78,17 @@ public final class FMFactoryManager extends FactoryManager<IFeatureModel> {
 	}
 
 	@Override
-	public IFeatureModelFactory getFactory(Path path, IPersistentFormat<? extends IFeatureModel> format) throws NoSuchExtensionException {
+	public IFeatureModelFactory getFactory(Path path, IPersistentFormat<? extends FeatureModel> format) throws NoSuchExtensionException {
 		return (IFeatureModelFactory) super.getFactory(path, format);
 	}
 
 	@Override
-	public IFeatureModelFactory getFactory(IPersistentFormat<? extends IFeatureModel> format) throws NoSuchExtensionException {
+	public IFeatureModelFactory getFactory(IPersistentFormat<? extends FeatureModel> format) throws NoSuchExtensionException {
 		return (IFeatureModelFactory) super.getFactory(format);
 	}
 
 	@Override
-	public boolean addExtension(IFactory<IFeatureModel> extension) {
+	public boolean addExtension(IFactory<FeatureModel> extension) {
 		return (extension instanceof IFeatureModelFactory) ? super.addExtension(extension) : false;
 	}
 

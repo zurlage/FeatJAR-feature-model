@@ -23,26 +23,26 @@ package org.spldev.featuremodel;
 import org.prop4j.Node;
 
 /**
- * Factory to create or copy instances of {@link IFeature}, {@link IFeatureModel}, {@link IConstraint}, and to obfuscate {@link IFeatureModel}s.
+ * Factory to create or copy instances of {@link Feature}, {@link FeatureModel}, {@link Constraint}, and to obfuscate {@link FeatureModel}s.
  *
  * @author Sebastian Krieter
  * @author Rahel Arens
  * @author Benedikt Jutz
  */
-public interface IFeatureModelFactory extends IFactory<IFeatureModel> {
+public interface IFeatureModelFactory extends IFactory<FeatureModel> {
 
 	public static String extensionPointID = "FMFactory";
 
 	public static String extensionID = "fmFactory";
 
-	IConstraint createConstraint(IFeatureModel featureModel, Node propNode);
+	Constraint createConstraint(FeatureModel featureModel, Node propNode);
 
-	IFeature createFeature(IFeatureModel featureModel, String name);
+	Feature createFeature(FeatureModel featureModel, String name);
 
-	IFeatureModel createObfuscatedFeatureModel(IFeatureModel featureModel, String salt);
+	FeatureModel createObfuscatedFeatureModel(FeatureModel featureModel, String salt);
 
-	IFeature copyFeature(IFeatureModel featureModel, IFeature oldFeature);
+	Feature copyFeature(FeatureModel featureModel, Feature oldFeature);
 
-	IConstraint copyConstraint(IFeatureModel featureModel, IConstraint oldConstraint);
+	Constraint copyConstraint(FeatureModel featureModel, Constraint oldConstraint);
 
 }

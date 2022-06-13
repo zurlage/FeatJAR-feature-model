@@ -18,38 +18,32 @@
  *
  * See http://featureide.cs.ovgu.de/ for further information.
  */
-package org.spldev.featuremodel.impl;
-
-import org.spldev.featuremodel.IFeature;
-import org.spldev.featuremodel.IFeatureProperty;
+package org.spldev.featuremodel;
 
 /**
- * All additional properties of an {@link IFeature}.
+ * Manages all additional properties of a feature.
  *
  * @author Sebastian Krieter
- * @author Marcus Pinnecke
  */
-public class FeatureProperty implements IFeatureProperty {
-
-	protected final IFeature correspondingFeature;
+public class FeatureProperty {
+	protected final Feature correspondingFeature;
 
 	protected String description;
 	protected boolean implicit;
 
-	public FeatureProperty(FeatureProperty oldProperty, IFeature correspondingFeature) {
+	public FeatureProperty(FeatureProperty oldProperty, Feature correspondingFeature) {
 		this.correspondingFeature = correspondingFeature != null ? correspondingFeature : oldProperty.correspondingFeature;
 		description = oldProperty.description.toString();
 		implicit = oldProperty.implicit;
 	}
 
-	public FeatureProperty(IFeature correspondingFeature) {
+	public FeatureProperty(Feature correspondingFeature) {
 		this.correspondingFeature = correspondingFeature;
 		description = "";
 		implicit = false;
 	}
 
-	@Override
-	public IFeatureProperty clone(IFeature newFeature) {
+	public FeatureProperty clone(Feature newFeature) {
 		return new FeatureProperty(this, newFeature);
 	}
 
@@ -57,45 +51,44 @@ public class FeatureProperty implements IFeatureProperty {
 	 *
 	 * @return The description of the Feature.
 	 */
-	@Override
 	public String getDescription() {
 		return description;
 	}
 
-	@Override
+	@Deprecated
 	public String getDisplayName() {
 		return correspondingFeature.getName();
 	}
 
-	@Override
-	public IFeature getFeature() {
+	public Feature getFeature() {
 		return correspondingFeature;
 	}
 
-	@Override
 	public void setDescription(final CharSequence description) {
 		this.description = description.toString();
 	}
 
-	@Override
+	@Deprecated
 	public void setDisplayName(CharSequence name) {}
 
-	@Override
 	public boolean isConstraintSelected() {
 		throw new UnsupportedOperationException("Not implemented yet");
 	}
 
-	@Override
 	public boolean selectConstraint(boolean state) {
 		throw new UnsupportedOperationException("Not implemented yet");
 	}
 
-	@Override
+	/**
+	 * Implicit features can be used to represent features that exist only for technical reasons, such as the implicit root feature of UVL models with multiple
+	 * actual root features.
+	 *
+	 * @return Whether the corresponding feature is implicit.
+	 */
 	public boolean isImplicit() {
 		return implicit;
 	}
 
-	@Override
 	public void setImplicit(boolean implicit) {
 		this.implicit = implicit;
 	}

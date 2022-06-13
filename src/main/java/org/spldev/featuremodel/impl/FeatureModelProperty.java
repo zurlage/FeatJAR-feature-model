@@ -25,13 +25,13 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Objects;
 
-import org.spldev.featuremodel.IFeature;
-import org.spldev.featuremodel.IFeatureModel;
+import org.spldev.featuremodel.Feature;
+import org.spldev.featuremodel.FeatureModel;
 import org.spldev.featuremodel.IFeatureModelProperty;
 import org.spldev.featuremodel.IPropertyContainer;
 
 /**
- * All additional properties of one {@link IFeature} instance.
+ * All additional properties of one {@link Feature} instance.
  *
  * @author Sebastian Krieter
  * @author Marcus Pinnecke
@@ -75,11 +75,11 @@ public class FeatureModelProperty extends MapPropertyContainer implements IFeatu
 	 */
 	protected final List<String> comments;
 
-	protected final IFeatureModel correspondingFeatureModel;
+	protected final FeatureModel correspondingFeatureModel;
 
 	protected boolean featureOrderInXML;
 
-	protected FeatureModelProperty(FeatureModelProperty oldProperty, IFeatureModel correspondingFeatureModel) {
+	protected FeatureModelProperty(FeatureModelProperty oldProperty, FeatureModel correspondingFeatureModel) {
 		super(oldProperty);
 		this.correspondingFeatureModel = correspondingFeatureModel != null ? correspondingFeatureModel : oldProperty.correspondingFeatureModel;
 
@@ -89,7 +89,7 @@ public class FeatureModelProperty extends MapPropertyContainer implements IFeatu
 		annotations = new LinkedList<>(oldProperty.annotations);
 	}
 
-	public FeatureModelProperty(IFeatureModel correspondingFeatureModel) {
+	public FeatureModelProperty(FeatureModel correspondingFeatureModel) {
 		super();
 		this.correspondingFeatureModel = correspondingFeatureModel;
 
@@ -111,7 +111,7 @@ public class FeatureModelProperty extends MapPropertyContainer implements IFeatu
 	}
 
 	@Override
-	public IFeatureModelProperty clone(IFeatureModel newFeatureNodel) {
+	public IFeatureModelProperty clone(FeatureModel newFeatureNodel) {
 		return new FeatureModelProperty(this, newFeatureNodel);
 	}
 
@@ -126,7 +126,7 @@ public class FeatureModelProperty extends MapPropertyContainer implements IFeatu
 	}
 
 	@Override
-	public IFeatureModel getFeatureModel() {
+	public FeatureModel getFeatureModel() {
 		return correspondingFeatureModel;
 	}
 
@@ -171,7 +171,7 @@ public class FeatureModelProperty extends MapPropertyContainer implements IFeatu
 	 * @param fm The relative feature model.
 	 * @return true, when analyses should be performed automatically, false otherwise.
 	 */
-	public static boolean isRunCalculationAutomatically(IFeatureModel fm) {
+	public static boolean isRunCalculationAutomatically(FeatureModel fm) {
 		Boolean isRunAutomatically =
 			getBooleanProperty(fm.getProperty(), FeatureModelProperty.TYPE_CALCULATIONS, FeatureModelProperty.PROPERTY_CALCULATIONS_RUN_AUTOMATICALLY);
 		if (isRunAutomatically == null) {
@@ -192,7 +192,7 @@ public class FeatureModelProperty extends MapPropertyContainer implements IFeatu
 	 * @param fm The relative feature model.
 	 * @return true, when feature should be considered when anayses are performed, false otherwise.
 	 */
-	public static boolean isCalculateFeatures(IFeatureModel fm) {
+	public static boolean isCalculateFeatures(FeatureModel fm) {
 		Boolean isCalculatingFeatures = FeatureModelProperty.getBooleanProperty(fm.getProperty(), FeatureModelProperty.TYPE_CALCULATIONS,
 				FeatureModelProperty.PROPERTY_CALCULATIONS_CALCULATE_FEATURES);
 		if (isCalculatingFeatures == null) {
@@ -208,7 +208,7 @@ public class FeatureModelProperty extends MapPropertyContainer implements IFeatu
 	 * @param fm The relative feature model.
 	 * @return true, when constraints should be considered when anayses are performed, false otherwise.
 	 */
-	public static boolean isCalculateConstraints(IFeatureModel fm) {
+	public static boolean isCalculateConstraints(FeatureModel fm) {
 		Boolean isCalculatingConstraints = FeatureModelProperty.getBooleanProperty(fm.getProperty(), FeatureModelProperty.TYPE_CALCULATIONS,
 				FeatureModelProperty.PROPERTY_CALCULATIONS_CALCULATE_CONSTRAINTS);
 		if (isCalculatingConstraints == null) {

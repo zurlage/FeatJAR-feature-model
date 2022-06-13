@@ -18,16 +18,14 @@
  *
  * See http://featureide.cs.ovgu.de/ for further information.
  */
-package org.spldev.featuremodel.impl;
+package org.spldev.featuremodel;
 
-import java.util.List;
-
-import org.spldev.featuremodel.IFeatureModel;
-import org.spldev.featuremodel.IFeatureModelElement;
 import org.spldev.featuremodel.event.DefaultEventManager;
 import org.spldev.featuremodel.event.FeatureIDEEvent;
 import org.spldev.featuremodel.event.IEventListener;
 import org.spldev.featuremodel.event.IEventManager;
+
+import java.util.List;
 
 /**
  * Partial implementation of feature and constraint.
@@ -35,22 +33,21 @@ import org.spldev.featuremodel.event.IEventManager;
  * @author Sebastian Krieter
  *
  */
-public abstract class AFeatureModelElement implements IFeatureModelElement {
-
+public abstract class FeatureModelElement implements IEventManager {
 	protected final long id;
 
 	protected String name;
 
-	protected final IFeatureModel featureModel;
+	protected final FeatureModel featureModel;
 	protected final IEventManager eventManager = new DefaultEventManager();
 
-	protected AFeatureModelElement(AFeatureModelElement oldElement, IFeatureModel featureModel) {
+	protected FeatureModelElement(FeatureModelElement oldElement, FeatureModel featureModel) {
 		this.featureModel = featureModel != null ? featureModel : oldElement.featureModel;
 		id = oldElement.id;
 		name = (oldElement.name == null) ? null : new String(oldElement.name);
 	}
 
-	public AFeatureModelElement(IFeatureModel featureModel) {
+	public FeatureModelElement(FeatureModel featureModel) {
 		if (featureModel == null) {
 			throw new NullPointerException("Feature model must not be null!");
 		}
@@ -59,22 +56,18 @@ public abstract class AFeatureModelElement implements IFeatureModelElement {
 		name = null;
 	}
 
-	@Override
-	public IFeatureModel getFeatureModel() {
+	public FeatureModel getFeatureModel() {
 		return featureModel;
 	}
 
-	@Override
 	public final long getInternalId() {
 		return id;
 	}
 
-	@Override
 	public String getName() {
 		return name;
 	}
 
-	@Override
 	public void setName(String name) {
 		this.name = name;
 	}
@@ -112,8 +105,17 @@ public abstract class AFeatureModelElement implements IFeatureModelElement {
 		if ((obj == null) || (getClass() != obj.getClass())) {
 			return false;
 		}
-		final AFeatureModelElement other = (AFeatureModelElement) obj;
+		final FeatureModelElement other = (FeatureModelElement) obj;
 		return id == other.id;
 	}
 
+	/**
+	 * Returns the element's custom-defined properties. These properties can be get and set without changes to the code base.
+	 * Custom-Properties consist of a key-value pair and can stored to the file system.
+	 *
+	 * @since 3.0
+	 *
+	 * @return Implementation-independent custom feature properties.
+	 */
+	abstract IPropertyContainer getCustomProperties();
 }

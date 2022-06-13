@@ -24,21 +24,21 @@ import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.NoSuchElementException;
 
-import org.spldev.featuremodel.IFeature;
-import org.spldev.featuremodel.IFeatureModel;
-import org.spldev.featuremodel.IFeatureStructure;
+import org.spldev.featuremodel.Feature;
+import org.spldev.featuremodel.FeatureModel;
+import org.spldev.featuremodel.FeatureStructure;
 
 /**
  * Returns all features of a feature model in pre-order.
  *
  * @author Sebastian Krieter
  */
-public class FeaturePreOrderIterator implements Iterator<IFeature> {
+public class FeaturePreOrderIterator implements Iterator<Feature> {
 
-	private final LinkedList<IFeatureStructure> featureStructureList = new LinkedList<>();
+	private final LinkedList<FeatureStructure> featureStructureList = new LinkedList<>();
 
-	public FeaturePreOrderIterator(IFeatureModel featureModel) {
-		final IFeatureStructure root = featureModel.getStructure().getRoot();
+	public FeaturePreOrderIterator(FeatureModel featureModel) {
+		final FeatureStructure root = featureModel.getStructure().getRoot();
 		if (root != null) {
 			featureStructureList.add(root);
 		}
@@ -50,11 +50,11 @@ public class FeaturePreOrderIterator implements Iterator<IFeature> {
 	}
 
 	@Override
-	public IFeature next() {
+	public Feature next() {
 		if (!hasNext()) {
 			throw new NoSuchElementException();
 		}
-		final IFeatureStructure removeFirst = featureStructureList.removeFirst();
+		final FeatureStructure removeFirst = featureStructureList.removeFirst();
 		if (removeFirst.hasChildren()) {
 			featureStructureList.addAll(0, removeFirst.getChildren());
 		}

@@ -20,8 +20,6 @@
  */
 package org.spldev.featuremodel.event;
 
-import org.spldev.featuremodel.impl.FeatureModel;
-
 /**
  * Interface for components listening to events fired by other components. <br> Some classes of FeatureIDE use the observer-pattern, to notify listening
  * clients. For instance, a feature model fires a "model data changed" event when the model is changed. Listening clients, e.g., the diagram editor can react on

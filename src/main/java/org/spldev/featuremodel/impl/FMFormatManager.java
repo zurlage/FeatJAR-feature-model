@@ -20,17 +20,17 @@
  */
 package org.spldev.featuremodel.impl;
 
-import org.spldev.featuremodel.IFeatureModel;
+import org.spldev.featuremodel.FeatureModel;
 import de.ovgu.featureide.fm.core.io.IFeatureModelFormat;
 import de.ovgu.featureide.fm.core.io.IPersistentFormat;
 import de.ovgu.featureide.fm.core.io.xml.XmlFeatureModelFormat;
 
 /**
- * Manages all formats for {@link IFeatureModel feature models}.
+ * Manages all formats for {@link FeatureModel feature models}.
  *
  * @author Sebastian Krieter
  */
-public final class FMFormatManager extends FormatManager<IFeatureModel> {
+public final class FMFormatManager extends FormatManager<FeatureModel> {
 
 	private static FMFormatManager instance = new FMFormatManager();
 
@@ -43,7 +43,7 @@ public final class FMFormatManager extends FormatManager<IFeatureModel> {
 	}
 
 	@Override
-	public boolean addExtension(IPersistentFormat<IFeatureModel> extension) {
+	public boolean addExtension(IPersistentFormat<FeatureModel> extension) {
 		return (extension instanceof IPersistentFormat) ? super.addExtension(extension) : false;
 	}
 

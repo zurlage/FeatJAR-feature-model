@@ -22,7 +22,7 @@ package org.spldev.featuremodel.impl;
 
 import de.ovgu.featureide.fm.core.PluginID;
 import org.spldev.featuremodel.IConfigurationFactory;
-import org.spldev.featuremodel.IFeature;
+import org.spldev.featuremodel.Feature;
 import de.ovgu.featureide.fm.core.configuration.Configuration;
 import de.ovgu.featureide.fm.core.configuration.SelectableFeature;
 
@@ -55,7 +55,7 @@ public class DefaultConfigurationFactory implements IConfigurationFactory {
 	}
 
 	@Override
-	public SelectableFeature createSelectableFeature(IFeature feature) {
+	public SelectableFeature createSelectableFeature(Feature feature) {
 		return new SelectableFeature(feature);
 	}
 

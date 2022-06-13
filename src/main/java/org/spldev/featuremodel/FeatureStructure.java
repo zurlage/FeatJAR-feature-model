@@ -18,48 +18,41 @@
  *
  * See http://featureide.cs.ovgu.de/ for further information.
  */
-package org.spldev.featuremodel.impl;
+package org.spldev.featuremodel;
+
+import org.spldev.featuremodel.event.FeatureIDEEvent;
 
 import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.NoSuchElementException;
 
-import org.spldev.featuremodel.FeatureUtils;
-import org.spldev.featuremodel.IConstraint;
-import org.spldev.featuremodel.IFeature;
-import org.spldev.featuremodel.IFeatureModel;
-import org.spldev.featuremodel.IFeatureStructure;
-import org.spldev.featuremodel.event.FeatureIDEEvent;
-import org.spldev.featuremodel.event.FeatureIDEEvent.EventType;
-
 /**
- * All structural information of an {@link IFeatureModel}.
+ * Manages all structural information of a feature.<br> Intended for tree structures (features are represented by tree nodes).
  *
  * @author Sebastian Krieter
  * @author Marcus Pinnecke
  */
-public class FeatureStructure implements IFeatureStructure {
-
+public class FeatureStructure {
 	protected boolean and;
 
-	protected final LinkedList<IFeatureStructure> children = new LinkedList<>();
+	protected final LinkedList<FeatureStructure> children = new LinkedList<>();
 	protected boolean concrete;
-	protected final IFeature correspondingFeature;
+	protected final Feature correspondingFeature;
 
 	protected boolean hidden;
 
 	protected boolean mandatory;
 	protected boolean multiple;
 
-	protected IFeatureStructure parent = null;
-	protected List<IConstraint> partOfConstraints = new LinkedList<>();
+	protected FeatureStructure parent = null;
+	protected List<Constraint> partOfConstraints = new LinkedList<>();
 
-	protected FeatureStructure(FeatureStructure oldStructure, IFeatureModel newFeatureModel) {
+	protected FeatureStructure(FeatureStructure oldStructure, FeatureModel newFeatureModel) {
 		this(oldStructure, newFeatureModel, false);
 	}
 
-	protected FeatureStructure(FeatureStructure oldStructure, IFeatureModel newFeatureModel, boolean copySubtree) {
+	protected FeatureStructure(FeatureStructure oldStructure, FeatureModel newFeatureModel, boolean copySubtree) {
 		if (newFeatureModel != null) {
 			correspondingFeature = oldStructure.correspondingFeature.clone(newFeatureModel, this);
 			if (copySubtree) {
@@ -76,13 +69,13 @@ public class FeatureStructure implements IFeatureStructure {
 		hidden = oldStructure.hidden;
 
 		if (copySubtree) {
-			for (final IFeatureStructure child : oldStructure.children) {
+			for (final FeatureStructure child : oldStructure.children) {
 				addNewChild(child.cloneSubtree(newFeatureModel));
 			}
 		}
 	}
 
-	public FeatureStructure(IFeature correspondingFeature) {
+	public FeatureStructure(Feature correspondingFeature) {
 		this.correspondingFeature = correspondingFeature;
 
 		mandatory = false;
@@ -92,14 +85,12 @@ public class FeatureStructure implements IFeatureStructure {
 		hidden = false;
 	}
 
-	@Override
-	public void addChild(IFeatureStructure newChild) {
+	public void addChild(FeatureStructure newChild) {
 		addNewChild(newChild);
 		fireChildrenChanged();
 	}
 
-	@Override
-	public void addChildAtPosition(int index, IFeatureStructure newChild) {
+	public void addChildAtPosition(int index, FeatureStructure newChild) {
 		if (index > children.size()) {
 			children.add(newChild);
 		} else {
@@ -108,12 +99,11 @@ public class FeatureStructure implements IFeatureStructure {
 		newChild.setParent(this);
 	}
 
-	protected void addNewChild(IFeatureStructure newChild) {
+	protected void addNewChild(FeatureStructure newChild) {
 		children.add(newChild);
 		newChild.setParent(this);
 	}
 
-	@Override
 	public void changeToAlternative() {
 		if (getChildrenCount() <= 1) {
 			return;
@@ -123,14 +113,12 @@ public class FeatureStructure implements IFeatureStructure {
 		fireChildrenChanged();
 	}
 
-	@Override
 	public void changeToAnd() {
 		and = true;
 		multiple = false;
 		fireChildrenChanged();
 	}
 
-	@Override
 	public void changeToOr() {
 		if (getChildrenCount() <= 1) {
 			return;
@@ -140,50 +128,45 @@ public class FeatureStructure implements IFeatureStructure {
 		fireChildrenChanged();
 	}
 
-	@Override
-	public IFeatureStructure cloneSubtree(IFeatureModel newFeatureModel) {
+	public FeatureStructure cloneSubtree(FeatureModel newFeatureModel) {
 		return new FeatureStructure(this, newFeatureModel, true);
 	}
 
-	@Override
-	public IFeatureStructure clone(IFeatureModel newFeatureModel) {
+	public FeatureStructure clone(FeatureModel newFeatureModel) {
 		return new FeatureStructure(this, newFeatureModel, false);
 	}
 
 	protected void fireAttributeChanged() {
-		final FeatureIDEEvent event = new FeatureIDEEvent(this, EventType.ATTRIBUTE_CHANGED);
+		final FeatureIDEEvent event = new FeatureIDEEvent(this, FeatureIDEEvent.EventType.ATTRIBUTE_CHANGED);
 		correspondingFeature.fireEvent(event);
 	}
 
 	protected void fireChildrenChanged() {
-		final FeatureIDEEvent event = new FeatureIDEEvent(this, EventType.GROUP_TYPE_CHANGED, Boolean.FALSE, Boolean.TRUE);
+		final FeatureIDEEvent event = new FeatureIDEEvent(this, FeatureIDEEvent.EventType.GROUP_TYPE_CHANGED, Boolean.FALSE, Boolean.TRUE);
 		correspondingFeature.fireEvent(event);
 	}
 
 	protected void fireHiddenChanged() {
-		final FeatureIDEEvent event = new FeatureIDEEvent(this, EventType.FEATURE_HIDDEN_CHANGED, Boolean.FALSE, Boolean.TRUE);
+		final FeatureIDEEvent event = new FeatureIDEEvent(this, FeatureIDEEvent.EventType.FEATURE_HIDDEN_CHANGED, Boolean.FALSE, Boolean.TRUE);
 		correspondingFeature.fireEvent(event);
 	}
 
 	protected void fireMandatoryChanged() {
-		final FeatureIDEEvent event = new FeatureIDEEvent(this, EventType.MANDATORY_CHANGED, Boolean.FALSE, Boolean.TRUE);
+		final FeatureIDEEvent event = new FeatureIDEEvent(this, FeatureIDEEvent.EventType.MANDATORY_CHANGED, Boolean.FALSE, Boolean.TRUE);
 		correspondingFeature.fireEvent(event);
 	}
 
-	@Override
-	public int getChildIndex(IFeatureStructure feature) {
+	public int getChildIndex(FeatureStructure feature) {
 		return children.indexOf(feature);
 	}
 
-	@Override
-	public List<IFeatureStructure> getChildren() {
+	public List<FeatureStructure> getChildren() {
 		return children;
 	}
 
-	@Override
 	public boolean hasVisibleChildren(boolean showHiddenFeature) {
 		boolean check = false;
-		for (final IFeatureStructure child : children) {
+		for (final FeatureStructure child : children) {
 			if ((!child.hasHiddenParent() || showHiddenFeature)) {
 				check = true;
 			}
@@ -191,49 +174,41 @@ public class FeatureStructure implements IFeatureStructure {
 		return check;
 	}
 
-	@Override
 	public int getChildrenCount() {
 		return children.size();
 	}
 
-	@Override
-	public IFeature getFeature() {
+	public Feature getFeature() {
 		return correspondingFeature;
 	}
 
-	@Override
-	public IFeatureStructure getFirstChild() {
+	public FeatureStructure getFirstChild() {
 		if (children.isEmpty()) {
 			return null;
 		}
 		return children.get(0);
 	}
 
-	@Override
-	public IFeatureStructure getLastChild() {
+	public FeatureStructure getLastChild() {
 		if (!children.isEmpty()) {
 			return children.getLast();
 		}
 		return null;
 	}
 
-	@Override
-	public IFeatureStructure getParent() {
+	public FeatureStructure getParent() {
 		return parent;
 	}
 
-	@Override
-	public Collection<IConstraint> getRelevantConstraints() {
+	public Collection<Constraint> getRelevantConstraints() {
 		setRelevantConstraints();
 		return partOfConstraints;
 	}
 
-	@Override
 	public boolean hasChildren() {
 		return !children.isEmpty();
 	}
 
-	@Override
 	public boolean hasHiddenParent() {
 
 		if (isHidden()) {
@@ -243,7 +218,7 @@ public class FeatureStructure implements IFeatureStructure {
 
 			return false;
 		}
-		IFeatureStructure p = getParent();
+		FeatureStructure p = getParent();
 
 		while (!p.isRoot()) {
 			if (p.isHidden()) {
@@ -259,24 +234,20 @@ public class FeatureStructure implements IFeatureStructure {
 	/**
 	 * Returns true if the rule can be writen in a format like 'Ab [Cd] Ef :: Gh'.
 	 */
-	@Override
 	public boolean hasInlineRule() {
 		return (getChildrenCount() > 1) && and && isMandatory() && !multiple;
 	}
 
-	@Override
 	public boolean isAbstract() {
 		return !isConcrete();
 	}
 
-	@Override
 	public boolean isAlternative() {
 		return !and && !multiple && (getChildrenCount() > 1);
 	}
 
-	@Override
-	public boolean isAncestor(IFeatureStructure parent) {
-		IFeatureStructure currParent = getParent();
+	public boolean isAncestor(FeatureStructure parent) {
+		FeatureStructure currParent = getParent();
 		while (currParent != null) {
 			if (parent == currParent) {
 				return true;
@@ -286,17 +257,15 @@ public class FeatureStructure implements IFeatureStructure {
 		return false;
 	}
 
-	@Override
 	public boolean isAnd() {
 		return and || (getChildrenCount() <= 1);
 	}
 
-	@Override
 	public boolean isANDPossible() {
 		if ((parent == null) || parent.isAnd()) {
 			return false;
 		}
-		for (final IFeatureStructure child : children) {
+		for (final FeatureStructure child : children) {
 			if (child.isAnd()) {
 				return false;
 			}
@@ -304,58 +273,57 @@ public class FeatureStructure implements IFeatureStructure {
 		return true;
 	}
 
-	@Override
 	public boolean isConcrete() {
 		return concrete;
 	}
 
-	@Override
-	public boolean isFirstChild(IFeatureStructure child) {
+	public boolean isFirstChild(FeatureStructure child) {
 		return children.indexOf(child) == 0;
 	}
 
-	@Override
 	public boolean isHidden() {
 		return hidden;
 	}
 
-	@Override
 	public boolean isMandatory() {
 		return (parent == null) || (!parent.isAndInternal() && (parent.getChildrenCount() == 1)) || mandatory;
 	}
 
-	@Override
 	public boolean isMandatorySet() {
 		return mandatory;
 	}
 
-	@Override
 	public boolean isMultiple() {
 		return multiple && (getChildrenCount() > 1);
 	}
 
-	@Override
 	public boolean isOr() {
 		return !and && multiple && (getChildrenCount() > 1);
 	}
 
-	@Override
 	public boolean isRoot() {
 		return parent == null;
 	}
 
-	@Override
+	/**
+	 * Returns the internal value of the variable {@code and}. In most cases the method {@link #isAnd()} should be used instead.
+	 *
+	 * @return the internal value of {@code and}
+	 */
 	public boolean isAndInternal() {
 		return and;
 	}
 
-	@Override
+	/**
+	 * Returns the internal value of the variable {@code multiple}. In most cases the method {@link #isMultiple()} should be used instead.
+	 *
+	 * @return the internal value of {@code multiple}
+	 */
 	public boolean isMultipleInternal() {
 		return multiple;
 	}
 
-	@Override
-	public void removeChild(IFeatureStructure child) {
+	public void removeChild(FeatureStructure child) {
 		if (!children.remove(child)) {
 			throw new NoSuchElementException();
 		}
@@ -363,16 +331,14 @@ public class FeatureStructure implements IFeatureStructure {
 		fireChildrenChanged();
 	}
 
-	@Override
-	public IFeatureStructure removeLastChild() {
-		final IFeatureStructure child = children.removeLast();
+	public FeatureStructure removeLastChild() {
+		final FeatureStructure child = children.removeLast();
 		child.setParent(null);
 		fireChildrenChanged();
 		return child;
 	}
 
-	@Override
-	public void replaceChild(IFeatureStructure oldChild, IFeatureStructure newChild) {
+	public void replaceChild(FeatureStructure oldChild, FeatureStructure newChild) {
 		final int index = children.indexOf(oldChild);
 		children.set(index, newChild);
 		oldChild.setParent(null);
@@ -380,75 +346,64 @@ public class FeatureStructure implements IFeatureStructure {
 		fireChildrenChanged();
 	}
 
-	@Override
 	public void setAbstract(boolean value) {
 		concrete = !value;
 		fireAttributeChanged();
 	}
 
-	@Override
 	public void setAlternative() {
 		and = false;
 		multiple = false;
 	}
 
-	@Override
 	public void setAnd() {
 		and = true;
 	}
 
-	@Override
 	public void setAND(boolean and) {
 		this.and = and;
 		fireChildrenChanged();
 	}
 
-	@Override
-	public void setChildren(List<IFeatureStructure> children) {
+	public void setChildren(List<FeatureStructure> children) {
 		this.children.clear();
-		for (final IFeatureStructure child : children) {
+		for (final FeatureStructure child : children) {
 			addNewChild(child);
 		}
 		fireChildrenChanged();
 	}
 
-	@Override
 	public void setHidden(boolean hid) {
 		hidden = hid;
 		fireHiddenChanged();
 	}
 
-	@Override
 	public void setMandatory(boolean mandatory) {
 		this.mandatory = mandatory;
 		fireMandatoryChanged();
 	}
 
-	@Override
 	public void setMultiple(boolean multiple) {
 		this.multiple = multiple;
 		fireChildrenChanged();
 	}
 
-	@Override
 	public void setOr() {
 		and = false;
 		multiple = true;
 	}
 
-	@Override
-	public void setParent(IFeatureStructure newParent) {
+	public void setParent(FeatureStructure newParent) {
 		if (newParent == parent) {
 			return;
 		}
 		parent = newParent;
 	}
 
-	@Override
 	public void setRelevantConstraints() {
-		final List<IConstraint> constraintList = new LinkedList<>();
-		for (final IConstraint constraint : correspondingFeature.getFeatureModel().getConstraints()) {
-			for (final IFeature f : constraint.getContainedFeatures()) {
+		final List<Constraint> constraintList = new LinkedList<>();
+		for (final Constraint constraint : correspondingFeature.getFeatureModel().getConstraints()) {
+			for (final Feature f : constraint.getContainedFeatures()) {
 				if (f.getName().equals(correspondingFeature.getName())) {
 					constraintList.add(constraint);
 					break;
@@ -458,17 +413,14 @@ public class FeatureStructure implements IFeatureStructure {
 		partOfConstraints = constraintList;
 	}
 
-	@Override
-	public void setRelevantConstraints(List<IConstraint> constraints) {
+	public void setRelevantConstraints(List<Constraint> constraints) {
 		partOfConstraints = constraints;
 	}
 
-	@Override
 	public String toString() {
 		final StringBuilder sb = new StringBuilder("FeatureStructure=(");
 		FeatureUtils.print(getFeature(), sb);
 		sb.append(")");
 		return sb.toString();
 	}
-
 }

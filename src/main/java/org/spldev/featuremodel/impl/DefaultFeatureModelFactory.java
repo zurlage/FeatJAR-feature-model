@@ -23,9 +23,9 @@ package org.spldev.featuremodel.impl;
 import org.prop4j.Node;
 
 import de.ovgu.featureide.fm.core.PluginID;
-import org.spldev.featuremodel.IConstraint;
-import org.spldev.featuremodel.IFeature;
-import org.spldev.featuremodel.IFeatureModel;
+import org.spldev.featuremodel.Constraint;
+import org.spldev.featuremodel.Feature;
+import org.spldev.featuremodel.FeatureModel;
 import org.spldev.featuremodel.IFeatureModelFactory;
 import de.ovgu.featureide.fm.core.editing.FeatureModelObfuscator;
 import de.ovgu.featureide.fm.core.job.LongRunningWrapper;
@@ -53,32 +53,32 @@ public class DefaultFeatureModelFactory implements IFeatureModelFactory {
 	}
 
 	@Override
-	public Constraint createConstraint(IFeatureModel featureModel, Node propNode) {
-		return new Constraint(featureModel, propNode);
+	public org.spldev.featuremodel.impl.Constraint createConstraint(FeatureModel featureModel, Node propNode) {
+		return new org.spldev.featuremodel.impl.Constraint(featureModel, propNode);
 	}
 
 	@Override
-	public Feature createFeature(IFeatureModel featureModel, String name) {
-		return new Feature(featureModel, name);
+	public org.spldev.featuremodel.impl.Feature createFeature(FeatureModel featureModel, String name) {
+		return new org.spldev.featuremodel.impl.Feature(featureModel, name);
 	}
 
 	@Override
-	public FeatureModel create() {
-		return new FeatureModel(ID);
+	public org.spldev.featuremodel.impl.FeatureModel create() {
+		return new org.spldev.featuremodel.impl.FeatureModel(ID);
 	}
 
 	@Override
-	public IFeature copyFeature(IFeatureModel featureModel, IFeature oldFeature) {
+	public Feature copyFeature(FeatureModel featureModel, Feature oldFeature) {
 		return oldFeature.getStructure().clone(featureModel).getFeature();
 	}
 
 	@Override
-	public IConstraint copyConstraint(IFeatureModel featureModel, IConstraint oldConstraint) {
+	public Constraint copyConstraint(FeatureModel featureModel, Constraint oldConstraint) {
 		return oldConstraint.clone(featureModel);
 	}
 
 	@Override
-	public IFeatureModel createObfuscatedFeatureModel(IFeatureModel featureModel, String salt) {
+	public FeatureModel createObfuscatedFeatureModel(FeatureModel featureModel, String salt) {
 		return LongRunningWrapper.runMethod(new FeatureModelObfuscator(featureModel, salt));
 	}
 

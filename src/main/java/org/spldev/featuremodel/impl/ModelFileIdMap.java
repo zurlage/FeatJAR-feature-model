@@ -24,14 +24,14 @@ import java.nio.file.Path;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.spldev.featuremodel.IFeatureModel;
+import org.spldev.featuremodel.FeatureModel;
 
 /**
  * This is a helper class to realize unique numeric identifiers for feature models in respect to the models physical file. Each feature model is required to be
  * assigned to an unique identifier. This unique identifier is coupled to the model file, such that the file path determines the feature models identifier.
  *
- * @see IFeatureModel#setSourceFile(Path)
  * @see FeatureModel#setSourceFile(Path)
+ * @see org.spldev.featuremodel.impl.FeatureModel#setSourceFile(Path)
  *
  * @author Sebastian Krieter
  * @author Marcus Pinnecke (Feature Interface)
@@ -52,7 +52,7 @@ public class ModelFileIdMap {
 	 *        (have to be <b>non-null</b>) physical file
 	 * @return The identifier associated with <b>modelFile</b> if there is already such an association. <b>featureModel</b>'s identifier otherwise.
 	 */
-	public static synchronized long getModelId(IFeatureModel featureModel, Path modelFile) {
+	public static synchronized long getModelId(FeatureModel featureModel, Path modelFile) {
 		final String fileLocation = modelFile.toAbsolutePath().toString();
 		Long id = map.get(fileLocation);
 		if (id == null) {

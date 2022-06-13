@@ -22,24 +22,24 @@ package org.spldev.featuremodel.impl;
 
 import java.util.Iterator;
 
-import org.spldev.featuremodel.IFeature;
-import org.spldev.featuremodel.IFeatureModel;
+import org.spldev.featuremodel.Feature;
+import org.spldev.featuremodel.FeatureModel;
 
 /**
  * Iterates over all features of a feature model in pre-order.
  *
  * @author Sebastian Krieter
  */
-public class FeaturePreOrder implements Iterable<IFeature> {
+public class FeaturePreOrder implements Iterable<Feature> {
 
-	private final IFeatureModel featureModel;
+	private final FeatureModel featureModel;
 
-	public FeaturePreOrder(IFeatureModel featureModel) {
+	public FeaturePreOrder(FeatureModel featureModel) {
 		this.featureModel = featureModel;
 	}
 
 	@Override
-	public Iterator<IFeature> iterator() {
+	public Iterator<Feature> iterator() {
 		return new FeaturePreOrderIterator(featureModel);
 	}
 
