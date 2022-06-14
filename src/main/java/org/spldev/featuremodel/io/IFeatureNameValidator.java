@@ -18,20 +18,26 @@
  *
  * See http://featureide.cs.ovgu.de/ for further information.
  */
-package de.ovgu.featureide.fm.core.configuration;
+package org.spldev.featuremodel.io;
 
 /**
- * Defines Selection types Selected, Unselected, Undefined. These are needed for the configuration process.
+ * Checks whether a given feature name is valid.
  *
  * @author Sebastian Krieter
  */
-public enum Selection {
+public interface IFeatureNameValidator {
 
-	SELECTED(), UNSELECTED(), UNDEFINED();
+	/**
+	 * Checks whether a given feature name is valid.
+	 *
+	 * @param featureName the feature name to check
+	 * @return {@code true} if the given feature name is valid, {@code false}
+	 *         otherwise
+	 */
+	boolean isValidFeatureName(String featureName);
 
-	@Override
-	public String toString() {
-		return super.toString();
+	default String getErrorMessage() {
+		return "";
 	}
 
 }

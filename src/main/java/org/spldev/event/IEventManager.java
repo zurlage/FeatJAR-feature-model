@@ -16,37 +16,26 @@
  * You should have received a copy of the GNU Lesser General Public License
  * along with FeatureIDE.  If not, see <http://www.gnu.org/licenses/>.
  *
- * See http://www.fosd.de/featureide/ for further information.
+ * See http://featureide.cs.ovgu.de/ for further information.
  */
-package de.ovgu.featureide.fm.core.configuration;
+package org.spldev.event;
 
-import de.ovgu.featureide.fm.core.PluginID;
-import de.ovgu.featureide.fm.core.localization.StringTable;
+import java.util.List;
 
 /**
- * Simple configuration format.<br> Lists all selected features in the user-defined order (if specified).
+ * Broadcasts {@link FeatureIDEEvent Events} to the corresponding
+ * {@link IEventListener IFeatureModelListeners}.
  *
  * @author Sebastian Krieter
- *
- * @see DefaultFormat
  */
-public class EquationFormat extends DefaultFormat {
+public interface IEventManager {
 
-	public static final String ID = PluginID.PLUGIN_ID + ".format.config." + EquationFormat.class.getSimpleName();
+	void addListener(IEventListener listener);
 
-	@Override
-	public String getSuffix() {
-		return StringTable.EQUATION;
-	}
+	void fireEvent(FeatureIDEEvent event);
 
-	@Override
-	public String getId() {
-		return ID;
-	}
+	void removeListener(IEventListener listener);
 
-	@Override
-	public String getName() {
-		return "Equation";
-	}
+	List<IEventListener> getListeners();
 
 }

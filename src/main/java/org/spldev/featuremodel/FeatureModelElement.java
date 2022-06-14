@@ -20,10 +20,10 @@
  */
 package org.spldev.featuremodel;
 
-import org.spldev.featuremodel.event.DefaultEventManager;
-import org.spldev.featuremodel.event.FeatureIDEEvent;
-import org.spldev.featuremodel.event.IEventListener;
-import org.spldev.featuremodel.event.IEventManager;
+import org.spldev.event.DefaultEventManager;
+import org.spldev.event.FeatureIDEEvent;
+import org.spldev.event.IEventListener;
+import org.spldev.event.IEventManager;
 
 import java.util.List;
 
@@ -110,8 +110,9 @@ public abstract class FeatureModelElement implements IEventManager {
 	}
 
 	/**
-	 * Returns the element's custom-defined properties. These properties can be get and set without changes to the code base.
-	 * Custom-Properties consist of a key-value pair and can stored to the file system.
+	 * Returns the element's custom-defined properties. These properties can be get
+	 * and set without changes to the code base. Custom-Properties consist of a
+	 * key-value pair and can stored to the file system.
 	 *
 	 * @since 3.0
 	 *

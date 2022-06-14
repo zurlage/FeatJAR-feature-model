@@ -18,26 +18,38 @@
  *
  * See http://featureide.cs.ovgu.de/ for further information.
  */
-package org.spldev.configuration.io;
-
-import org.spldev.configuration.Configuration;
-
-import java.io.IOException;
-import java.nio.file.Path;
+package org.spldev.event;
 
 /**
- * Callback for ConfigurationLoader. Gets notified for progress of loading configurations
+ * Event for executing a specific operation.
  *
- * @author Paul Maximilian Bittner
- * @author Antje Moench
+ * @author Sebastian Krieter
  */
-public interface IConfigurationLoaderCallback {
+public class FeatureModelOperationEvent extends FeatureIDEEvent {
 
-	public void onLoadingStarted();
+	public enum ExecutionType {
+		EXECUTE, REDO, UNDO, UNKNOWN
+	}
 
-	public void onConfigurationLoaded(Configuration configuration, Path path);
+	private final String operationId;
+	private ExecutionType executionType = ExecutionType.UNKNOWN;
 
-	public void onLoadingFinished();
+	public FeatureModelOperationEvent(String operationId, FeatureIDEEvent.EventType type, Object source,
+		Object oldValue, Object newValue) {
+		super(source, type, oldValue, newValue);
+		this.operationId = operationId;
+	}
 
-	public void onLoadingError(IOException exception);
+	public String getID() {
+		return operationId;
+	}
+
+	public ExecutionType getExecutionType() {
+		return executionType;
+	}
+
+	public void setExecutionType(ExecutionType executionType) {
+		this.executionType = executionType;
+	}
+
 }

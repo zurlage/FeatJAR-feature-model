@@ -18,19 +18,20 @@
  *
  * See http://featureide.cs.ovgu.de/ for further information.
  */
-package de.ovgu.featureide.fm.core.configuration;
+package org.spldev.featuremodel;
 
 /**
- * This exception identifies an error in the propagation of feature selections. If this occurs there might be an error in updating automatically selections.
- *
- * @author Thomas Thuem
+ * Representation of a feature renaming.
  */
-public class AutomaticalSelectionNotPossibleException extends RuntimeException {
+public class Renaming {
 
-	private static final long serialVersionUID = 1793844229871267311L;
+	public final String oldName;
 
-	public AutomaticalSelectionNotPossibleException(String feature, Selection selection) {
-		super("The feature \"" + feature + "\" cannot be automatically " + (selection == Selection.SELECTED ? "selected" : "deselected"));
+	public final String newName;
+
+	public Renaming(String oldName, String newName) {
+		this.oldName = oldName;
+		this.newName = newName;
 	}
 
 }

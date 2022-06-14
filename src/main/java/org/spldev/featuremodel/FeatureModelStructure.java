@@ -23,7 +23,8 @@ package org.spldev.featuremodel;
 import java.util.*;
 
 /**
- * Manages all structural information of a feature model. Intended for tree structures (features are represented by tree nodes).
+ * Manages all structural information of a feature model. Intended for tree
+ * structures (features are represented by tree nodes).
  *
  * @author Sebastian Krieter
  */
@@ -73,7 +74,8 @@ public class FeatureModelStructure {
 	protected boolean showHiddenFeatures = false;
 
 	protected FeatureModelStructure(FeatureModelStructure oldStructure, FeatureModel correspondingFeatureModel) {
-		this.correspondingFeatureModel = correspondingFeatureModel != null ? correspondingFeatureModel : oldStructure.correspondingFeatureModel;
+		this.correspondingFeatureModel = correspondingFeatureModel != null ? correspondingFeatureModel
+			: oldStructure.correspondingFeatureModel;
 
 		rootFeature = oldStructure.rootFeature;
 	}
@@ -166,8 +168,9 @@ public class FeatureModelStructure {
 
 	public boolean hasOptionalFeatures() {
 		for (final Feature f : correspondingFeatureModel.getVisibleFeatures()) {
-			if (!f.equals(rootFeature.getFeature()) && f.getStructure().getParent().isPresent() && f.getStructure().getParent().get().isAnd()
-					&& !f.getStructure().isMandatory()) {
+			if (!f.equals(rootFeature.getFeature()) && f.getStructure().getParent().isPresent() && f.getStructure()
+				.getParent().get().isAnd()
+				&& !f.getStructure().isMandatory()) {
 				return true;
 			}
 		}
@@ -204,7 +207,8 @@ public class FeatureModelStructure {
 	}
 
 	public void replaceRoot(FeatureTree feature) {
-		// TODO remove all features that are no children of the new root (part of a different sub tree)
+		// TODO remove all features that are no children of the new root (part of a
+		// different sub tree)
 		correspondingFeatureModel.deleteFeatureFromTable(rootFeature.getFeature());
 
 		feature.setParent(null);

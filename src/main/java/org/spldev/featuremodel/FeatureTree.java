@@ -20,7 +20,7 @@
  */
 package org.spldev.featuremodel;
 
-import org.spldev.featuremodel.event.FeatureIDEEvent;
+import org.spldev.event.FeatureIDEEvent;
 import org.spldev.util.tree.structure.RootedTree;
 import org.spldev.util.tree.structure.Tree;
 
@@ -30,7 +30,8 @@ import java.util.List;
 import java.util.Objects;
 
 /**
- * Manages all structural information of a feature.<br> Intended for tree structures (features are represented by tree nodes).
+ * Manages all structural information of a feature.<br>
+ * Intended for tree structures (features are represented by tree nodes).
  *
  * @author Sebastian Krieter
  * @author Marcus Pinnecke
@@ -168,17 +169,20 @@ public class FeatureTree extends RootedTree<FeatureTree> {
 	}
 
 	protected void fireChildrenChanged() {
-		final FeatureIDEEvent event = new FeatureIDEEvent(this, FeatureIDEEvent.EventType.GROUP_TYPE_CHANGED, Boolean.FALSE, Boolean.TRUE);
+		final FeatureIDEEvent event = new FeatureIDEEvent(this, FeatureIDEEvent.EventType.GROUP_TYPE_CHANGED,
+			Boolean.FALSE, Boolean.TRUE);
 		feature.fireEvent(event);
 	}
 
 	protected void fireHiddenChanged() {
-		final FeatureIDEEvent event = new FeatureIDEEvent(this, FeatureIDEEvent.EventType.FEATURE_HIDDEN_CHANGED, Boolean.FALSE, Boolean.TRUE);
+		final FeatureIDEEvent event = new FeatureIDEEvent(this, FeatureIDEEvent.EventType.FEATURE_HIDDEN_CHANGED,
+			Boolean.FALSE, Boolean.TRUE);
 		feature.fireEvent(event);
 	}
 
 	protected void fireMandatoryChanged() {
-		final FeatureIDEEvent event = new FeatureIDEEvent(this, FeatureIDEEvent.EventType.MANDATORY_CHANGED, Boolean.FALSE, Boolean.TRUE);
+		final FeatureIDEEvent event = new FeatureIDEEvent(this, FeatureIDEEvent.EventType.MANDATORY_CHANGED,
+			Boolean.FALSE, Boolean.TRUE);
 		feature.fireEvent(event);
 	}
 
@@ -283,7 +287,8 @@ public class FeatureTree extends RootedTree<FeatureTree> {
 	}
 
 	/**
-	 * Returns the internal value of the variable {@code and}. In most cases the method {@link #isAnd()} should be used instead.
+	 * Returns the internal value of the variable {@code and}. In most cases the
+	 * method {@link #isAnd()} should be used instead.
 	 *
 	 * @return the internal value of {@code and}
 	 */
@@ -292,7 +297,8 @@ public class FeatureTree extends RootedTree<FeatureTree> {
 	}
 
 	/**
-	 * Returns the internal value of the variable {@code multiple}. In most cases the method {@link #isMultiple()} should be used instead.
+	 * Returns the internal value of the variable {@code multiple}. In most cases
+	 * the method {@link #isMultiple()} should be used instead.
 	 *
 	 * @return the internal value of {@code multiple}
 	 */
@@ -326,11 +332,13 @@ public class FeatureTree extends RootedTree<FeatureTree> {
 
 	@Override
 	public boolean equalsNode(Object o) {
-		if (this == o) return true;
-		if (o == null || getClass() != o.getClass()) return false;
+		if (this == o)
+			return true;
+		if (o == null || getClass() != o.getClass())
+			return false;
 		FeatureTree that = (FeatureTree) o;
 		return isMandatory == that.isMandatory && isAnd == that.isAnd && isMultiple == that.isMultiple &&
-				isConcrete == that.isConcrete && isHidden == that.isHidden && Objects.equals(feature, that.feature);
+			isConcrete == that.isConcrete && isHidden == that.isHidden && Objects.equals(feature, that.feature);
 	}
 
 	@Override

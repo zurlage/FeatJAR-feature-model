@@ -20,10 +20,10 @@
  */
 package org.spldev.featuremodel;
 
-import org.spldev.featuremodel.event.DefaultEventManager;
-import org.spldev.featuremodel.event.FeatureIDEEvent;
-import org.spldev.featuremodel.event.IEventListener;
-import org.spldev.featuremodel.event.IEventManager;
+import org.spldev.event.DefaultEventManager;
+import org.spldev.event.FeatureIDEEvent;
+import org.spldev.event.IEventListener;
+import org.spldev.event.IEventManager;
 import org.spldev.formula.io.textual.NodeWriter;
 import org.spldev.util.tree.Trees;
 
@@ -55,18 +55,18 @@ import java.util.stream.Collectors;
  * FeatureModel}, and the corresponding default factory {@link org.spldev.featuremodel.impl.DefaultFeatureModelFactory DefaultFeatureModelFactory} over
  * the conviennent factory class {@link FMFactoryManager}: <code> IFeatureModel model = FMFactoryManager.getFactory().createFeatureModel(); </code> A unified
  * handling of certain <code>IFeature</code>, and <code>IFeatureModel</code> implementations (in terms of conviennent methods) can be achieved with the use of
- * {@link org.spldev.featuremodel.FeatureUtils FeatureUtils} helper class. <br> <br> <b>Caching notes</b>: A feature model implementation using the
+ * {@link org.spldev.featuremodel.FeatureModels FeatureUtils} helper class. <br> <br> <b>Caching notes</b>: A feature model implementation using the
  * <code>IFeatureModel</code> interface has to provide a map of feature names to the corresponding feature objects, the <i>feature table</i>. This data
  * structure is used in the {@link RenamingsManager} for instance. If the implementation utilizes this data structure for internal use, modifications to this
  * data structure must be protected against concurrent accesses. The default implementations {@link FeatureModel} uses a <code>ConcurrentHashMap</code> for
  * this purpose. <br> <br> <b>API notes</b>: The classes internal structure has heavily changed compared to older FeatureIDE version. A bridge to the
- * old-fashioned handling is available in {@link org.spldev.featuremodel.FeatureUtils FeatureUtils} as static methods. <br> <br> <b>Notes on thread
+ * old-fashioned handling is available in {@link org.spldev.featuremodel.FeatureModels FeatureUtils} as static methods. <br> <br> <b>Notes on thread
  * safeness</b>: At least the management of <code>IFeature</code> and <code>IFeatureModel</code> identifiers (e.g., getting the next free id) have to be thread
  * safe. The reference default implementation for feature models is <code> private static long NEXT_ID = 0;
  *
  * protected static final synchronized long getNextId() { return NEXT_ID++; } </code> <br> <br> <b>Compatibility Notes</b>: To provide compatibility to earlier
  * versions of FeatureIDE, the <i>out-dated</i> class {@link FeatureModel FeatureModel} is now a wrapper to an <code>IFeatureModel</code> instance (but
- * incompatible to it) and make use of convert-functionalities inside {@link org.spldev.featuremodel.FeatureUtils FeatureUtils}.
+ * incompatible to it) and make use of convert-functionalities inside {@link org.spldev.featuremodel.FeatureModels FeatureUtils}.
  *
  * @see org.spldev.featuremodel.impl.FeatureModel Default implementation of <code>IFeatureModel</code> (as starting point for custom implementations)
  *
@@ -86,7 +86,8 @@ import java.util.stream.Collectors;
  * @author Marcus Pinnecke
  */
 /**
- * The model representation of the feature tree that notifies listeners of changes in the tree.
+ * The model representation of the feature tree that notifies listeners of
+ * changes in the tree.
  *
  * @author Thomas Thuem
  * @author Florian Proksch
@@ -105,12 +106,17 @@ public class FeatureModel implements Cloneable, IEventManager {
 	private long nextElementId = 0;
 
 	/**
-	 * Feature models are identified with their system-wide unique numeric identifier. This methods returns the <i>next</i> free identifier of the current
-	 * feature model and is a <b>state-full</b> operation, such that invoking the method twice will result in two other numeric identifiers. <br> <br> The
-	 * default implementations provides this by the following code snippet: <code> private static long NEXT_ID = 0;
+	 * Feature models are identified with their system-wide unique numeric
+	 * identifier. This methods returns the <i>next</i> free identifier of the
+	 * current feature model and is a <b>state-full</b> operation, such that
+	 * invoking the method twice will result in two other numeric identifiers. <br>
+	 * <br>
+	 * The default implementations provides this by the following code snippet:
+	 * <code> private static long NEXT_ID = 0;
 	 *
-	 * protected static final synchronized long getNextId() { return NEXT_ID++; } </code> <b>Notes to thread-safe execution</b>: The management of receiving the
-	 * next free identifier must be thread-safe.
+	 * protected static final synchronized long getNextId() { return NEXT_ID++; } </code>
+	 * <b>Notes to thread-safe execution</b>: The management of receiving the next
+	 * free identifier must be thread-safe.
 	 *
 	 * @see #getId()
 	 *
@@ -127,7 +133,8 @@ public class FeatureModel implements Cloneable, IEventManager {
 	protected final List<Constraint> constraints = new ArrayList<>();
 
 	/**
-	 * A list containing the feature names in their specified order will be initialized in XmlFeatureModelReader.
+	 * A list containing the feature names in their specified order will be
+	 * initialized in XmlFeatureModelReader.
 	 */
 	protected final List<String> featureOrderList;
 	protected boolean featureOrderUserDefined;
@@ -141,7 +148,7 @@ public class FeatureModel implements Cloneable, IEventManager {
 
 	protected final IFeatureModelProperty property;
 
-	//protected final RenamingsManager renamingsManager;
+	protected final RenamingsManager renamingsManager;
 
 	protected final FeatureModelStructure structure;
 
@@ -157,7 +164,7 @@ public class FeatureModel implements Cloneable, IEventManager {
 		property = createProperty();
 		structure = createStructure();
 
-		//renamingsManager = new RenamingsManager(this);
+		renamingsManager = new RenamingsManager(this);
 	}
 
 	protected FeatureModel(FeatureModel oldFeatureModel, Feature newRoot) {
@@ -170,7 +177,7 @@ public class FeatureModel implements Cloneable, IEventManager {
 		property = oldFeatureModel.getProperty().clone(this);
 		structure = createStructure();
 
-		//renamingsManager = oldFeatureModel.renamingsManager.clone(this);
+		renamingsManager = oldFeatureModel.renamingsManager.clone(this);
 
 		sourceFile = oldFeatureModel.sourceFile;
 
@@ -185,7 +192,8 @@ public class FeatureModel implements Cloneable, IEventManager {
 		} else {
 			structure.setRoot(newRoot.getStructure().cloneSubtree(this));
 			for (final Constraint constraint : oldFeatureModel.constraints) {
-				if (featureTable.keySet().containsAll(constraint.getContainedFeatures().stream().map(Feature::getName).collect(Collectors.toList()))) {
+				if (featureTable.keySet().containsAll(constraint.getContainedFeatures().stream().map(Feature::getName)
+					.collect(Collectors.toList()))) {
 					constraints.add(constraint.clone(this));
 				}
 			}
@@ -203,14 +211,23 @@ public class FeatureModel implements Cloneable, IEventManager {
 	/**
 	 * A constraint is an additional restriction on features in the feature model.
 	 *
-	 * This methods adds the constraint <code>constraint</code> to the <i>end</i> of the existing collection. Please note that <ul> <li>the specification do not
-	 * require a check if <code>constraint</code> is <i>null</i>. However, for regular use, <code>constraint</code> is assumed to be <i>non-null</i></li>
-	 * <li>the specification do not require a check of duplicates. In FeatureIDE's default implementation, the collection is managed using a <code>List</code>.
-	 * For regular use case, this collection is assumed to be duplicate-free. Therefore, duplicates should not be added.</li> </ul>
+	 * This methods adds the constraint <code>constraint</code> to the <i>end</i> of
+	 * the existing collection. Please note that
+	 * <ul>
+	 * <li>the specification do not require a check if <code>constraint</code> is
+	 * <i>null</i>. However, for regular use, <code>constraint</code> is assumed to
+	 * be <i>non-null</i></li>
+	 * <li>the specification do not require a check of duplicates. In FeatureIDE's
+	 * default implementation, the collection is managed using a <code>List</code>.
+	 * For regular use case, this collection is assumed to be duplicate-free.
+	 * Therefore, duplicates should not be added.</li>
+	 * </ul>
 	 *
-	 * To add a constraint at a specific position, use {@link #addConstraint(Constraint, int)}
+	 * To add a constraint at a specific position, use
+	 * {@link #addConstraint(Constraint, int)}
 	 *
-	 * @param constraint The constraint to be added at the end of the existing collection
+	 * @param constraint The constraint to be added at the end of the existing
+	 *                   collection
 	 *
 	 * @see #addConstraint(Constraint, int)
 	 * @see #getConstraintCount()
@@ -232,15 +249,26 @@ public class FeatureModel implements Cloneable, IEventManager {
 	/**
 	 * A constraint is an additional restriction on features in the feature model.
 	 *
-	 * This methods adds the constraint <code>constraint</code> at the given <i>index</i> of the existing collection. Please note that <ul> <li>the
-	 * specification do not require a check if <code>constraint</code> is <i>null</i>. However, for regular use, <code>constraint</code> is assumed to be
-	 * <i>non-null</i></li> <li>the specification do not require a check of duplicates. In FeatureIDE's default implementation, the collection is managed using
-	 * a <code>List</code>. For regular use case, this collection is assumed to be duplicate-free. Therefore, duplicates should not be added.</li> </ul>
+	 * This methods adds the constraint <code>constraint</code> at the given
+	 * <i>index</i> of the existing collection. Please note that
+	 * <ul>
+	 * <li>the specification do not require a check if <code>constraint</code> is
+	 * <i>null</i>. However, for regular use, <code>constraint</code> is assumed to
+	 * be <i>non-null</i></li>
+	 * <li>the specification do not require a check of duplicates. In FeatureIDE's
+	 * default implementation, the collection is managed using a <code>List</code>.
+	 * For regular use case, this collection is assumed to be duplicate-free.
+	 * Therefore, duplicates should not be added.</li>
+	 * </ul>
 	 *
-	 * To add a constraint at a specific position, use {@link #addConstraint(Constraint, int)}
+	 * To add a constraint at a specific position, use
+	 * {@link #addConstraint(Constraint, int)}
 	 *
-	 * @param constraint The constraint to be added at position <i>index</i> of the existing collection
-	 * @param index The position. It is assumed, that the index is valid. Otherwise a exception have to be thrown by the implementation.
+	 * @param constraint The constraint to be added at position <i>index</i> of the
+	 *                   existing collection
+	 * @param index      The position. It is assumed, that the index is valid.
+	 *                   Otherwise a exception have to be thrown by the
+	 *                   implementation.
 	 *
 	 * @see #addConstraint(Constraint)
 	 * @see #getConstraintCount()
@@ -260,12 +288,16 @@ public class FeatureModel implements Cloneable, IEventManager {
 	}
 
 	/**
-	 * Add a new feature <code>feature</code> to this feature model. If the feature model not contains a feature with the name {@link Feature#getName()} of
-	 * <code>feature</code>, the <code>feature</code> will be added and the method returns <b>true</b>. Otherwise, the feature is not added and the method
-	 * returns <b>false</b>. Classes implementing <code>IFeatureModel</code> must provide consistency with the underlying <i>feature table</i> which is
+	 * Add a new feature <code>feature</code> to this feature model. If the feature
+	 * model not contains a feature with the name {@link Feature#getName()} of
+	 * <code>feature</code>, the <code>feature</code> will be added and the method
+	 * returns <b>true</b>. Otherwise, the feature is not added and the method
+	 * returns <b>false</b>. Classes implementing <code>IFeatureModel</code> must
+	 * provide consistency with the underlying <i>feature table</i> which is
 	 * accessible by {@link #getFeatureTable()}.
 	 *
-	 * @param feature the feature to be added. <code>feature</code> is assumed to be <i>non-null</i>
+	 * @param feature the feature to be added. <code>feature</code> is assumed to be
+	 *                <i>non-null</i>
 	 * @return <b>true</b> if the feature was added, otherwise <b>false</b>.
 	 *
 	 * @see #deleteFeature(Feature)
@@ -291,17 +323,33 @@ public class FeatureModel implements Cloneable, IEventManager {
 	}
 
 	/**
-	 * Clones this feature model <code>f</code>, such that a new instance <code>f'</code> is created. The cloned feature model <code>f'</code> must satisfy the
-	 * following properties to contain the same information as <code>f</code>: <ul> <li>the identifiers of <code>f</code> and <code>f'</code> must be
-	 * identical</li> <li>the feature order list of <code>f</code> and <code>f'</code> must be equal, but the references must be different</li> <li>the user
-	 * defined feature order flag of <code>f</code> and <code>f'</code> must be identical</li> <li>the feature models properties must be equal but with
-	 * different references in <code>f</code> and <code>f'</code></li> <li>the feature models constraints must be equal but with different references in
-	 * <code>f</code> and <code>f'</code></li> <li>the cloned feature model <code>f'</code> must contain the structure behind <code>newRoot</code> but with
-	 * different references</li> <li>the cloned feature model <code>f'</code>'s root feature must be <code>newRoot</code></li> </ul> Additionally, the following
-	 * must hold <code>f != f'</code> and <code>f.equals(f')</code>.
+	 * Clones this feature model <code>f</code>, such that a new instance
+	 * <code>f'</code> is created. The cloned feature model <code>f'</code> must
+	 * satisfy the following properties to contain the same information as
+	 * <code>f</code>:
+	 * <ul>
+	 * <li>the identifiers of <code>f</code> and <code>f'</code> must be
+	 * identical</li>
+	 * <li>the feature order list of <code>f</code> and <code>f'</code> must be
+	 * equal, but the references must be different</li>
+	 * <li>the user defined feature order flag of <code>f</code> and <code>f'</code>
+	 * must be identical</li>
+	 * <li>the feature models properties must be equal but with different references
+	 * in <code>f</code> and <code>f'</code></li>
+	 * <li>the feature models constraints must be equal but with different
+	 * references in <code>f</code> and <code>f'</code></li>
+	 * <li>the cloned feature model <code>f'</code> must contain the structure
+	 * behind <code>newRoot</code> but with different references</li>
+	 * <li>the cloned feature model <code>f'</code>'s root feature must be
+	 * <code>newRoot</code></li>
+	 * </ul>
+	 * Additionally, the following must hold <code>f != f'</code> and
+	 * <code>f.equals(f')</code>.
 	 *
-	 * @param newRoot the new root feature including the entire structure of <code>newRoot</code> for the cloned model
-	 * @return A new equal instance of this feature model with different references and <code>newRoot</code> as root feature
+	 * @param newRoot the new root feature including the entire structure of
+	 *                <code>newRoot</code> for the cloned model
+	 * @return A new equal instance of this feature model with different references
+	 *         and <code>newRoot</code> as root feature
 	 *
 	 * @since 3.0
 	 */
@@ -310,13 +358,19 @@ public class FeatureModel implements Cloneable, IEventManager {
 	}
 
 	/**
-	 * Resets this feature model to the default values. The parameter <code>projectName</code> will be used as the new root features name if there are no
-	 * features in this model (the <i>feature table</i> is empty). Independent of this, a new feature called <code>Base</code> will be added as child of the
-	 * feature models root feature, and the feature models root feature will be set as <i>abstract feature</i>.
+	 * Resets this feature model to the default values. The parameter
+	 * <code>projectName</code> will be used as the new root features name if there
+	 * are no features in this model (the <i>feature table</i> is empty).
+	 * Independent of this, a new feature called <code>Base</code> will be added as
+	 * child of the feature models root feature, and the feature models root feature
+	 * will be set as <i>abstract feature</i>.
 	 *
-	 * @param projectName the name for the root feature, if this feature model does not contain any features. Otherwise this parameter will be ignored. If
-	 *        <code>projectName</code> is an empty string, the string <code>"Root"</code> will be used for the potential new root feature. The parameter
-	 *        <code>projectName</code> is assumed to be <i>non-null</i>
+	 * @param projectName the name for the root feature, if this feature model does
+	 *                    not contain any features. Otherwise this parameter will be
+	 *                    ignored. If <code>projectName</code> is an empty string,
+	 *                    the string <code>"Root"</code> will be used for the
+	 *                    potential new root feature. The parameter
+	 *                    <code>projectName</code> is assumed to be <i>non-null</i>
 	 *
 	 * @see #reset()
 	 *
@@ -340,17 +394,30 @@ public class FeatureModel implements Cloneable, IEventManager {
 	}
 
 	/**
-	 * Removes <code>feature</code> from this model. <code>feature</code> can not be removed, if it is the feature models <i>root</i> feature or if it is not
-	 * contained in this model. In both cases, the method returns <b>false</b>. Otherwise the method returns <b>true</b>. <br> <br> Implementations of this
-	 * method must ensure, that after removing <code>feature</code>, the feature's <i>parent feature</i> is changed to an <i>and</i> ( <i>or</i>,
-	 * <i>alternative</i>) group if <code>feature</code> was an <i>and</i> (<i>or</i>, <i>alternative</i>) group. Additionally, removing <code>feature</code>
-	 * has to add the children of <code>feature</code> as children to the <i>parent feature</i>. <br> <br> Removing a feature also removes this feature from the
-	 * <i>feature table</i> and the <i>feature order list</i>. Both must be consistent with {@link #getFeatureOrderList()} and {@link #getFeatureOrderList()}
-	 * <br> <br> <b>Note</b>If the structure should not be changed, use {@link #deleteFeatureFromTable(Feature)}
+	 * Removes <code>feature</code> from this model. <code>feature</code> can not be
+	 * removed, if it is the feature models <i>root</i> feature or if it is not
+	 * contained in this model. In both cases, the method returns <b>false</b>.
+	 * Otherwise the method returns <b>true</b>. <br>
+	 * <br>
+	 * Implementations of this method must ensure, that after removing
+	 * <code>feature</code>, the feature's <i>parent feature</i> is changed to an
+	 * <i>and</i> ( <i>or</i>, <i>alternative</i>) group if <code>feature</code> was
+	 * an <i>and</i> (<i>or</i>, <i>alternative</i>) group. Additionally, removing
+	 * <code>feature</code> has to add the children of <code>feature</code> as
+	 * children to the <i>parent feature</i>. <br>
+	 * <br>
+	 * Removing a feature also removes this feature from the <i>feature table</i>
+	 * and the <i>feature order list</i>. Both must be consistent with
+	 * {@link #getFeatureOrderList()} and {@link #getFeatureOrderList()} <br>
+	 * <br>
+	 * <b>Note</b>If the structure should not be changed, use
+	 * {@link #deleteFeatureFromTable(Feature)}
 	 *
-	 * @param feature the feature that should be removed. It is assumed to be <i>non-null</i>
-	 * @return <b>false</b> if <code>feature</code> is the models <i>root</i> feature, or if <code>feature</code> is not contained in this model. Otherwise
-	 *         <b>true</b>.
+	 * @param feature the feature that should be removed. It is assumed to be
+	 *                <i>non-null</i>
+	 * @return <b>false</b> if <code>feature</code> is the models <i>root</i>
+	 *         feature, or if <code>feature</code> is not contained in this model.
+	 *         Otherwise <b>true</b>.
 	 *
 	 * @see #addFeature(Feature)
 	 * @see #getFeature(CharSequence)
@@ -388,7 +455,8 @@ public class FeatureModel implements Cloneable, IEventManager {
 		// add children to parent
 		final int index = parent.getChildIndex(feature.getStructure());
 		while (feature.getStructure().hasChildren()) {
-			parent.addChild(index, feature.getStructure().removeChild(feature.getStructure().getNumberOfChildren() - 1));
+			parent.addChild(index, feature.getStructure().removeChild(feature.getStructure().getNumberOfChildren()
+				- 1));
 		}
 
 		// delete feature
@@ -400,17 +468,27 @@ public class FeatureModel implements Cloneable, IEventManager {
 	}
 
 	/**
-	 * Removes the feature <code>feature</code> from the <i>feature table</i> by <code>feature</code>'s name with {@link Feature#getName()}. If the <i>feature
-	 * table</i> does not contain a feature with such a name, there will be no changes. <br> <br> This method only affects the collection of features stored in
-	 * the feature model, but do not change the <i>structure</i> neither of <code>feature</code> nor it's <i>parent</i> or <i>children</i>. <br> <br>
-	 * <b>Note</b> There is no equality check over the identifiers between the feature to be deleted and the feature contained in the collection, expect for
-	 * equality in their names. To avoid confusion, this check should be done before calling this method. <br> <b>Note</b> If the structure should be changed,
-	 * use {@link #deleteFeature(Feature)}
+	 * Removes the feature <code>feature</code> from the <i>feature table</i> by
+	 * <code>feature</code>'s name with {@link Feature#getName()}. If the <i>feature
+	 * table</i> does not contain a feature with such a name, there will be no
+	 * changes. <br>
+	 * <br>
+	 * This method only affects the collection of features stored in the feature
+	 * model, but do not change the <i>structure</i> neither of <code>feature</code>
+	 * nor it's <i>parent</i> or <i>children</i>. <br>
+	 * <br>
+	 * <b>Note</b> There is no equality check over the identifiers between the
+	 * feature to be deleted and the feature contained in the collection, expect for
+	 * equality in their names. To avoid confusion, this check should be done before
+	 * calling this method. <br>
+	 * <b>Note</b> If the structure should be changed, use
+	 * {@link #deleteFeature(Feature)}
 	 *
 	 * @see #setFeatureTable(Hashtable)
 	 * @see #getFeatureTable()
 	 *
-	 * @param feature the feature (the feature's name) which should be deleted from the <i>feature table</i>
+	 * @param feature the feature (the feature's name) which should be deleted from
+	 *                the <i>feature table</i>
 	 *
 	 * @since 3.0
 	 */
@@ -463,10 +541,14 @@ public class FeatureModel implements Cloneable, IEventManager {
 	}
 
 	/**
-	 * Returns the index of the first occurrence of <code>constraint</code> in the collection of constraints, or <b>-1</b> if <code>constraint</code> is not
-	 * contained. <br> <br> <b>Note</b>:
+	 * Returns the index of the first occurrence of <code>constraint</code> in the
+	 * collection of constraints, or <b>-1</b> if <code>constraint</code> is not
+	 * contained. <br>
+	 * <br>
+	 * <b>Note</b>:
 	 *
-	 * @param constraint the element to be removed. It is assumed that this parameter is <i>non-null</i>
+	 * @param constraint the element to be removed. It is assumed that this
+	 *                   parameter is <i>non-null</i>
 	 * @throws NullPointerException - if <code>constraint</code> is null (optional)
 	 *
 	 * @see #addConstraint(Constraint)
@@ -481,15 +563,18 @@ public class FeatureModel implements Cloneable, IEventManager {
 	 *
 	 * @since 3.0
 	 *
-	 * @return the index of the first occurrence of <code>constraint</code> in the collection of constraints, or <b>-1</b> otherwise.
+	 * @return the index of the first occurrence of <code>constraint</code> in the
+	 *         collection of constraints, or <b>-1</b> otherwise.
 	 */
 	public int getConstraintIndex(Constraint constraint) {
 		return constraints.indexOf(constraint);
 	}
 
 	/**
-	 * Returns the list of constraints stored in this feature model. <br> <br> <b>Note</b>: The returned list should be <b>unmodifiable</b> to avoid external
-	 * access to internal data
+	 * Returns the list of constraints stored in this feature model. <br>
+	 * <br>
+	 * <b>Note</b>: The returned list should be <b>unmodifiable</b> to avoid
+	 * external access to internal data
 	 *
 	 * @see #addConstraint(Constraint)
 	 * @see #addConstraint(Constraint, int)
@@ -510,11 +595,14 @@ public class FeatureModel implements Cloneable, IEventManager {
 	}
 
 	/**
-	 * Returns the feature with the given <code>name</code> stored in this feature model, or <code>null</code> if no features can be found. The given
-	 * <code>name</code> is compared to the names of the contained features in a <i>case-sensitive</i> manner. Therefore <code>"FeatureA"</code> is unequal to
+	 * Returns the feature with the given <code>name</code> stored in this feature
+	 * model, or <code>null</code> if no features can be found. The given
+	 * <code>name</code> is compared to the names of the contained features in a
+	 * <i>case-sensitive</i> manner. Therefore <code>"FeatureA"</code> is unequal to
 	 * <code>featureA</code>.
 	 *
-	 * @param name the name (case sensitive) of the feature which should be return. This parameter is assumed to be non-null.
+	 * @param name the name (case sensitive) of the feature which should be return.
+	 *             This parameter is assumed to be non-null.
 	 *
 	 * @see #addFeature(Feature)
 	 * @see #deleteFeature(Feature)
@@ -524,16 +612,20 @@ public class FeatureModel implements Cloneable, IEventManager {
 	 *
 	 * @since 3.0
 	 *
-	 * @return the associated feature, if there is a match to <code>name</code>, or <b>null</b> otherwise.
+	 * @return the associated feature, if there is a match to <code>name</code>, or
+	 *         <b>null</b> otherwise.
 	 */
 	public Feature getFeature(CharSequence name) {
 		return featureTable.get(name);
 	}
 
 	/**
-	 * Returns the ordered collection of feature names according to the given feature order. If an order is given, the method returns the corresponding list of
-	 * feature names according to their order. If no order is set, the method returns the names of features according to a pre-order traversation of the root
-	 * feature's structure. In both cases, the resulting collection is <b>unmodifiable</b>.
+	 * Returns the ordered collection of feature names according to the given
+	 * feature order. If an order is given, the method returns the corresponding
+	 * list of feature names according to their order. If no order is set, the
+	 * method returns the names of features according to a pre-order traversation of
+	 * the root feature's structure. In both cases, the resulting collection is
+	 * <b>unmodifiable</b>.
 	 *
 	 * @see #setFeatureOrderList(List)
 	 * @see #setFeatureOrderListItem(int, String)
@@ -541,32 +633,46 @@ public class FeatureModel implements Cloneable, IEventManager {
 	 *
 	 * @since 3.0
 	 *
-	 * @return an ordered list of feature names, either as a given order or in pre-order by traversing the root-feature.
+	 * @return an ordered list of feature names, either as a given order or in
+	 *         pre-order by traversing the root-feature.
 	 */
 	public List<String> getFeatureOrderList() {
 		if (featureOrderList.isEmpty()) {
 			return Trees.preOrderStream(getStructure().getRoot())
-					.filter(FeatureTree::isConcrete)
-					.map(FeatureTree::getFeature)
-					.map(Feature::getName)
-					.collect(Collectors.toList());
+				.filter(FeatureTree::isConcrete)
+				.map(FeatureTree::getFeature)
+				.map(Feature::getName)
+				.collect(Collectors.toList());
 		}
 		return Collections.unmodifiableList(featureOrderList);
 	}
 
-
 	/**
-	 * Returns the a read-only iterable collection of features stored in this feature model. This method is intend to provide the iteration-concept directly.
-	 * <br> <br> <b>Example</b> <code> for (IFeature feature : featureModel.getFeatures()) { // ... } </code> If a list interface is required rather than the
-	 * iterable counterpart, the utility class {@link Functional} provides a set of useful methods. To convert the iterator directly into a list, use
-	 * {@link Functional#toList(Iterable)}. By using methods from the {@link Functional} utility class the advantages of a functional-like programming style can
-	 * be directly used. For instance, to convert the collection of features inside a feature model into a set of feature names, the following code snippet can
-	 * be used: <br><br><code> import static de.ovgu.featureide.fm.core.functional.Functional.*;
+	 * Returns the a read-only iterable collection of features stored in this
+	 * feature model. This method is intend to provide the iteration-concept
+	 * directly. <br>
+	 * <br>
+	 * <b>Example</b>
+	 * <code> for (IFeature feature : featureModel.getFeatures()) { // ... } </code>
+	 * If a list interface is required rather than the iterable counterpart, the
+	 * utility class {@link Functional} provides a set of useful methods. To convert
+	 * the iterator directly into a list, use {@link Functional#toList(Iterable)}.
+	 * By using methods from the {@link Functional} utility class the advantages of
+	 * a functional-like programming style can be directly used. For instance, to
+	 * convert the collection of features inside a feature model into a set of
+	 * feature names, the following code snippet can be used: <br>
+	 * <br>
+	 * <code> import static de.ovgu.featureide.fm.core.functional.Functional.*;
 	 *
-	 * <br>Set&lt;String&gt; featureNames = new HashSet&lt;&gt;(toList(mapToString(fm.getFeatures()))) </code> <br>If modification is required, use the related
-	 * constructor for collection implementations, e.g., <br> <code>List&lt;IFeature&gt; list = new
-	 * LinkedList&lt;IFeature&gt;(Functional.toList(fm.getFeatures()));</code> <br> <b>Note</b>: Many operations of features in feature models runs over
-	 * iteration. This method returns an iterator rather than a collection for <i>lazy evaluation</i> purposes. <br>
+	 * <br>Set&lt;String&gt; featureNames = new HashSet&lt;&gt;(toList(mapToString(fm.getFeatures()))) </code>
+	 * <br>
+	 * If modification is required, use the related constructor for collection
+	 * implementations, e.g., <br>
+	 * <code>List&lt;IFeature&gt; list = new
+	 * LinkedList&lt;IFeature&gt;(Functional.toList(fm.getFeatures()));</code> <br>
+	 * <b>Note</b>: Many operations of features in feature models runs over
+	 * iteration. This method returns an iterator rather than a collection for
+	 * <i>lazy evaluation</i> purposes. <br>
 	 *
 	 * @see Functional FeatureIDE functional helper class
 	 * @see #addFeature(Feature)
@@ -583,19 +689,31 @@ public class FeatureModel implements Cloneable, IEventManager {
 		return Collections.unmodifiableCollection(featureTable.values());
 	}
 
-
 	/**
-	 * Returns the a read-only iterable collection of features stored in this feature model, which are not collapsed. This method is intend to provide the
-	 * iteration-concept directly. <br> <br> <b>Example</b> <code> for (IFeature feature : featureModel.getVisibleFeatures()) { // ... } </code> If a list
-	 * interface is required rather than the iterable counterpart, the utility class {@link Functional} provides a set of useful methods. To convert the
-	 * iterator directly into a list, use {@link Functional#toList(Iterable)}. By using methods from the {@link Functional} utility class the advantages of a
-	 * functional-like programming style can be directly used. For instance, to convert the collection of features inside a feature model into a set of feature
-	 * names, the following code snippet can be used: <code> import static de.ovgu.featureide.fm.core.functional.Functional.*;
+	 * Returns the a read-only iterable collection of features stored in this
+	 * feature model, which are not collapsed. This method is intend to provide the
+	 * iteration-concept directly. <br>
+	 * <br>
+	 * <b>Example</b>
+	 * <code> for (IFeature feature : featureModel.getVisibleFeatures()) { // ... } </code>
+	 * If a list interface is required rather than the iterable counterpart, the
+	 * utility class {@link Functional} provides a set of useful methods. To convert
+	 * the iterator directly into a list, use {@link Functional#toList(Iterable)}.
+	 * By using methods from the {@link Functional} utility class the advantages of
+	 * a functional-like programming style can be directly used. For instance, to
+	 * convert the collection of features inside a feature model into a set of
+	 * feature names, the following code snippet can be used:
+	 * <code> import static de.ovgu.featureide.fm.core.functional.Functional.*;
 	 *
-	 * Set&lt;String&gt; featureNames = new HashSet&lt;&gt;(toList(mapToString(fm.getVisibleFeatures()))) </code> If modification is required, use the related
-	 * constructor for collection implementations, e.g., <br> <code>List&lt;IFeature&gt; list = new
-	 * LinkedList&lt;IFeature&gt;(Functional.toList(fm.getVisibleFeatures()));</code> <br> <b>Note</b>: Many operations of features in feature models runs over
-	 * iteration. This method returns an iterator rather than a collection for <i>lazy evaluation</i> purposes. <br>
+	 * Set&lt;String&gt; featureNames = new HashSet&lt;&gt;(toList(mapToString(fm.getVisibleFeatures()))) </code>
+	 * If modification is required, use the related constructor for collection
+	 * implementations, e.g., <br>
+	 * <code>List&lt;IFeature&gt; list = new
+	 * LinkedList&lt;IFeature&gt;(Functional.toList(fm.getVisibleFeatures()));</code>
+	 * <br>
+	 * <b>Note</b>: Many operations of features in feature models runs over
+	 * iteration. This method returns an iterator rather than a collection for
+	 * <i>lazy evaluation</i> purposes. <br>
 	 *
 	 *
 	 * @see Functional FeatureIDE functional helper class
@@ -618,7 +736,8 @@ public class FeatureModel implements Cloneable, IEventManager {
 	}
 
 	/**
-	 * Returns the number of features stored in this feature model. This call must be constistent with {@link FeatureModel#getFeatureTable()} size.
+	 * Returns the number of features stored in this feature model. This call must
+	 * be constistent with {@link FeatureModel#getFeatureTable()} size.
 	 *
 	 * @see #addFeature(Feature)
 	 * @see #deleteFeature(Feature)
@@ -635,9 +754,15 @@ public class FeatureModel implements Cloneable, IEventManager {
 	}
 
 	/**
-	 * Returns the model properties attached to this feature model. These properties contain at least <ul> <li>Annotations</li> <li>Comments</li> <li>The
-	 * feature order specification</li> </ul> The properties returned by this model is implementation specific and might contain additional properties (see
-	 * {@link IFeatureModelProperty}).
+	 * Returns the model properties attached to this feature model. These properties
+	 * contain at least
+	 * <ul>
+	 * <li>Annotations</li>
+	 * <li>Comments</li>
+	 * <li>The feature order specification</li>
+	 * </ul>
+	 * The properties returned by this model is implementation specific and might
+	 * contain additional properties (see {@link IFeatureModelProperty}).
 	 *
 	 * @since 3.0
 	 *
@@ -648,8 +773,10 @@ public class FeatureModel implements Cloneable, IEventManager {
 	}
 
 	/**
-	 * Returns the feature models {@link FeatureModelStructure} instance. In this features can be received in preorder, and further structural properties can
-	 * be get. For instance, the structure holds information if alternative groups are contained, or the number of or-groups in total. For more information, see
+	 * Returns the feature models {@link FeatureModelStructure} instance. In this
+	 * features can be received in preorder, and further structural properties can
+	 * be get. For instance, the structure holds information if alternative groups
+	 * are contained, or the number of or-groups in total. For more information, see
 	 * {@link FeatureModelStructure}.
 	 *
 	 * @since 3.0
@@ -682,11 +809,12 @@ public class FeatureModel implements Cloneable, IEventManager {
 	}
 
 	/**
-	 * Fires the the event {@link org.spldev.featuremodel.event.FeatureIDEEvent.EventType#MODEL_DATA_CHANGED} to listeners.
+	 * Fires the the event {@link FeatureIDEEvent.EventType#MODEL_DATA_CHANGED} to
+	 * listeners.
 	 *
 	 * @since 3.0
 	 */
-		public void handleModelDataChanged() {
+	public void handleModelDataChanged() {
 		fireEvent(FeatureIDEEvent.EventType.MODEL_DATA_CHANGED);
 	}
 
@@ -702,7 +830,8 @@ public class FeatureModel implements Cloneable, IEventManager {
 	}
 
 	/**
-	 * Removes the first occurrence of <code>constraint</code> from the collection of constraints in this model, if it is present. Otherwise there is no effect
+	 * Removes the first occurrence of <code>constraint</code> from the collection
+	 * of constraints in this model, if it is present. Otherwise there is no effect
 	 * to this model.
 	 *
 	 * @see #addConstraint(Constraint)
@@ -725,7 +854,8 @@ public class FeatureModel implements Cloneable, IEventManager {
 	}
 
 	/**
-	 * Removes the constraint at the specified position <code>index</code> in this collection of constraints in this model. When a constraint was removed, the
+	 * Removes the constraint at the specified position <code>index</code> in this
+	 * collection of constraints in this model. When a constraint was removed, the
 	 * remaining constraints to the right are shifted one position to the left.
 	 *
 	 * @param index position of the constraint to be removed
@@ -749,10 +879,11 @@ public class FeatureModel implements Cloneable, IEventManager {
 	}
 
 	/**
-	 * Replaces the constraint <code>constraint</code> at the specified position <code>index</code> in the collection of constraints of this feature model.
+	 * Replaces the constraint <code>constraint</code> at the specified position
+	 * <code>index</code> in the collection of constraints of this feature model.
 	 *
 	 * @param constraint constraint which should be stored at <code>index</code>
-	 * @param index position for replacement
+	 * @param index      position for replacement
 	 *
 	 * @see #addConstraint(Constraint)
 	 * @see #addConstraint(Constraint, int)
@@ -764,7 +895,7 @@ public class FeatureModel implements Cloneable, IEventManager {
 	 * @see #setConstraint(int, Constraint)
 	 * @see #setConstraints(Iterable)
 	 *
-	 * @throws NullPointerException if <code>constraint</code> is <b>null</b>
+	 * @throws NullPointerException      if <code>constraint</code> is <b>null</b>
 	 * @throws IndexOutOfBoundsException if the index is out of range
 	 *
 	 * @since 3.0
@@ -780,8 +911,10 @@ public class FeatureModel implements Cloneable, IEventManager {
 	}
 
 	/**
-	 * Set the feature models structure root element to <b>null</b> and clears the collections of features and constraints. Moreover, the feature order list is
-	 * cleared and all properties. The next unique element identifier is also reseted to <b>0</b>, such that {@link FeatureModel#getNextElementId()} will
+	 * Set the feature models structure root element to <b>null</b> and clears the
+	 * collections of features and constraints. Moreover, the feature order list is
+	 * cleared and all properties. The next unique element identifier is also
+	 * reseted to <b>0</b>, such that {@link FeatureModel#getNextElementId()} will
 	 * return <b>0</b>.
 	 *
 	 * @see #deleteFeature(Feature)
@@ -795,7 +928,7 @@ public class FeatureModel implements Cloneable, IEventManager {
 		structure.setRoot(null);
 
 		featureTable.clear();
-		//renamingsManager.clear();
+		renamingsManager.clear();
 		constraints.clear();
 		featureOrderList.clear();
 		elements.clear();
@@ -805,10 +938,12 @@ public class FeatureModel implements Cloneable, IEventManager {
 	}
 
 	/**
-	 * Sets the collections of constraints to the ones yielded by <code>constraints</code>. Existing constraint in the collection will be removed before this
-	 * operation.
+	 * Sets the collections of constraints to the ones yielded by
+	 * <code>constraints</code>. Existing constraint in the collection will be
+	 * removed before this operation.
 	 *
-	 * @param constraints Source of constraints which should be copied into this feature model
+	 * @param constraints Source of constraints which should be copied into this
+	 *                    feature model
 	 *
 	 * @see #addConstraint(Constraint)
 	 * @see #addConstraint(Constraint, int)
@@ -830,24 +965,31 @@ public class FeatureModel implements Cloneable, IEventManager {
 	}
 
 	/**
-	 * Sets the list of feature names for ordering purposed to the content provided by <code>featureOrderList</code>. Existing ordering will be removed before
-	 * this operation is executed. There is no check if the feature names provided by <code>featureOrderList</code> actually reflects names of features stored
-	 * in this model. <br> <br> The order of strings provided in <code>featureOrderList</code> provide the order of feature names.
+	 * Sets the list of feature names for ordering purposed to the content provided
+	 * by <code>featureOrderList</code>. Existing ordering will be removed before
+	 * this operation is executed. There is no check if the feature names provided
+	 * by <code>featureOrderList</code> actually reflects names of features stored
+	 * in this model. <br>
+	 * <br>
+	 * The order of strings provided in <code>featureOrderList</code> provide the
+	 * order of feature names.
 	 *
 	 * @see #getFeatureOrderList()
 	 * @see #setFeatureOrderListItem(int, String)
 	 * @see #setFeatureOrderUserDefined(boolean)
 	 *
-	 * @param featureOrderList the orderd list of feature names which provides the feature order. This parameter is assumed to be <i>non-null</i>
+	 * @param featureOrderList the orderd list of feature names which provides the
+	 *                         feature order. This parameter is assumed to be
+	 *                         <i>non-null</i>
 	 *
 	 * @since 3.0
 	 */
 	public void setFeatureOrderList(List<String> featureOrderList) {
 		List<String> basicSet = Trees.preOrderStream(getStructure().getRoot())
-				.filter(FeatureTree::isConcrete)
-				.map(FeatureTree::getFeature)
-				.map(Feature::getName)
-				.collect(Collectors.toList());
+			.filter(FeatureTree::isConcrete)
+			.map(FeatureTree::getFeature)
+			.map(Feature::getName)
+			.collect(Collectors.toList());
 		// TODO optimize performance
 		basicSet.removeAll(featureOrderList);
 		this.featureOrderList.clear();
@@ -856,7 +998,8 @@ public class FeatureModel implements Cloneable, IEventManager {
 	}
 
 	/**
-	 * Sets a flag that specificities if the feature order in this feature model user defined or not.
+	 * Sets a flag that specificities if the feature order in this feature model
+	 * user defined or not.
 	 *
 	 * @see #getFeatureOrderList()
 	 * @see #setFeatureOrderList(List)
@@ -871,16 +1014,21 @@ public class FeatureModel implements Cloneable, IEventManager {
 	}
 
 	/**
-	 * Overwrites the contents of the <i>feature table</i> with the given <code>featureTable</code>. The existing feature table will be cleared and each element
-	 * in <code>featureTable</code> will be inserted in the feature model's underlying feature table. There is no check, if the the mapping of features names to
-	 * features in <code>featureTable</code> is consistent. Moreover, there is no check if the feature names in <code>featureTable</code> corresponds to the
-	 * feature names in this feature model. Therefore, overwriting the contents of the feature table by this function might lead to unexpected behavior, when
-	 * not used correctly.
+	 * Overwrites the contents of the <i>feature table</i> with the given
+	 * <code>featureTable</code>. The existing feature table will be cleared and
+	 * each element in <code>featureTable</code> will be inserted in the feature
+	 * model's underlying feature table. There is no check, if the the mapping of
+	 * features names to features in <code>featureTable</code> is consistent.
+	 * Moreover, there is no check if the feature names in <code>featureTable</code>
+	 * corresponds to the feature names in this feature model. Therefore,
+	 * overwriting the contents of the feature table by this function might lead to
+	 * unexpected behavior, when not used correctly.
 	 *
 	 * @see #deleteFeatureFromTable(Feature)
 	 * @see #getFeatureTable()
 	 *
-	 * @param featureTable New feature table for this feature model. This parameter is assumed to be <i>non-null</i>
+	 * @param featureTable New feature table for this feature model. This parameter
+	 *                     is assumed to be <i>non-null</i>
 	 *
 	 * @since 3.0
 	 */
@@ -900,7 +1048,8 @@ public class FeatureModel implements Cloneable, IEventManager {
 	 * @see #setFeatureTable(Hashtable)
 	 * @see #deleteFeatureFromTable(Feature)
 	 *
-	 * @return Returns this feature model's underlying <i>feature table</i> as an <b>unmodifiable map</b>.
+	 * @return Returns this feature model's underlying <i>feature table</i> as an
+	 *         <b>unmodifiable map</b>.
 	 *
 	 * @since 3.0
 	 */
@@ -909,10 +1058,11 @@ public class FeatureModel implements Cloneable, IEventManager {
 	}
 
 	/**
-	 * Replaces the feature order item at the specified position <code>i</code> in this feature model's feature order list with the specified element
+	 * Replaces the feature order item at the specified position <code>i</code> in
+	 * this feature model's feature order list with the specified element
 	 * <code>newName</code>.
 	 *
-	 * @param i index of the element to replace
+	 * @param i       index of the element to replace
 	 * @param newName new name to be stored at the specified position
 	 *
 	 * @see #getFeatureOrderList()
@@ -966,12 +1116,20 @@ public class FeatureModel implements Cloneable, IEventManager {
 	}
 
 	/**
-	 * Set the feature models source file to <code>file</code>. By definition, the feature model's unique identifier is bidirectional mapped to the source
-	 * files. Therefore, two feature model's based on the same file must have to same unique identifier. The feature model's identifier will not be changed, if
-	 * <code>file</code> is <b>null</b>. <br><br> The default implementation provides this mechanism by using {@link ModelFileIdMap}, such that: <code>
-	 * this.sourceFile = file; if (file != null) { id = ModelFileIdMap.getModelId(this, file); } </code> <b>Note</b>: The specification does not require to
-	 * reload the content of this feature model, when the source file is changes. Hence, using this method only will affect the return value of
-	 * {@link #getSourceFile()} and perhaps {@link #getId()}. However, it is not intended to notify listeners about this change.
+	 * Set the feature models source file to <code>file</code>. By definition, the
+	 * feature model's unique identifier is bidirectional mapped to the source
+	 * files. Therefore, two feature model's based on the same file must have to
+	 * same unique identifier. The feature model's identifier will not be changed,
+	 * if <code>file</code> is <b>null</b>. <br>
+	 * <br>
+	 * The default implementation provides this mechanism by using
+	 * {@link ModelFileIdMap}, such that: <code>
+	 * this.sourceFile = file; if (file != null) { id = ModelFileIdMap.getModelId(this, file); } </code>
+	 * <b>Note</b>: The specification does not require to reload the content of this
+	 * feature model, when the source file is changes. Hence, using this method only
+	 * will affect the return value of {@link #getSourceFile()} and perhaps
+	 * {@link #getId()}. However, it is not intended to notify listeners about this
+	 * change.
 	 *
 	 * @see #getSourceFile()
 	 * @see ModelFileIdMap#getModelId(FeatureModel, Path)
@@ -992,17 +1150,21 @@ public class FeatureModel implements Cloneable, IEventManager {
 	 *
 	 * @since 3.0
 	 *
-	 * @return Returns the feature models current source file, or <b>null</b> if no source file is specified.
+	 * @return Returns the feature models current source file, or <b>null</b> if no
+	 *         source file is specified.
 	 */
 	public Path getSourceFile() {
 		return sourceFile;
 	}
 
 	/**
-	 * Feature models are identified with their system-wide unique numeric identifier. This methods returns the identifier of the current feature model. Custom
-	 * implementations might manage the feature model's identifier similar to the default implementation: <code> private static long NEXT_ID = 0;
+	 * Feature models are identified with their system-wide unique numeric
+	 * identifier. This methods returns the identifier of the current feature model.
+	 * Custom implementations might manage the feature model's identifier similar to
+	 * the default implementation: <code> private static long NEXT_ID = 0;
 	 *
-	 * protected static final synchronized long getNextId() { return NEXT_ID++; } </code> The identifier has to be used for comparisons using
+	 * protected static final synchronized long getNextId() { return NEXT_ID++; } </code>
+	 * The identifier has to be used for comparisons using
 	 * {@link Object#equals(Object)}.
 	 *
 	 * @return unique identifier
@@ -1033,10 +1195,11 @@ public class FeatureModel implements Cloneable, IEventManager {
 	}
 
 	/**
-	 * Overwrites the constraint stored in this feature model at position <code>index</code> with the constraint provided by the parameter
+	 * Overwrites the constraint stored in this feature model at position
+	 * <code>index</code> with the constraint provided by the parameter
 	 * <code>constraint</code>.
 	 *
-	 * @param index index of the constraint to replace
+	 * @param index      index of the constraint to replace
 	 * @param constraint constraint to be stored at the specified position
 	 *
 	 * @see #addConstraint(Constraint)
@@ -1058,12 +1221,23 @@ public class FeatureModel implements Cloneable, IEventManager {
 	}
 
 	/**
-	 * Clones this feature model <code>f</code> to a new instance of feature model <code>f'</code>, such that <code>f != f'</code> and <code>f.equals(f')</code>
-	 * holds. More in detail: <ul> <li>Both feature model's unique identifiers are equal</li> <li>Both feature order lists are equal but their references aren't
-	 * identical</li> <li>Both feature order lists user defined order flag is equal</li> <li>Both feature order lists property and structure are equal, but
-	 * their references aren't identical</li> <li>Both feature model's source files are equal but their references aren't identical</li> <li>Both feature
-	 * model's feature structure (including their constraints) are equal but their references aren't identical</li> <li>The feature model <code>f'</code>'
-	 * feature model analyzer instance is a <i>new</i> instance</li> </ul>
+	 * Clones this feature model <code>f</code> to a new instance of feature model
+	 * <code>f'</code>, such that <code>f != f'</code> and <code>f.equals(f')</code>
+	 * holds. More in detail:
+	 * <ul>
+	 * <li>Both feature model's unique identifiers are equal</li>
+	 * <li>Both feature order lists are equal but their references aren't
+	 * identical</li>
+	 * <li>Both feature order lists user defined order flag is equal</li>
+	 * <li>Both feature order lists property and structure are equal, but their
+	 * references aren't identical</li>
+	 * <li>Both feature model's source files are equal but their references aren't
+	 * identical</li>
+	 * <li>Both feature model's feature structure (including their constraints) are
+	 * equal but their references aren't identical</li>
+	 * <li>The feature model <code>f'</code>' feature model analyzer instance is a
+	 * <i>new</i> instance</li>
+	 * </ul>
 	 *
 	 * @since 3.0
 	 *
@@ -1076,15 +1250,18 @@ public class FeatureModel implements Cloneable, IEventManager {
 	 * @see #getStructure()
 	 * @see #getConstraints()
 	 *
-	 * @return cloned instance of this model, such that the new instance is equal to this feature model but their references aren't identical
+	 * @return cloned instance of this model, such that the new instance is equal to
+	 *         this feature model but their references aren't identical
 	 */
 	public FeatureModel clone() {
 		return new FeatureModel(this, null);
 	}
 
 	/**
-	 * A feature model is created via a feature model {@link FeatureModelFactory factory}. This methods returns the identifier of the factory used to create
-	 * this feature model. The factory can be used to create more feature models, features, or constraint from the same type as this feature model.
+	 * A feature model is created via a feature model {@link FeatureModelFactory
+	 * factory}. This methods returns the identifier of the factory used to create
+	 * this feature model. The factory can be used to create more feature models,
+	 * features, or constraint from the same type as this feature model.
 	 *
 	 * @return the feature model factory ID.
 	 *
@@ -1105,7 +1282,8 @@ public class FeatureModel implements Cloneable, IEventManager {
 	}
 
 	/**
-	 * Sets the next element ID to the correct value for this feature model to avoid duplicate IDs.
+	 * Sets the next element ID to the correct value for this feature model to avoid
+	 * duplicate IDs.
 	 */
 	public void updateNextElementId() {
 		long max = 0;
@@ -1128,7 +1306,10 @@ public class FeatureModel implements Cloneable, IEventManager {
 	/**
 	 * @since 3.0
 	 *
-	 * @return Returns an instance of {@link RenamingsManager} which is bound to this feature model.
+	 * @return Returns an instance of {@link RenamingsManager} which is bound to
+	 *         this feature model.
 	 */
-	//RenamingsManager getRenamingsManager();
+	RenamingsManager getRenamingsManager() {
+		return renamingsManager;
+	}
 }

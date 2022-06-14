@@ -32,7 +32,8 @@ import java.util.Set;
  */
 public class MapPropertyContainer implements IPropertyContainer {
 
-	public MapPropertyContainer() {}
+	public MapPropertyContainer() {
+	}
 
 	public MapPropertyContainer(IPropertyContainer other) {
 		setProperties(other.getProperties());

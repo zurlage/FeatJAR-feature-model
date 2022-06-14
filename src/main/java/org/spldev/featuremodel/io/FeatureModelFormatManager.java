@@ -18,8 +18,9 @@
  *
  * See http://featureide.cs.ovgu.de/ for further information.
  */
-package org.spldev.featuremodel;
+package org.spldev.featuremodel.io;
 
+import org.spldev.featuremodel.FeatureModel;
 import org.spldev.util.io.format.FormatManager;
 
 /**

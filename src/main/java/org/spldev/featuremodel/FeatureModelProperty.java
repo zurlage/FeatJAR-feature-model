@@ -35,7 +35,10 @@ public class FeatureModelProperty extends MapPropertyContainer implements IFeatu
 
 	public static final String VALUE_BOOLEAN_TRUE = "true";
 	public static final String VALUE_BOOLEAN_FALSE = "false";
-	/** The big model size limit changes the behaviour of FeatureIDE (e.g., "analyses are no longer performed automatically as default") */
+	/**
+	 * The big model size limit changes the behaviour of FeatureIDE (e.g., "analyses
+	 * are no longer performed automatically as default")
+	 */
 	public static int BIG_MODEL_LIMIT = 1000;
 	public static String TYPE_CALCULATIONS = "calculations";
 	/** Property decides whether calculations are performed automatically. */
@@ -54,14 +57,16 @@ public class FeatureModelProperty extends MapPropertyContainer implements IFeatu
 	public boolean equals(Object obj) {
 		if (super.equals(obj)) {
 			final FeatureModelProperty other = (FeatureModelProperty) obj;
-			return (featureOrderInXML == other.featureOrderInXML) && Objects.equals(annotations, other.annotations) && Objects.equals(comments, other.comments);
+			return (featureOrderInXML == other.featureOrderInXML) && Objects.equals(annotations, other.annotations)
+				&& Objects.equals(comments, other.comments);
 		} else {
 			return false;
 		}
 	}
 
 	/**
-	 * Saves the annotations from the model file as they were read, because they were not yet used.
+	 * Saves the annotations from the model file as they were read, because they
+	 * were not yet used.
 	 */
 	protected final List<String> annotations;
 
@@ -76,7 +81,8 @@ public class FeatureModelProperty extends MapPropertyContainer implements IFeatu
 
 	protected FeatureModelProperty(FeatureModelProperty oldProperty, FeatureModel correspondingFeatureModel) {
 		super(oldProperty);
-		this.correspondingFeatureModel = correspondingFeatureModel != null ? correspondingFeatureModel : oldProperty.correspondingFeatureModel;
+		this.correspondingFeatureModel = correspondingFeatureModel != null ? correspondingFeatureModel
+			: oldProperty.correspondingFeatureModel;
 
 		featureOrderInXML = oldProperty.featureOrderInXML;
 
@@ -161,14 +167,16 @@ public class FeatureModelProperty extends MapPropertyContainer implements IFeatu
 	}
 
 	/**
-	 * Indicates whether a feature diagram editor and constraint editor should perform analyses automatically based on the users preferences and model size.
+	 * Indicates whether a feature diagram editor and constraint editor should
+	 * perform analyses automatically based on the users preferences and model size.
 	 *
 	 * @param fm The relative feature model.
-	 * @return true, when analyses should be performed automatically, false otherwise.
+	 * @return true, when analyses should be performed automatically, false
+	 *         otherwise.
 	 */
 	public static boolean isRunCalculationAutomatically(FeatureModel fm) {
-		Boolean isRunAutomatically =
-			getBooleanProperty(fm.getProperty(), FeatureModelProperty.TYPE_CALCULATIONS, FeatureModelProperty.PROPERTY_CALCULATIONS_RUN_AUTOMATICALLY);
+		Boolean isRunAutomatically = getBooleanProperty(fm.getProperty(), FeatureModelProperty.TYPE_CALCULATIONS,
+			FeatureModelProperty.PROPERTY_CALCULATIONS_RUN_AUTOMATICALLY);
 		if (isRunAutomatically == null) {
 			if (fm.getNumberOfFeatures() >= FeatureModelProperty.BIG_MODEL_LIMIT) {
 				// Is big model => no automatic analyses as default
@@ -182,14 +190,17 @@ public class FeatureModelProperty extends MapPropertyContainer implements IFeatu
 	}
 
 	/**
-	 * Defines whether features should be included into calculations. If features are not analyzed, then constraints are also NOT analyzed.
+	 * Defines whether features should be included into calculations. If features
+	 * are not analyzed, then constraints are also NOT analyzed.
 	 *
 	 * @param fm The relative feature model.
-	 * @return true, when feature should be considered when anayses are performed, false otherwise.
+	 * @return true, when feature should be considered when anayses are performed,
+	 *         false otherwise.
 	 */
 	public static boolean isCalculateFeatures(FeatureModel fm) {
-		Boolean isCalculatingFeatures = FeatureModelProperty.getBooleanProperty(fm.getProperty(), FeatureModelProperty.TYPE_CALCULATIONS,
-				FeatureModelProperty.PROPERTY_CALCULATIONS_CALCULATE_FEATURES);
+		Boolean isCalculatingFeatures = FeatureModelProperty.getBooleanProperty(fm.getProperty(),
+			FeatureModelProperty.TYPE_CALCULATIONS,
+			FeatureModelProperty.PROPERTY_CALCULATIONS_CALCULATE_FEATURES);
 		if (isCalculatingFeatures == null) {
 			// default value == true
 			isCalculatingFeatures = Boolean.TRUE;
@@ -201,11 +212,13 @@ public class FeatureModelProperty extends MapPropertyContainer implements IFeatu
 	 * Defines whether constraints should be included into calculations.
 	 *
 	 * @param fm The relative feature model.
-	 * @return true, when constraints should be considered when anayses are performed, false otherwise.
+	 * @return true, when constraints should be considered when anayses are
+	 *         performed, false otherwise.
 	 */
 	public static boolean isCalculateConstraints(FeatureModel fm) {
-		Boolean isCalculatingConstraints = FeatureModelProperty.getBooleanProperty(fm.getProperty(), FeatureModelProperty.TYPE_CALCULATIONS,
-				FeatureModelProperty.PROPERTY_CALCULATIONS_CALCULATE_CONSTRAINTS);
+		Boolean isCalculatingConstraints = FeatureModelProperty.getBooleanProperty(fm.getProperty(),
+			FeatureModelProperty.TYPE_CALCULATIONS,
+			FeatureModelProperty.PROPERTY_CALCULATIONS_CALCULATE_CONSTRAINTS);
 		if (isCalculatingConstraints == null) {
 			// default value == true
 			isCalculatingConstraints = Boolean.TRUE;

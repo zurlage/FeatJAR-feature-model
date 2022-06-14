@@ -24,7 +24,8 @@ import org.spldev.formula.structure.Formula;
 import org.spldev.util.data.Factory;
 
 /**
- * Factory to create or copy instances of {@link Feature}, {@link FeatureModel}, {@link Constraint}, and to obfuscate {@link FeatureModel}s.
+ * Factory to create or copy instances of {@link Feature}, {@link FeatureModel},
+ * {@link Constraint}, and to obfuscate {@link FeatureModel}s.
  *
  * @author Sebastian Krieter
  * @author Rahel Arens
@@ -32,7 +33,7 @@ import org.spldev.util.data.Factory;
  */
 public class FeatureModelFactory implements Factory<FeatureModel> {
 	public static FeatureModelFactory getInstance() {
-	return new FeatureModelFactory();
+		return new FeatureModelFactory();
 	}
 
 	public Constraint createConstraint(FeatureModel featureModel, Formula propNode) {

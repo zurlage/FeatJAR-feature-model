@@ -18,23 +18,40 @@
  *
  * See http://featureide.cs.ovgu.de/ for further information.
  */
-package org.spldev.featuremodel;
+package org.spldev.featuremodel.io;
 
-import org.spldev.configuration.Configuration;
-import org.spldev.util.io.format.FormatManager;
+import org.spldev.featuremodel.FeatureModel;
+import org.spldev.featuremodel.FeatureModelFactory;
+import org.spldev.util.io.format.Format;
 
 /**
- * Manages all formats for {@link de.ovgu.featureide.fm.core.configuration.Configuration configurations}.
+ * Abstract class for foramts that handle feature models.
  *
  * @author Sebastian Krieter
  */
-public final class ConfigurationFormatManager extends FormatManager<Configuration> {
-    private static ConfigurationFormatManager INSTANCE = new ConfigurationFormatManager();
+public abstract class FeatureModelFormat implements Format<FeatureModel>, IFeatureNameValidator {
 
-    public static ConfigurationFormatManager getInstance() {
-        return INSTANCE;
-    }
+	protected FeatureModelFactory factory = FeatureModelFactory.getInstance();
+	protected IFeatureNameValidator validator;
 
-    private ConfigurationFormatManager() {
-    }
+	public FeatureModelFormat() {
+	}
+
+	protected FeatureModelFormat(FeatureModelFormat oldFormat) {
+		factory = oldFormat.factory;
+		validator = oldFormat.validator;
+	}
+
+	public void setFeatureNameValidator(IFeatureNameValidator validator) {
+		this.validator = validator;
+	}
+
+	public IFeatureNameValidator getFeatureNameValidator() {
+		return validator;
+	}
+
+	@Override
+	public boolean isValidFeatureName(String featureName) {
+		return true;
+	}
 }

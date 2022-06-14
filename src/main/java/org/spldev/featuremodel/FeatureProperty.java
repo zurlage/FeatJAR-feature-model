@@ -32,7 +32,8 @@ public class FeatureProperty {
 	protected boolean implicit;
 
 	public FeatureProperty(FeatureProperty oldProperty, Feature correspondingFeature) {
-		this.correspondingFeature = correspondingFeature != null ? correspondingFeature : oldProperty.correspondingFeature;
+		this.correspondingFeature = correspondingFeature != null ? correspondingFeature
+			: oldProperty.correspondingFeature;
 		description = oldProperty.description.toString();
 		implicit = oldProperty.implicit;
 	}
@@ -55,11 +56,6 @@ public class FeatureProperty {
 		return description;
 	}
 
-	@Deprecated
-	public String getDisplayName() {
-		return correspondingFeature.getName();
-	}
-
 	public Feature getFeature() {
 		return correspondingFeature;
 	}
@@ -67,9 +63,6 @@ public class FeatureProperty {
 	public void setDescription(final CharSequence description) {
 		this.description = description.toString();
 	}
-
-	@Deprecated
-	public void setDisplayName(CharSequence name) {}
 
 	public boolean isConstraintSelected() {
 		throw new UnsupportedOperationException("Not implemented yet");
@@ -80,8 +73,9 @@ public class FeatureProperty {
 	}
 
 	/**
-	 * Implicit features can be used to represent features that exist only for technical reasons, such as the implicit root feature of UVL models with multiple
-	 * actual root features.
+	 * Implicit features can be used to represent features that exist only for
+	 * technical reasons, such as the implicit root feature of UVL models with
+	 * multiple actual root features.
 	 *
 	 * @return Whether the corresponding feature is implicit.
 	 */

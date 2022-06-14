@@ -18,7 +18,7 @@
  *
  * See http://featureide.cs.ovgu.de/ for further information.
  */
-package org.spldev.featuremodel.event;
+package org.spldev.event;
 
 import org.spldev.util.logging.Logger;
 
