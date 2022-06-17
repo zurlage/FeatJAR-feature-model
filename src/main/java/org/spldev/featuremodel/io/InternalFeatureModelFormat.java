@@ -24,6 +24,7 @@ import org.spldev.featuremodel.Constraint;
 import org.spldev.featuremodel.FeatureModel;
 import org.spldev.featuremodel.FeatureTree;
 import org.spldev.formula.io.textual.NodeWriter;
+import org.spldev.util.io.format.Format;
 import org.spldev.util.io.format.InputHeader;
 
 /**
@@ -31,7 +32,7 @@ import org.spldev.util.io.format.InputHeader;
  *
  * @author Sebastian Krieter
  */
-public class InternalFeatureModelFormat extends FeatureModelFormat {
+public class InternalFeatureModelFormat implements Format<FeatureModel> {
 	private static final String[] SYMBOLS = { "!", "&&", "||", "->", "<->", ", ", "choose", "atleast", "atmost" };
 	private static final String NEWLINE = System.getProperty("line.separator", "\n");
 
@@ -43,7 +44,7 @@ public class InternalFeatureModelFormat extends FeatureModelFormat {
 	@Override
 	public String serialize(FeatureModel object) {
 		final StringBuilder sb = new StringBuilder();
-		final FeatureTree root = object.getStructure().getRoot();
+		final FeatureTree root = object.getFeatureTree();
 		if (root == null) {
 			return "";
 		}
@@ -56,7 +57,7 @@ public class InternalFeatureModelFormat extends FeatureModelFormat {
 		writeFeatureGroup(root, sb);
 
 		for (final Constraint constraint : object.getConstraints()) {
-			sb.append(new NodeWriter().write(constraint.getNode())); // todo use SYMBOLS
+			sb.append(new NodeWriter().write(constraint.getFormula())); // todo use SYMBOLS
 			sb.append(NEWLINE);
 		}
 
@@ -90,14 +91,14 @@ public class InternalFeatureModelFormat extends FeatureModelFormat {
 	}
 
 	private void writeFeature(FeatureTree feature, StringBuilder sb) {
-		if (feature.isAbstract()) {
+		if (feature.getFeature().isAbstract()) {
 			sb.append("a ");
 		}
 		if (feature.isMandatory() && (feature.isRoot() || feature.getParent().get().isAnd())) {
 			sb.append("m ");
 		}
 		sb.append(feature.getFeature().getName());
-		final String description = feature.getFeature().getProperty().getDescription();
+		final String description = feature.getFeature().getDescription().orElse(null);
 		final boolean hasDescription = (description != null) && !description.isEmpty();
 
 		if ((feature.getNumberOfChildren() != 0) || hasDescription) {
