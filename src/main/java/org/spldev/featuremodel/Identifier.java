@@ -26,5 +26,19 @@ public class Identifier<T> {
                 return new Identifier<>(java.util.UUID.fromString(identifierString));
             }
         }
+
+        public static class LocalCounter extends Factory<Long> {
+            long counter = 0;
+
+            @Override
+            public Identifier<Long> get() {
+                return new Identifier<>(++counter);
+            }
+
+            @Override
+            public Identifier<Long> fromString(String identifierString) {
+                return new Identifier<>(Long.valueOf(identifierString));
+            }
+        }
     }
 }

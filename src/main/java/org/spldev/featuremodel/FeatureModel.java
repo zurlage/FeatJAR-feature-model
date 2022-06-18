@@ -24,7 +24,7 @@ public class FeatureModel extends PureFeatureModel {
 	}
 
 	public FeatureModel() {
-		this(DEFAULT_IDENTIFIER_FACTORY);
+		this(DEFAULT_IDENTIFIER_FACTORY_SUPPLIER.get());
 	}
 
 	public void refreshElementCache() {

@@ -5,6 +5,7 @@ import org.spldev.util.data.Result;
 import org.spldev.util.tree.Trees;
 
 import java.util.*;
+import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
 /**
@@ -17,9 +18,10 @@ import java.util.stream.Collectors;
  * @author Elias Kuiter
  */
 public class PureFeatureModel extends AttributeContainer implements Cloneable {
-	protected static final Identifier.Factory<UUID> DEFAULT_IDENTIFIER_FACTORY = new Identifier.Factory.UUID();
+	protected static final Supplier<Identifier.Factory<UUID>> DEFAULT_IDENTIFIER_FACTORY_SUPPLIER = Identifier.Factory.UUID::new;
 
 	protected final Identifier.Factory<?> identifierFactory;
+	protected final FeatureModelTree featureModelTree;
 	protected final FeatureTree featureTree;
 	protected final List<Constraint> constraints = Collections.synchronizedList(new ArrayList<>());
 	protected FeatureOrder featureOrder = FeatureOrder.ofPreOrder();
@@ -44,7 +46,7 @@ public class PureFeatureModel extends AttributeContainer implements Cloneable {
 	}
 
 	public PureFeatureModel() {
-		this(DEFAULT_IDENTIFIER_FACTORY);
+		this(DEFAULT_IDENTIFIER_FACTORY_SUPPLIER.get());
 	}
 
 	public Identifier.Factory<?> getIdentifierFactory() {
