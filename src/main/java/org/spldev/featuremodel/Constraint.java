@@ -29,11 +29,6 @@ public class Constraint extends Element {
 		setFormula(formula);
 	}
 
-	@Override
-	public Set<Attribute<?>> getDefinableAttributes() {
-		return featureModel.getDefinableConstraintAttributes();
-	}
-
 	public FeatureModel getFeatureModel() {
 		return featureModel;
 	}

@@ -19,11 +19,6 @@ public class Feature extends Element {
 		featureTree = new FeatureTree(this, featureModel);
 	}
 
-	@Override
-	public Set<Attribute<?>> getDefinableAttributes() {
-		return featureTree.getFeatureModel().getDefinableFeatureAttributes();
-	}
-
 	public FeatureTree getFeatureTree() {
 		return featureTree;
 	}

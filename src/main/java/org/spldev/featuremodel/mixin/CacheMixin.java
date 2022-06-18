@@ -22,12 +22,18 @@ public interface CacheMixin extends FeatureTreeMixin, ConstraintMixin, FeatureMo
 	Set<Feature> getFeatureCache();
 	Set<FeatureModel> getFeatureModelCache();
 
+	private void invalidateElement(Element element) {
+		if (getElementCache().get(element.getIdentifier()) != null)
+			throw new RuntimeException("duplicate identifier " + element.getIdentifier());
+		getElementCache().put(element.getIdentifier(), element);
+	}
+
 	default void invalidateElementCache() {
 		getElementCache().clear();
 		Stream.concat(Stream.concat(FeatureTreeMixin.super.getFeatures().stream(),
 						getConstraints().stream()),
 						FeatureModelTreeMixin.super.getFeatureModels().stream())
-				.forEach(element -> getElementCache().put(element.getIdentifier(), element));
+				.forEach(this::invalidateElement);
 	}
 
 	default void invalidateFeatureCache() {
@@ -46,7 +52,7 @@ public interface CacheMixin extends FeatureTreeMixin, ConstraintMixin, FeatureMo
 
 		getElementCache().clear();
 		Stream.concat(Stream.concat(features.stream(), getConstraints().stream()), featureModels.stream())
-				.forEach(element -> getElementCache().put(element.getIdentifier(), element));
+				.forEach(this::invalidateElement);
 
 		getFeatureCache().clear();
 		getFeatureCache().addAll(features);

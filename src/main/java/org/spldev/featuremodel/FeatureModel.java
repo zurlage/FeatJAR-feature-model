@@ -22,20 +22,6 @@ public class FeatureModel extends Element implements FeatureTreeMixin, Constrain
 	protected final Set<Feature> featureCache = Collections.synchronizedSet(new HashSet<>());
 	protected final Set<FeatureModel> featureModelCache = Collections.synchronizedSet(new HashSet<>());
 
-	protected final Set<Attribute<?>> ownDefinableAttributes = new HashSet<>();
-	protected final Set<Attribute<?>> ownDefinableFeatureAttributes = new HashSet<>();
-	protected final Set<Attribute<?>> ownDefinableConstraintAttributes = new HashSet<>();
-
-	{
-		ownDefinableFeatureAttributes.add(Attributes.NAME);
-		ownDefinableFeatureAttributes.add(Attributes.DESCRIPTION);
-		ownDefinableFeatureAttributes.add(Attributes.HIDDEN);
-		ownDefinableFeatureAttributes.add(Attributes.ABSTRACT);
-		ownDefinableConstraintAttributes.add(Attributes.DESCRIPTION);
-		ownDefinableAttributes.add(Attributes.NAME);
-		ownDefinableAttributes.add(Attributes.DESCRIPTION);
-	}
-
 	public FeatureModel(Identifier<?> identifier) {
 		super(identifier);
 		final Feature root = new Feature(this);
@@ -82,21 +68,6 @@ public class FeatureModel extends Element implements FeatureTreeMixin, Constrain
 	@Override
 	public Set<FeatureModel> getFeatureModelCache() {
 		return featureModelCache;
-	}
-
-	@Override
-	public Set<Attribute<?>> getOwnDefinableAttributes() {
-		return ownDefinableAttributes;
-	}
-
-	@Override
-	public Set<Attribute<?>> getOwnDefinableFeatureAttributes() {
-		return ownDefinableFeatureAttributes;
-	}
-
-	@Override
-	public Set<Attribute<?>> getOwnDefinableConstraintAttributes() {
-		return ownDefinableConstraintAttributes;
 	}
 
 	// todo
