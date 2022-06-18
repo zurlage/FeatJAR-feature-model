@@ -8,22 +8,21 @@ import java.util.*;
  * @author Sebastian Krieter
  * @author Elias Kuiter
  */
-public abstract class Element extends AttributeContainer {
+public abstract class Element implements Identifiable, Attributable {
 	protected final Identifier<?> identifier;
+	protected final Map<Attribute<?>, Object> attributeToValueMap = new HashMap<>();
 
-	protected final PureFeatureModel featureModel;
-	public Element(Identifier<?> identifier, PureFeatureModel featureModel) {
+	public Element(Identifier<?> identifier) {
 		Objects.requireNonNull(identifier);
-		Objects.requireNonNull(featureModel);
 		this.identifier = identifier;
-		this.featureModel = featureModel;
 	}
 
 	public Identifier<?> getIdentifier() {
 		return identifier;
 	}
 
-	public PureFeatureModel getFeatureModel() {
-		return featureModel;
+	@Override
+	public Map<Attribute<?>, Object> getAttributeToValueMap() {
+		return attributeToValueMap;
 	}
 }

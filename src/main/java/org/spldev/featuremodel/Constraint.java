@@ -18,17 +18,24 @@ import org.spldev.formula.structure.Formulas;
  * @author Elias Kuiter
  */
 public class Constraint extends Element {
+	protected final PureFeatureModel featureModel;
 	protected Formula formula;
 	protected Set<Feature> containedFeaturesCache = new HashSet<>();
 
 	public Constraint(Identifier<?> identifier, PureFeatureModel featureModel, Formula formula) {
-		super(identifier, featureModel);
+		super(identifier);
+		Objects.requireNonNull(featureModel);
+		this.featureModel = featureModel;
 		setFormula(formula);
 	}
 
 	@Override
 	public Set<Attribute<?>> getDefinableAttributes() {
 		return featureModel.getDefinableConstraintAttributes();
+	}
+
+	public PureFeatureModel getFeatureModel() {
+		return featureModel;
 	}
 
 	public Formula getFormula() {
@@ -57,10 +64,10 @@ public class Constraint extends Element {
 	}
 
 	public Optional<String> getDescription() {
-		return getAttributeValue(Attribute.DESCRIPTION);
+		return getAttributeValue(Attributes.DESCRIPTION);
 	}
 
 	public void setDescription(String description) {
-		setAttributeValue(Attribute.DESCRIPTION, description);
+		setAttributeValue(Attributes.DESCRIPTION, description);
 	}
 }

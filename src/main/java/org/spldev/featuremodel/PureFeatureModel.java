@@ -17,7 +17,7 @@ import java.util.stream.Collectors;
  * @author Marcus Pinnecke
  * @author Elias Kuiter
  */
-public class PureFeatureModel extends AttributeContainer implements Cloneable {
+public class PureFeatureModel extends Element implements Cloneable {
 	protected static final Supplier<Identifier.Factory<UUID>> DEFAULT_IDENTIFIER_FACTORY_SUPPLIER = Identifier.Factory.UUID::new;
 
 	protected final Identifier.Factory<?> identifierFactory;
@@ -31,17 +31,21 @@ public class PureFeatureModel extends AttributeContainer implements Cloneable {
 	protected Set<Attribute<?>> definableConstraintAttributes = new HashSet<>();
 
 	{
-		definableFeatureAttributes.add(Attribute.NAME);
-		definableFeatureAttributes.add(Attribute.DESCRIPTION);
-		definableFeatureAttributes.add(Attribute.HIDDEN);
-		definableFeatureAttributes.add(Attribute.ABSTRACT);
-		definableConstraintAttributes.add(Attribute.DESCRIPTION);
+		definableFeatureAttributes.add(Attributes.NAME);
+		definableFeatureAttributes.add(Attributes.DESCRIPTION);
+		definableFeatureAttributes.add(Attributes.HIDDEN);
+		definableFeatureAttributes.add(Attributes.ABSTRACT);
+		definableConstraintAttributes.add(Attributes.DESCRIPTION);
+		definableAttributes.add(Attributes.NAME);
+		definableAttributes.add(Attributes.DESCRIPTION);
 	}
 
 	public PureFeatureModel(Identifier.Factory<?> identifierFactory) {
+		super(identifierFactory.get());
 		Objects.requireNonNull(identifierFactory);
 		this.identifierFactory = identifierFactory;
 		final Feature root = new Feature(identifierFactory.get(), this);
+		featureModelTree = new FeatureModelTree(this);
 		featureTree = root.getFeatureTree();
 	}
 
@@ -51,6 +55,19 @@ public class PureFeatureModel extends AttributeContainer implements Cloneable {
 
 	public Identifier.Factory<?> getIdentifierFactory() {
 		return identifierFactory;
+	}
+
+	public FeatureModelTree getFeatureModelTree() {
+		return featureModelTree;
+	}
+
+	public Set<PureFeatureModel> getFeatureModels() {
+		return Trees.parallelStream(featureModelTree).map(FeatureModelTree::getFeatureModel).collect(Collectors.toSet());
+	}
+
+	public Optional<PureFeatureModel> getFeatureModel(Identifier<?> identifier) {
+		Objects.requireNonNull(identifier);
+		return getFeatureModels().stream().filter(featureModel -> featureModel.getIdentifier().equals(identifier)).findFirst();
 	}
 
 	public FeatureTree getFeatureTree() {
@@ -265,6 +282,22 @@ public class PureFeatureModel extends AttributeContainer implements Cloneable {
 
 	public void setDefinableAttributes(Set<Attribute<?>> definableAttributes) {
 		this.definableAttributes = definableAttributes;
+	}
+
+	public String getName() {
+		return getAttributeValue(Attributes.NAME);
+	}
+
+	public void setName(String name) {
+		setAttributeValue(Attributes.NAME, name);
+	}
+
+	public Optional<String> getDescription() {
+		return getAttributeValue(Attributes.DESCRIPTION);
+	}
+
+	public void setDescription(String description) {
+		setAttributeValue(Attributes.DESCRIPTION, description);
 	}
 
 	// todo

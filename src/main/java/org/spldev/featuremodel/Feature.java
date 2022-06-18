@@ -1,5 +1,6 @@
 package org.spldev.featuremodel;
 
+import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
 
@@ -12,10 +13,13 @@ import java.util.Set;
  * @author Elias Kuiter
  */
 public class Feature extends Element {
-	protected final FeatureTree featureTree;
+	protected final PureFeatureModel featureModel;
 
+	protected final FeatureTree featureTree;
 	public Feature(Identifier<?> identifier, PureFeatureModel featureModel) {
-		super(identifier, featureModel);
+		super(identifier);
+		Objects.requireNonNull(featureModel);
+		this.featureModel = featureModel;
 		featureTree = new FeatureTree(this);
 	}
 
@@ -24,28 +28,32 @@ public class Feature extends Element {
 		return featureModel.getDefinableFeatureAttributes();
 	}
 
+	public PureFeatureModel getFeatureModel() {
+		return featureModel;
+	}
+
 	public FeatureTree getFeatureTree() {
 		return featureTree;
 	}
 
 	public String getName() {
-		return getAttributeValue(Attribute.NAME).orElse("@" + getIdentifier());
+		return getAttributeValue(Attributes.NAME);
 	}
 
 	public void setName(String name) {
-		setAttributeValue(Attribute.NAME, name);
+		setAttributeValue(Attributes.NAME, name);
 	}
 
 	public Optional<String> getDescription() {
-		return getAttributeValue(Attribute.DESCRIPTION);
+		return getAttributeValue(Attributes.DESCRIPTION);
 	}
 
 	public void setDescription(String description) {
-		setAttributeValue(Attribute.DESCRIPTION, description);
+		setAttributeValue(Attributes.DESCRIPTION, description);
 	}
 
 	public boolean isAbstract() {
-		return getAttributeValue(Attribute.ABSTRACT).get();
+		return getAttributeValue(Attributes.ABSTRACT);
 	}
 
 	public boolean isConcrete() {
@@ -53,11 +61,11 @@ public class Feature extends Element {
 	}
 
 	public void setAbstract(boolean value) {
-		setAttributeValue(Attribute.ABSTRACT, value);
+		setAttributeValue(Attributes.ABSTRACT, value);
 	}
 
 	public boolean isHidden() {
-		return getAttributeValue(Attribute.HIDDEN).get();
+		return getAttributeValue(Attributes.HIDDEN);
 	}
 
 	public boolean isVisible() {
@@ -65,6 +73,6 @@ public class Feature extends Element {
 	}
 
 	public void setHidden(boolean value) {
-		setAttributeValue(Attribute.HIDDEN, value);
+		setAttributeValue(Attributes.HIDDEN, value);
 	}
 }
