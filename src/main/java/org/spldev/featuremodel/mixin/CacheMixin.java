@@ -22,12 +22,6 @@ public interface CacheMixin extends FeatureTreeMixin, ConstraintMixin, FeatureMo
 	Set<Feature> getFeatureCache();
 	Set<FeatureModel> getFeatureModelCache();
 
-//	public FeatureModel(Identifier.Factory<?> identifierFactory) {
-//		super(identifierFactory);
-//		refreshElementCache();
-//		refreshFeatureCache();
-//	}
-
 	default void invalidateElementCache() {
 		getElementCache().clear();
 		Stream.concat(Stream.concat(FeatureTreeMixin.super.getFeatures().stream(),

@@ -13,7 +13,7 @@ import java.util.*;
  * @author Marcus Pinnecke
  * @author Elias Kuiter
  */
-public class FeatureModel extends Element implements FeatureTreeMixin, ConstraintMixin, FeatureModelTreeMixin, FeatureOrderMixin, CacheMixin, Cloneable {
+public class FeatureModel extends Element implements FeatureTreeMixin, ConstraintMixin, FeatureModelTreeMixin, FeatureOrderMixin, AttributeMixin, CacheMixin, Cloneable {
 	protected final FeatureModelTree featureModelTree;
 	protected final FeatureTree featureTree;
 	protected final List<Constraint> constraints = Collections.synchronizedList(new ArrayList<>());
@@ -22,18 +22,18 @@ public class FeatureModel extends Element implements FeatureTreeMixin, Constrain
 	protected final Set<Feature> featureCache = Collections.synchronizedSet(new HashSet<>());
 	protected final Set<FeatureModel> featureModelCache = Collections.synchronizedSet(new HashSet<>());
 
-	protected Set<Attribute<?>> definableAttributes = new HashSet<>();
-	protected Set<Attribute<?>> definableFeatureAttributes = new HashSet<>();
-	protected Set<Attribute<?>> definableConstraintAttributes = new HashSet<>();
+	protected final Set<Attribute<?>> ownDefinableAttributes = new HashSet<>();
+	protected final Set<Attribute<?>> ownDefinableFeatureAttributes = new HashSet<>();
+	protected final Set<Attribute<?>> ownDefinableConstraintAttributes = new HashSet<>();
 
 	{
-		definableFeatureAttributes.add(Attributes.NAME);
-		definableFeatureAttributes.add(Attributes.DESCRIPTION);
-		definableFeatureAttributes.add(Attributes.HIDDEN);
-		definableFeatureAttributes.add(Attributes.ABSTRACT);
-		definableConstraintAttributes.add(Attributes.DESCRIPTION);
-		definableAttributes.add(Attributes.NAME);
-		definableAttributes.add(Attributes.DESCRIPTION);
+		ownDefinableFeatureAttributes.add(Attributes.NAME);
+		ownDefinableFeatureAttributes.add(Attributes.DESCRIPTION);
+		ownDefinableFeatureAttributes.add(Attributes.HIDDEN);
+		ownDefinableFeatureAttributes.add(Attributes.ABSTRACT);
+		ownDefinableConstraintAttributes.add(Attributes.DESCRIPTION);
+		ownDefinableAttributes.add(Attributes.NAME);
+		ownDefinableAttributes.add(Attributes.DESCRIPTION);
 	}
 
 	public FeatureModel(Identifier<?> identifier) {
@@ -41,6 +41,7 @@ public class FeatureModel extends Element implements FeatureTreeMixin, Constrain
 		final Feature root = new Feature(this);
 		featureModelTree = new FeatureModelTree(this);
 		featureTree = root.getFeatureTree();
+		invalidateCaches();
 	}
 
 	@Override
@@ -83,45 +84,19 @@ public class FeatureModel extends Element implements FeatureTreeMixin, Constrain
 		return featureModelCache;
 	}
 
-	public Set<Attribute<?>> getDefinableFeatureAttributes() {
-		return definableFeatureAttributes;
-	}
-
-	public void setDefinableFeatureAttributes(Set<Attribute<?>> definableFeatureAttributes) {
-		this.definableFeatureAttributes = definableFeatureAttributes;
-	}
-
-	public Set<Attribute<?>> getDefinableConstraintAttributes() {
-		return definableConstraintAttributes;
-	}
-
-	public void setDefinableConstraintAttributes(Set<Attribute<?>> definableConstraintAttributes) {
-		this.definableConstraintAttributes = definableConstraintAttributes;
+	@Override
+	public Set<Attribute<?>> getOwnDefinableAttributes() {
+		return ownDefinableAttributes;
 	}
 
 	@Override
-	public Set<Attribute<?>> getDefinableAttributes() {
-		return definableAttributes;
+	public Set<Attribute<?>> getOwnDefinableFeatureAttributes() {
+		return ownDefinableFeatureAttributes;
 	}
 
-	public void setDefinableAttributes(Set<Attribute<?>> definableAttributes) {
-		this.definableAttributes = definableAttributes;
-	}
-
-	public String getName() {
-		return getAttributeValue(Attributes.NAME);
-	}
-
-	public void setName(String name) {
-		setAttributeValue(Attributes.NAME, name);
-	}
-
-	public Optional<String> getDescription() {
-		return getAttributeValue(Attributes.DESCRIPTION);
-	}
-
-	public void setDescription(String description) {
-		setAttributeValue(Attributes.DESCRIPTION, description);
+	@Override
+	public Set<Attribute<?>> getOwnDefinableConstraintAttributes() {
+		return ownDefinableConstraintAttributes;
 	}
 
 	// todo
