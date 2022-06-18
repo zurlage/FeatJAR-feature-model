@@ -18,12 +18,12 @@ import org.spldev.formula.structure.Formulas;
  * @author Elias Kuiter
  */
 public class Constraint extends Element {
-	protected final PureFeatureModel featureModel;
+	protected final FeatureModel featureModel;
 	protected Formula formula;
 	protected Set<Feature> containedFeaturesCache = new HashSet<>();
 
-	public Constraint(Identifier<?> identifier, PureFeatureModel featureModel, Formula formula) {
-		super(identifier);
+	public Constraint(FeatureModel featureModel, Formula formula) {
+		super(featureModel.getNewIdentifier());
 		Objects.requireNonNull(featureModel);
 		this.featureModel = featureModel;
 		setFormula(formula);
@@ -34,7 +34,7 @@ public class Constraint extends Element {
 		return featureModel.getDefinableConstraintAttributes();
 	}
 
-	public PureFeatureModel getFeatureModel() {
+	public FeatureModel getFeatureModel() {
 		return featureModel;
 	}
 
@@ -45,7 +45,7 @@ public class Constraint extends Element {
 	public void setFormula(Formula formula) {
 		Objects.requireNonNull(this.formula);
 		Set<Identifier<?>> identifiers = Formulas.getVariableNames(formula).stream()
-				.map(featureModel.identifierFactory::fromString)
+				.map(getIdentifier().getFactory()::fromString)
 				.collect(Collectors.toSet());
 		Optional<Identifier<?>> unknownIdentifier =
 				identifiers.stream().filter(identifier -> !featureModel.hasFeature(identifier)).findAny();

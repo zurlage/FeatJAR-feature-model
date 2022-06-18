@@ -32,7 +32,7 @@ import static org.junit.jupiter.api.Assertions.assertSame;
 public class FeatureModelTest {
 	@Test
 	public void test() {
-		final FeatureModel fm = new FeatureModel();
+		final FeatureModel fm = new FeatureModel(Identifier.newCounter());
 		final Feature feature = fm.createFeatureBelow(fm.getRootFeature());
 		assertSame(feature, feature.getFeatureTree().getFeature());
 		assertSame(fm.getRootFeature(), feature.getFeatureTree().getParent().get().getFeature());

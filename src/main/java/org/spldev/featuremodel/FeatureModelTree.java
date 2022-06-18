@@ -9,14 +9,14 @@ public class FeatureModelTree extends RootedTree<FeatureModelTree> {
     /**
      * Feature model at the root of this feature model tree.
      */
-    protected final PureFeatureModel featureModel;
+    protected final FeatureModel featureModel;
 
-    public FeatureModelTree(PureFeatureModel featureModel) {
+    public FeatureModelTree(FeatureModel featureModel) {
         Objects.requireNonNull(featureModel);
         this.featureModel = featureModel;
     }
 
-    public PureFeatureModel getFeatureModel() {
+    public FeatureModel getFeatureModel() {
         return featureModel;
     }
 

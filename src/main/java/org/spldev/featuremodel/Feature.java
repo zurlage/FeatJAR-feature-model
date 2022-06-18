@@ -1,6 +1,5 @@
 package org.spldev.featuremodel;
 
-import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
 
@@ -13,23 +12,16 @@ import java.util.Set;
  * @author Elias Kuiter
  */
 public class Feature extends Element {
-	protected final PureFeatureModel featureModel;
-
 	protected final FeatureTree featureTree;
-	public Feature(Identifier<?> identifier, PureFeatureModel featureModel) {
-		super(identifier);
-		Objects.requireNonNull(featureModel);
-		this.featureModel = featureModel;
-		featureTree = new FeatureTree(this);
+
+	public Feature(FeatureModel featureModel) {
+		super(featureModel.getNewIdentifier());
+		featureTree = new FeatureTree(this, featureModel);
 	}
 
 	@Override
 	public Set<Attribute<?>> getDefinableAttributes() {
-		return featureModel.getDefinableFeatureAttributes();
-	}
-
-	public PureFeatureModel getFeatureModel() {
-		return featureModel;
+		return featureTree.getFeatureModel().getDefinableFeatureAttributes();
 	}
 
 	public FeatureTree getFeatureTree() {

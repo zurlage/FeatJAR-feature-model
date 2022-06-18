@@ -1,7 +1,5 @@
 package org.spldev.featuremodel;
 
-import java.util.Objects;
-
 /**
  * Feature model element
  *
@@ -10,4 +8,8 @@ import java.util.Objects;
  */
 public interface Identifiable {
 	Identifier<?> getIdentifier();
+
+	default Identifier<?> getNewIdentifier() {
+		return getIdentifier().getFactory().get();
+	}
 }

@@ -1,11 +1,11 @@
 package org.spldev.featuremodel;
 
+import org.spldev.featuremodel.mixin.*;
+
 import java.util.*;
-import java.util.stream.Stream;
 
 /**
  * Feature model
- * assumes that features/constraints are only added/deleted through the feature model class, not manually
  *
  * @author Thomas Thuem
  * @author Florian Proksch
@@ -13,86 +13,130 @@ import java.util.stream.Stream;
  * @author Marcus Pinnecke
  * @author Elias Kuiter
  */
-public class FeatureModel extends PureFeatureModel {
+public class FeatureModel extends Element implements FeatureTreeMixin, ConstraintMixin, FeatureModelTreeMixin, FeatureOrderMixin, CacheMixin, Cloneable {
+	protected final FeatureModelTree featureModelTree;
+	protected final FeatureTree featureTree;
+	protected final List<Constraint> constraints = Collections.synchronizedList(new ArrayList<>());
+	protected FeatureOrder featureOrder = FeatureOrder.ofPreOrder();
 	protected final Map<Identifier<?>, Element> elementCache = Collections.synchronizedMap(new LinkedHashMap<>());
 	protected final Set<Feature> featureCache = Collections.synchronizedSet(new HashSet<>());
+	protected final Set<FeatureModel> featureModelCache = Collections.synchronizedSet(new HashSet<>());
 
-	public FeatureModel(Identifier.Factory<?> identifierFactory) {
-		super(identifierFactory);
-		refreshElementCache();
-		refreshFeatureCache();
+	protected Set<Attribute<?>> definableAttributes = new HashSet<>();
+	protected Set<Attribute<?>> definableFeatureAttributes = new HashSet<>();
+	protected Set<Attribute<?>> definableConstraintAttributes = new HashSet<>();
+
+	{
+		definableFeatureAttributes.add(Attributes.NAME);
+		definableFeatureAttributes.add(Attributes.DESCRIPTION);
+		definableFeatureAttributes.add(Attributes.HIDDEN);
+		definableFeatureAttributes.add(Attributes.ABSTRACT);
+		definableConstraintAttributes.add(Attributes.DESCRIPTION);
+		definableAttributes.add(Attributes.NAME);
+		definableAttributes.add(Attributes.DESCRIPTION);
 	}
 
-	public FeatureModel() {
-		this(DEFAULT_IDENTIFIER_FACTORY_SUPPLIER.get());
-	}
-
-	public void refreshElementCache() {
-		elementCache.clear();
-		Stream.concat(super.getFeatures().stream(), constraints.stream())
-				.forEach(element -> elementCache.put(element.getIdentifier(), element));
-	}
-
-	public void refreshFeatureCache() {
-		featureCache.clear();
-		featureCache.addAll(super.getFeatures());
-	}
-
-	@Override
-	public Optional<Feature> getFeature(Identifier<?> identifier) {
-		Objects.requireNonNull(identifier);
-		Element element = elementCache.get(identifier);
-		if (!(element instanceof Feature))
-			return Optional.empty();
-		return Optional.of((Feature) element);
+	public FeatureModel(Identifier<?> identifier) {
+		super(identifier);
+		final Feature root = new Feature(this);
+		featureModelTree = new FeatureModelTree(this);
+		featureTree = root.getFeatureTree();
 	}
 
 	@Override
-	public void addFeatureBelow(Feature newFeature, Feature parentFeature, int index) {
-		super.addFeatureBelow(newFeature, parentFeature, index);
-		featureCache.add(newFeature);
-		elementCache.put(newFeature.getIdentifier(), newFeature);
+	public FeatureModelTree getFeatureModelTree() {
+		return featureModelTree;
 	}
 
 	@Override
-	public void removeFeature(Feature feature) {
-		super.removeFeature(feature);
-		featureCache.remove(feature);
-		elementCache.remove(feature.getIdentifier());
+	public FeatureTree getFeatureTree() {
+		return featureTree;
 	}
 
 	@Override
-	public Optional<Constraint> getConstraint(Identifier<?> identifier) {
-		Objects.requireNonNull(identifier);
-		Element element = elementCache.get(identifier);
-		if (!(element instanceof Constraint))
-			return Optional.empty();
-		return Optional.of((Constraint) element);
+	public List<Constraint> getConstraints() {
+		return Collections.unmodifiableList(constraints);
 	}
 
 	@Override
-	public void setConstraint(int index, Constraint constraint) {
-		elementCache.remove(constraints.get(index).getIdentifier());
-		super.setConstraint(index, constraint);
-		elementCache.put(constraint.getIdentifier(), constraint);
+	public FeatureOrder getFeatureOrder() {
+		return featureOrder;
 	}
 
 	@Override
-	public void addConstraint(Constraint newConstraint, int index) {
-		super.addConstraint(newConstraint, index);
-		elementCache.put(newConstraint.getIdentifier(), newConstraint);
+	public void setFeatureOrder(FeatureOrder featureOrder) {
+		this.featureOrder = featureOrder;
 	}
 
 	@Override
-	public void removeConstraint(Constraint constraint) {
-		super.removeConstraint(constraint);
-		elementCache.remove(constraint.getIdentifier());
+	public Map<Identifier<?>, Element> getElementCache() {
+		return elementCache;
 	}
 
 	@Override
-	public Constraint removeConstraint(int index) {
-		Constraint constraint = super.removeConstraint(index);
-		elementCache.remove(constraint.getIdentifier());
-		return constraint;
+	public Set<Feature> getFeatureCache() {
+		return featureCache;
+	}
+
+	@Override
+	public Set<FeatureModel> getFeatureModelCache() {
+		return featureModelCache;
+	}
+
+	public Set<Attribute<?>> getDefinableFeatureAttributes() {
+		return definableFeatureAttributes;
+	}
+
+	public void setDefinableFeatureAttributes(Set<Attribute<?>> definableFeatureAttributes) {
+		this.definableFeatureAttributes = definableFeatureAttributes;
+	}
+
+	public Set<Attribute<?>> getDefinableConstraintAttributes() {
+		return definableConstraintAttributes;
+	}
+
+	public void setDefinableConstraintAttributes(Set<Attribute<?>> definableConstraintAttributes) {
+		this.definableConstraintAttributes = definableConstraintAttributes;
+	}
+
+	@Override
+	public Set<Attribute<?>> getDefinableAttributes() {
+		return definableAttributes;
+	}
+
+	public void setDefinableAttributes(Set<Attribute<?>> definableAttributes) {
+		this.definableAttributes = definableAttributes;
+	}
+
+	public String getName() {
+		return getAttributeValue(Attributes.NAME);
+	}
+
+	public void setName(String name) {
+		setAttributeValue(Attributes.NAME, name);
+	}
+
+	public Optional<String> getDescription() {
+		return getAttributeValue(Attributes.DESCRIPTION);
+	}
+
+	public void setDescription(String description) {
+		setAttributeValue(Attributes.DESCRIPTION, description);
+	}
+
+	// todo
+	@Override
+	public int hashCode() {
+		return super.hashCode();
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		return super.equals(obj);
+	}
+
+	@Override
+	public FeatureModel clone() {
+		throw new RuntimeException();
 	}
 }
