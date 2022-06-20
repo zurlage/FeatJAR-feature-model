@@ -106,7 +106,7 @@ public class FeatureTree extends RootedTree<FeatureTree> {
 
 	public Set<Constraint> getRelevantConstraints() {
 		refreshContainingConstraints();
-		return Collections.unmodifiableSet(containingConstraintsCache);
+		return containingConstraintsCache;
 	}
 
 	public void refreshContainingConstraints() {

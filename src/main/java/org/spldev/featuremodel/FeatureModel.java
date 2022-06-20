@@ -45,7 +45,7 @@ public class FeatureModel extends Element implements FeatureTreeMixin, Constrain
 
 	@Override
 	public List<Constraint> getConstraints() {
-		return Collections.unmodifiableList(constraints);
+		return constraints;
 	}
 
 	@Override
