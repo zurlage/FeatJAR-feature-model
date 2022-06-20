@@ -1,7 +1,9 @@
 package org.spldev.featuremodel.mixin;
 
 import org.spldev.featuremodel.Constraint;
+import org.spldev.featuremodel.FeatureModel;
 import org.spldev.featuremodel.Identifier;
+import org.spldev.formula.structure.Formula;
 import org.spldev.util.data.Result;
 
 import java.util.List;
@@ -33,53 +35,57 @@ public interface ConstraintMixin {
         return getConstraints().size();
     }
 
-    default void setConstraint(int index, Constraint constraint) {
-        Objects.requireNonNull(constraint);
-        if (hasConstraint(constraint)) {
-            throw new IllegalArgumentException();
+    interface Mutator {
+        FeatureModel getFeatureModel();
+
+        default void setConstraint(int index, Constraint constraint) {
+            Objects.requireNonNull(constraint);
+            if (getFeatureModel().hasConstraint(constraint)) {
+                throw new IllegalArgumentException();
+            }
+            getFeatureModel().getConstraints().set(index, constraint);
         }
-        getConstraints().set(index, constraint);
-    }
 
-    default void setConstraints(Iterable<Constraint> constraints) {
-        Objects.requireNonNull(constraints);
-        this.getConstraints().clear();
-        constraints.forEach(this::addConstraint);
-    }
-
-    default void addConstraint(Constraint newConstraint, int index) {
-        Objects.requireNonNull(newConstraint);
-        if (hasConstraint(newConstraint)) {
-            throw new IllegalArgumentException();
+        default void setConstraints(Iterable<Constraint> constraints) {
+            Objects.requireNonNull(constraints);
+            getFeatureModel().getConstraints().clear();
+            constraints.forEach(this::addConstraint);
         }
-        getConstraints().add(index, newConstraint);
-    }
 
-    default void addConstraint(Constraint newConstraint) {
-        addConstraint(newConstraint, getConstraints().size());
-    }
-
-//    default Constraint createConstraint(Formula formula) {
-//        Constraint newConstraint = new Constraint(identifierFactory.get(), this, formula);
-//        addConstraint(newConstraint);
-//        return newConstraint;
-//    }
-//
-//    default Constraint createConstraint(Formula formula, int index) {
-//        Constraint newConstraint = new Constraint(identifierFactory.get(), this, formula);
-//        addConstraint(newConstraint, index);
-//        return newConstraint;
-//    }
-
-    default void removeConstraint(Constraint constraint) {
-        Objects.requireNonNull(constraint);
-        if (!hasConstraint(constraint)) {
-            throw new IllegalArgumentException();
+        default void addConstraint(Constraint newConstraint, int index) {
+            Objects.requireNonNull(newConstraint);
+            if (getFeatureModel().hasConstraint(newConstraint)) {
+                throw new IllegalArgumentException();
+            }
+            getFeatureModel().getConstraints().add(index, newConstraint);
         }
-        getConstraints().remove(constraint);
-    }
 
-    default Constraint removeConstraint(int index) {
-        return getConstraints().remove(index);
+        default void addConstraint(Constraint newConstraint) {
+            addConstraint(newConstraint, getFeatureModel().getConstraints().size());
+        }
+
+        default Constraint createConstraint(Formula formula) {
+            Constraint newConstraint = new Constraint(getFeatureModel(), formula);
+            addConstraint(newConstraint);
+            return newConstraint;
+        }
+
+        default Constraint createConstraint(Formula formula, int index) {
+            Constraint newConstraint = new Constraint(getFeatureModel(), formula);
+            addConstraint(newConstraint, index);
+            return newConstraint;
+        }
+
+        default void removeConstraint(Constraint constraint) {
+            Objects.requireNonNull(constraint);
+            if (!getFeatureModel().hasConstraint(constraint)) {
+                throw new IllegalArgumentException();
+            }
+            getFeatureModel().getConstraints().remove(constraint);
+        }
+
+        default Constraint removeConstraint(int index) {
+            return getFeatureModel().getConstraints().remove(index);
+        }
     }
 }

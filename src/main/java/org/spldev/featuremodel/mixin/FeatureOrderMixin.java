@@ -8,9 +8,11 @@ import java.util.List;
 public interface FeatureOrderMixin extends FeatureTreeMixin {
     FeatureOrder getFeatureOrder();
 
-    void setFeatureOrder(FeatureOrder featureOrder);
-
     default List<Feature> getOrderedFeatures() {
         return getFeatureOrder().apply(this);
+    }
+
+    interface Mutator {
+        void setFeatureOrder(FeatureOrder featureOrder);
     }
 }

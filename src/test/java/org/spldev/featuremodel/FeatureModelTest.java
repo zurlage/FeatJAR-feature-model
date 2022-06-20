@@ -32,11 +32,11 @@ import static org.junit.jupiter.api.Assertions.assertSame;
 public class FeatureModelTest {
 	@Test
 	public void test() {
-		final FeatureModel fm = new FeatureModel(Identifier.newCounter());
-		final Feature feature = fm.createFeatureBelow(fm.getRootFeature());
+		final FeatureModel featureModel = new FeatureModel(Identifier.newCounter());
+		final Feature feature = featureModel.mutateReturn(mutator -> mutator.createFeatureBelow(featureModel.getRootFeature()));
 		assertSame(feature, feature.getFeatureTree().getFeature());
-		assertSame(fm.getRootFeature(), feature.getFeatureTree().getParent().get().getFeature());
-		assertSame(feature.getFeatureTree().getParent().get(), fm.getRootFeature().getFeatureTree());
-		assertSame(fm.getFeature(feature.getIdentifier()).get(), feature);
+		assertSame(featureModel.getRootFeature(), feature.getFeatureTree().getParent().get().getFeature());
+		assertSame(feature.getFeatureTree().getParent().get(), featureModel.getRootFeature().getFeatureTree());
+		assertSame(featureModel.getFeature(feature.getIdentifier()).get(), feature);
 	}
 }

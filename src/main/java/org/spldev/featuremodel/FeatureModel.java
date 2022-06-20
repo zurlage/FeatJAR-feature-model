@@ -3,6 +3,8 @@ package org.spldev.featuremodel;
 import org.spldev.featuremodel.mixin.*;
 
 import java.util.*;
+import java.util.function.Consumer;
+import java.util.function.Function;
 
 /**
  * Feature model
@@ -21,6 +23,7 @@ public class FeatureModel extends Element implements FeatureTreeMixin, Constrain
 	protected final Map<Identifier<?>, Element> elementCache = Collections.synchronizedMap(new LinkedHashMap<>());
 	protected final Set<Feature> featureCache = Collections.synchronizedSet(new HashSet<>());
 	protected final Set<FeatureModel> featureModelCache = Collections.synchronizedSet(new HashSet<>());
+	protected final Mutator mutator = new Mutator(this);
 
 	public FeatureModel(Identifier<?> identifier) {
 		super(identifier);
@@ -51,11 +54,6 @@ public class FeatureModel extends Element implements FeatureTreeMixin, Constrain
 	}
 
 	@Override
-	public void setFeatureOrder(FeatureOrder featureOrder) {
-		this.featureOrder = featureOrder;
-	}
-
-	@Override
 	public Map<Identifier<?>, Element> getElementCache() {
 		return elementCache;
 	}
@@ -68,6 +66,23 @@ public class FeatureModel extends Element implements FeatureTreeMixin, Constrain
 	@Override
 	public Set<FeatureModel> getFeatureModelCache() {
 		return featureModelCache;
+	}
+
+	public FeatureModel mutate(Consumer<Mutator> mutatorConsumer) {
+		mutatorConsumer.accept(mutator);
+		return this;
+	}
+
+	public <T> T mutateReturn(Function<Mutator, T> mutatorFunction) {
+		return mutatorFunction.apply(mutator);
+	}
+
+	public void unsafeMutate(Runnable r) {
+		try {
+			r.run();
+		} finally {
+			invalidateCaches();
+		}
 	}
 
 	// todo
@@ -85,4 +100,23 @@ public class FeatureModel extends Element implements FeatureTreeMixin, Constrain
 	public FeatureModel clone() {
 		throw new RuntimeException();
 	}
+
+	public static class Mutator implements FeatureTreeMixin.Mutator, ConstraintMixin.Mutator, FeatureOrderMixin.Mutator, AttributeMixin.Mutator {
+		protected final FeatureModel featureModel;
+
+		public Mutator(FeatureModel featureModel) {
+			this.featureModel = featureModel;
+		}
+
+		@Override
+		public FeatureModel getFeatureModel() {
+			return featureModel;
+		}
+
+		@Override
+		public void setFeatureOrder(FeatureOrder featureOrder) {
+			featureModel.featureOrder = featureOrder;
+		}
+	}
+
 }

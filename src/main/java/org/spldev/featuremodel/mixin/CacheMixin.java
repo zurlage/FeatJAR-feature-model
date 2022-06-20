@@ -61,14 +61,6 @@ public interface CacheMixin extends FeatureTreeMixin, ConstraintMixin, FeatureMo
 		getFeatureModelCache().addAll(featureModels);
 	}
 
-	default void manipulateUnsafe(Runnable r) {
-		try {
-			r.run();
-		} finally {
-			invalidateCaches();
-		}
-	}
-
 	@Override
 	default Set<Feature> getFeatures() {
 		return getFeatureCache();
@@ -84,20 +76,6 @@ public interface CacheMixin extends FeatureTreeMixin, ConstraintMixin, FeatureMo
 	}
 
 	@Override
-	default void addFeatureBelow(Feature newFeature, Feature parentFeature, int index) {
-		FeatureTreeMixin.super.addFeatureBelow(newFeature, parentFeature, index);
-		getFeatureCache().add(newFeature);
-		getElementCache().put(newFeature.getIdentifier(), newFeature);
-	}
-
-	@Override
-	default void removeFeature(Feature feature) {
-		FeatureTreeMixin.super.removeFeature(feature);
-		getFeatureCache().remove(feature);
-		getElementCache().remove(feature.getIdentifier());
-	}
-
-	@Override
 	default Optional<Constraint> getConstraint(Identifier<?> identifier) {
 		Objects.requireNonNull(identifier);
 		Element element = getElementCache().get(identifier);
@@ -107,33 +85,53 @@ public interface CacheMixin extends FeatureTreeMixin, ConstraintMixin, FeatureMo
 	}
 
 	@Override
-	default void setConstraint(int index, Constraint constraint) {
-		getElementCache().remove(getConstraints().get(index).getIdentifier());
-		ConstraintMixin.super.setConstraint(index, constraint);
-		getElementCache().put(constraint.getIdentifier(), constraint);
-	}
-
-	@Override
-	default void addConstraint(Constraint newConstraint, int index) {
-		ConstraintMixin.super.addConstraint(newConstraint, index);
-		getElementCache().put(newConstraint.getIdentifier(), newConstraint);
-	}
-
-	@Override
-	default void removeConstraint(Constraint constraint) {
-		ConstraintMixin.super.removeConstraint(constraint);
-		getElementCache().remove(constraint.getIdentifier());
-	}
-
-	@Override
-	default Constraint removeConstraint(int index) {
-		Constraint constraint = ConstraintMixin.super.removeConstraint(index);
-		getElementCache().remove(constraint.getIdentifier());
-		return constraint;
-	}
-
-	@Override
 	default Set<FeatureModel> getFeatureModels() {
 		return Trees.parallelStream(getFeatureModelTree()).map(FeatureModelTree::getFeatureModel).collect(Collectors.toSet());
+	}
+
+	// todo: getfeaturemodel()
+
+	interface Mutator extends FeatureTreeMixin.Mutator, ConstraintMixin.Mutator {
+		FeatureModel getFeatureModel();
+
+		@Override
+		default void addFeatureBelow(Feature newFeature, Feature parentFeature, int index) {
+			FeatureTreeMixin.Mutator.super.addFeatureBelow(newFeature, parentFeature, index);
+			getFeatureModel().getFeatureCache().add(newFeature);
+			getFeatureModel().getElementCache().put(newFeature.getIdentifier(), newFeature);
+		}
+
+		@Override
+		default void removeFeature(Feature feature) {
+			FeatureTreeMixin.Mutator.super.removeFeature(feature);
+			getFeatureModel().getFeatureCache().remove(feature);
+			getFeatureModel().getElementCache().remove(feature.getIdentifier());
+		}
+
+		@Override
+		default void setConstraint(int index, Constraint constraint) {
+			getFeatureModel().getElementCache().remove(getFeatureModel().getConstraints().get(index).getIdentifier());
+			ConstraintMixin.Mutator.super.setConstraint(index, constraint);
+			getFeatureModel().getElementCache().put(constraint.getIdentifier(), constraint);
+		}
+
+		@Override
+		default void addConstraint(Constraint newConstraint, int index) {
+			ConstraintMixin.Mutator.super.addConstraint(newConstraint, index);
+			getFeatureModel().getElementCache().put(newConstraint.getIdentifier(), newConstraint);
+		}
+
+		@Override
+		default void removeConstraint(Constraint constraint) {
+			ConstraintMixin.Mutator.super.removeConstraint(constraint);
+			getFeatureModel().getElementCache().remove(constraint.getIdentifier());
+		}
+
+		@Override
+		default Constraint removeConstraint(int index) {
+			Constraint constraint = ConstraintMixin.Mutator.super.removeConstraint(index);
+			getFeatureModel().getElementCache().remove(constraint.getIdentifier());
+			return constraint;
+		}
 	}
 }

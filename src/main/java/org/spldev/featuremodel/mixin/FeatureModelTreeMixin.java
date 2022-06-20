@@ -22,10 +22,6 @@ public interface FeatureModelTreeMixin {
         return getFeatureModels().size();
     }
 
-    default FeatureModel getRootFeatureModel() {
-        return getFeatureModelTree().getRoot().getFeatureModel();
-    }
-
     default Optional<FeatureModel> getFeatureModel(Identifier<?> identifier) {
         Objects.requireNonNull(identifier);
         return getFeatureModels().stream().filter(featureModel -> featureModel.getIdentifier().equals(identifier)).findFirst();
