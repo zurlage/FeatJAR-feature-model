@@ -51,6 +51,15 @@ public class Constraint extends Element implements Mutable<Constraint, Constrain
 		this.mutator = mutator;
 	}
 
+	@Override
+	public void invalidate() {
+	}
+
+	@Override
+	public String toString() {
+		return String.format("Constraint{formula=%s}", formula);
+	}
+
 	public class Mutator implements Mutable.Mutator<Constraint>, CommonAttributesMixin.Mutator<Constraint> {
 		@Override
 		public Constraint getMutable() {

@@ -13,7 +13,7 @@ import java.util.*;
  *
  * @author Elias Kuiter
  */
-public class FeatureModel extends Element implements FeatureModelFeatureTreeMixin, FeatureModelConstraintMixin, FeatureModelFeatureOrderMixin, CommonAttributesMixin, Mutable<FeatureModel, FeatureModel.Mutator>, Cloneable { // CacheMixin
+public class FeatureModel extends Element implements FeatureModelFeatureTreeMixin, FeatureModelConstraintMixin, FeatureModelFeatureOrderMixin, CommonAttributesMixin, FeatureModelCacheMixin, Mutable<FeatureModel, FeatureModel.Mutator>, Cloneable { // CacheMixin
 	protected final FeatureTree featureTree;
 	protected final List<Constraint> constraints = Collections.synchronizedList(new ArrayList<>());
 	protected FeatureOrder featureOrder = FeatureOrder.ofPreOrder();
@@ -26,7 +26,7 @@ public class FeatureModel extends Element implements FeatureModelFeatureTreeMixi
 		super(identifier);
 		final Feature root = new Feature(this);
 		featureTree = root.getFeatureTree();
-		//invalidateCaches();
+		invalidate();
 	}
 
 	@Override
@@ -44,20 +44,15 @@ public class FeatureModel extends Element implements FeatureModelFeatureTreeMixi
 		return featureOrder;
 	}
 
-//	@Override
-//	public Map<Identifier<?>, Element> getElementCache() {
-//		return elementCache;
-//	}
-//
-//	@Override
-//	public Set<Feature> getFeatureCache() {
-//		return featureCache;
-//	}
-//
-//	@Override
-//	public Set<FeatureModel> getFeatureModelCache() {
-//		return featureModelCache;
-//	}
+	@Override
+	public Map<Identifier<?>, Element> getElementCache() {
+		return elementCache;
+	}
+
+	@Override
+	public Set<Feature> getFeatureCache() {
+		return featureCache;
+	}
 
 	@Override
 	public Mutator getMutator() {
@@ -69,23 +64,22 @@ public class FeatureModel extends Element implements FeatureModelFeatureTreeMixi
 		this.mutator = mutator;
 	}
 
-	// todo
 	@Override
-	public int hashCode() {
-		return super.hashCode();
+	public void invalidate() {
+		FeatureModelCacheMixin.super.invalidate();
 	}
 
 	@Override
-	public boolean equals(Object obj) {
-		return super.equals(obj);
+	public String toString() {
+		return String.format("FeatureModel{features=%s, constraints=%s}", getFeatures(), constraints);
 	}
 
 	@Override
-	public FeatureModel clone() {
-		throw new RuntimeException();
+	protected Object clone() throws CloneNotSupportedException {
+		throw new CloneNotSupportedException(); // todo
 	}
 
-	public class Mutator implements Mutable.Mutator<FeatureModel>, FeatureModelFeatureTreeMixin.Mutator, FeatureModelConstraintMixin.Mutator, FeatureModelFeatureOrderMixin.Mutator, CommonAttributesMixin.Mutator<FeatureModel> {
+	public class Mutator implements Mutable.Mutator<FeatureModel>, FeatureModelFeatureTreeMixin.Mutator, FeatureModelConstraintMixin.Mutator, FeatureModelFeatureOrderMixin.Mutator, CommonAttributesMixin.Mutator<FeatureModel>, FeatureModelCacheMixin.Mutator {
 		@Override
 		public FeatureModel getMutable() {
 			return FeatureModel.this;

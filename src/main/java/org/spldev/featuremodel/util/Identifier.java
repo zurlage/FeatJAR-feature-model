@@ -33,6 +33,19 @@ public class Identifier<T> extends org.spldev.util.data.Identifier<T> {
         return id.toString();
     }
 
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Identifier<?> that = (Identifier<?>) o;
+        return id.equals(that.id);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id);
+    }
+
     public abstract static class Factory<T> implements org.spldev.util.data.Factory<Identifier<T>> {
 
         abstract public Identifier<T> fromString(String identifierString);

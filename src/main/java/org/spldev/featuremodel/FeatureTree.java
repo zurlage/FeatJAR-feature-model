@@ -34,8 +34,6 @@ public class FeatureTree extends RootedTree<FeatureTree> implements Mutable<Feat
 	 */
 	protected long groupMaximum = Long.MAX_VALUE;
 
-	protected Set<Constraint> containingConstraintsCache = new HashSet<>();
-
 	protected Mutator mutator = null;
 
 	public FeatureTree(Feature feature) {
@@ -72,12 +70,7 @@ public class FeatureTree extends RootedTree<FeatureTree> implements Mutable<Feat
 	}
 
 	public Set<Constraint> getContainingConstraints() {
-		refreshContainingConstraints();
-		return containingConstraintsCache;
-	}
-
-	public void refreshContainingConstraints() {
-		containingConstraintsCache = feature.getFeatureModel().getConstraints().stream()
+		return feature.getFeatureModel().getConstraints().stream()
 				.filter(constraint -> constraint.getContainedFeatures().stream()
 						.anyMatch(feature::equals)).collect(Collectors.toSet());
 	}
@@ -96,6 +89,12 @@ public class FeatureTree extends RootedTree<FeatureTree> implements Mutable<Feat
 	public void setMutator(Mutator mutator) {
 		this.mutator = mutator;
 	}
+
+	@Override
+	public void invalidate() {
+	}
+
+	// todo hashcode, equals, tostring, clone
 
 	public class Mutator implements Mutable.Mutator<FeatureTree> {
 		@Override

@@ -58,6 +58,15 @@ public class Feature extends Element implements CommonAttributesMixin, Mutable<F
 		this.mutator = mutator;
 	}
 
+	@Override
+	public void invalidate() {
+	}
+
+	@Override
+	public String toString() {
+		return String.format("Feature{name=%s}", getName());
+	}
+
 	public class Mutator implements Mutable.Mutator<Feature>, CommonAttributesMixin.Mutator<Feature> {
 		@Override
 		public Feature getMutable() {

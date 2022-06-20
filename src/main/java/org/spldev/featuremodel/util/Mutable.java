@@ -1,7 +1,6 @@
 package org.spldev.featuremodel.util;
 
 import java.util.function.Consumer;
-import java.util.function.Function;
 
 /**
  * An object that can be mutated (i.e., changed) with a {@link Mutator}.
@@ -20,6 +19,8 @@ public interface Mutable<T, U extends Mutable.Mutator<T>> {
 
     void setMutator(U mutator);
 
+    void invalidate();
+
     default U mutate() {
         return getMutator();
     }
@@ -29,15 +30,12 @@ public interface Mutable<T, U extends Mutable.Mutator<T>> {
         return getMutator().getMutable();
     }
 
-    default <V> V mutateAndReturn(Function<U, V> mutatorFunction) {
-        return mutatorFunction.apply(getMutator());
-    }
-
-    default void mutateUnsafely(Runnable r) {
+    default void mutateInternal(Runnable r) {
         try {
             r.run();
         } finally {
-            //invalidateCaches(); //todo
+            invalidate();
         }
     }
+
 }

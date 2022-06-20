@@ -31,4 +31,17 @@ public abstract class Element implements Identifiable, Attributable {
 	public Map<Attribute<?>, Object> getAttributeToValueMap() {
 		return attributeToValueMap;
 	}
+
+	@Override
+	public boolean equals(Object o) {
+		if (this == o) return true;
+		if (o == null || getClass() != o.getClass()) return false;
+		Constraint that = (Constraint) o;
+		return getIdentifier().equals(that.getIdentifier());
+	}
+
+	@Override
+	public int hashCode() {
+		return Objects.hash(getIdentifier());
+	}
 }

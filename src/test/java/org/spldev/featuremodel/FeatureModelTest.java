@@ -2,6 +2,7 @@ package org.spldev.featuremodel;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.spldev.featuremodel.mixins.FeatureModelFeatureTreeMixin;
 import org.spldev.featuremodel.util.Attribute;
 import org.spldev.featuremodel.util.Identifier;
 
@@ -61,7 +62,6 @@ public class FeatureModelTest {
 		FeatureModel.Mutator mutator = featureModel.new Mutator();
 		featureModel.setMutator(mutator);
 		assertSame(mutator, featureModel.getMutator());
-		assertSame(featureModel, featureModel.mutateAndReturn(m -> featureModel));
 		// todo: mutate unsafely
 	}
 
@@ -78,9 +78,22 @@ public class FeatureModelTest {
 	}
 
 	@Test
+	public void featureModelCacheMixin() {
+		featureModel.mutate().createFeatureBelow(featureModel.getRootFeature());
+		assertEquals(2, featureModel.getFeatureCache().size());
+		featureModel.mutate().createFeatureBelow(featureModel.getRootFeature());
+		assertEquals(3, featureModel.getFeatureCache().size());
+		FeatureModelFeatureTreeMixin.Mutator uncachedMutator = () -> featureModel;
+		uncachedMutator.createFeatureBelow(featureModel.getRootFeature());
+		assertEquals(3, featureModel.getFeatureCache().size());
+		featureModel.mutateInternal(() -> uncachedMutator.createFeatureBelow(featureModel.getRootFeature()));
+		assertEquals(5, featureModel.getFeatureCache().size());
+	}
+
+	@Test
 	public void featureTree() {
 		final FeatureModel featureModel = new FeatureModel(Identifier.newCounter());
-		final Feature feature = featureModel.mutateAndReturn(mutator -> mutator.createFeatureBelow(featureModel.getRootFeature()));
+		final Feature feature = featureModel.mutate().createFeatureBelow(featureModel.getRootFeature());
 		assertSame(feature, feature.getFeatureTree().getFeature());
 		assertSame(featureModel.getRootFeature(), feature.getFeatureTree().getParent().get().getFeature());
 		assertSame(feature.getFeatureTree().getParent().get(), featureModel.getRootFeature().getFeatureTree());

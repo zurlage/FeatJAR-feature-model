@@ -46,6 +46,11 @@ public class Attribute<T> implements Function<Map<Attribute<?>, Object>, Optiona
     }
 
     @Override
+    public String toString() {
+        return String.format("Attribute{namespace='%s', name='%s'}", namespace, name);
+    }
+
+    @Override
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
