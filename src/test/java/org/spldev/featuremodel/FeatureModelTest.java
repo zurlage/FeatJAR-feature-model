@@ -33,7 +33,7 @@ public class FeatureModelTest {
 	@Test
 	public void test() {
 		final FeatureModel featureModel = new FeatureModel(Identifier.newCounter());
-		final Feature feature = featureModel.mutateReturn(mutator -> mutator.createFeatureBelow(featureModel.getRootFeature()));
+		final Feature feature = featureModel.mutateAndReturn(mutator -> mutator.createFeatureBelow(featureModel.getRootFeature()));
 		assertSame(feature, feature.getFeatureTree().getFeature());
 		assertSame(featureModel.getRootFeature(), feature.getFeatureTree().getParent().get().getFeature());
 		assertSame(feature.getFeatureTree().getParent().get(), featureModel.getRootFeature().getFeatureTree());

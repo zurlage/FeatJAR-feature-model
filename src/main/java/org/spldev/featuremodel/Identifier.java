@@ -17,6 +17,10 @@ public class Identifier<T> {
         return factory;
     }
 
+    public Identifier<?> getNewIdentifier() {
+        return factory.get();
+    }
+
     @Override
     public String toString() {
         return id.toString();

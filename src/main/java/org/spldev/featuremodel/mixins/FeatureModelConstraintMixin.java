@@ -1,4 +1,4 @@
-package org.spldev.featuremodel.mixin;
+package org.spldev.featuremodel.mixins;
 
 import org.spldev.featuremodel.Constraint;
 import org.spldev.featuremodel.FeatureModel;
@@ -10,7 +10,7 @@ import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 
-public interface ConstraintMixin {
+public interface FeatureModelConstraintMixin {
     List<Constraint> getConstraints();
 
     default Optional<Constraint> getConstraint(Identifier<?> identifier) {
@@ -35,57 +35,55 @@ public interface ConstraintMixin {
         return getConstraints().size();
     }
 
-    interface Mutator {
-        FeatureModel getFeatureModel();
-
+    interface Mutator extends MutableMixin.Mutator<FeatureModel> {
         default void setConstraint(int index, Constraint constraint) {
             Objects.requireNonNull(constraint);
-            if (getFeatureModel().hasConstraint(constraint)) {
+            if (getMutable().hasConstraint(constraint)) {
                 throw new IllegalArgumentException();
             }
-            getFeatureModel().getConstraints().set(index, constraint);
+            getMutable().getConstraints().set(index, constraint);
         }
 
         default void setConstraints(Iterable<Constraint> constraints) {
             Objects.requireNonNull(constraints);
-            getFeatureModel().getConstraints().clear();
+            getMutable().getConstraints().clear();
             constraints.forEach(this::addConstraint);
         }
 
         default void addConstraint(Constraint newConstraint, int index) {
             Objects.requireNonNull(newConstraint);
-            if (getFeatureModel().hasConstraint(newConstraint)) {
+            if (getMutable().hasConstraint(newConstraint)) {
                 throw new IllegalArgumentException();
             }
-            getFeatureModel().getConstraints().add(index, newConstraint);
+            getMutable().getConstraints().add(index, newConstraint);
         }
 
         default void addConstraint(Constraint newConstraint) {
-            addConstraint(newConstraint, getFeatureModel().getConstraints().size());
+            addConstraint(newConstraint, getMutable().getConstraints().size());
         }
 
         default Constraint createConstraint(Formula formula) {
-            Constraint newConstraint = new Constraint(getFeatureModel(), formula);
+            Constraint newConstraint = new Constraint(getMutable(), formula);
             addConstraint(newConstraint);
             return newConstraint;
         }
 
         default Constraint createConstraint(Formula formula, int index) {
-            Constraint newConstraint = new Constraint(getFeatureModel(), formula);
+            Constraint newConstraint = new Constraint(getMutable(), formula);
             addConstraint(newConstraint, index);
             return newConstraint;
         }
 
         default void removeConstraint(Constraint constraint) {
             Objects.requireNonNull(constraint);
-            if (!getFeatureModel().hasConstraint(constraint)) {
+            if (!getMutable().hasConstraint(constraint)) {
                 throw new IllegalArgumentException();
             }
-            getFeatureModel().getConstraints().remove(constraint);
+            getMutable().getConstraints().remove(constraint);
         }
 
         default Constraint removeConstraint(int index) {
-            return getFeatureModel().getConstraints().remove(index);
+            return getMutable().getConstraints().remove(index);
         }
     }
 }

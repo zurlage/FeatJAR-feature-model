@@ -1,5 +1,8 @@
 package org.spldev.featuremodel;
 
+import org.spldev.featuremodel.mixins.CommonAttributesMixin;
+import org.spldev.featuremodel.mixins.MutableMixin;
+
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
@@ -21,11 +24,13 @@ public interface Attributable {
 		return attribute.applyWithDefaultValue(getAttributeToValueMap(), this);
 	}
 
-	default <T> void setAttributeValue(Attribute<T> attribute, T value) {
-		getAttributeToValueMap().put(attribute, value);
-	}
+	interface Mutator<T extends Attributable> extends MutableMixin.Mutator<T> {
+		default <U> void setAttributeValue(Attribute<U> attribute, U value) {
+			getMutable().getAttributeToValueMap().put(attribute, value);
+		}
 
-	default <T> Object removeAttributeValue(Attribute<T> attribute) {
-		return getAttributeToValueMap().remove(attribute);
+		default <U> Object removeAttributeValue(Attribute<U> attribute) {
+			return getMutable().getAttributeToValueMap().remove(attribute);
+		}
 	}
 }

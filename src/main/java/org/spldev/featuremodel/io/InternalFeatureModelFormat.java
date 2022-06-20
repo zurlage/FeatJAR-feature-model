@@ -94,7 +94,7 @@ public class InternalFeatureModelFormat implements Format<FeatureModel> {
 		if (feature.getFeature().isAbstract()) {
 			sb.append("a ");
 		}
-		if (feature.isMandatory() && (feature.isRoot() || feature.getParent().get().isAnd())) {
+		if (feature.isMandatory() && (!feature.hasParent() || feature.getParent().get().isAnd())) {
 			sb.append("m ");
 		}
 		sb.append(feature.getFeature().getName());

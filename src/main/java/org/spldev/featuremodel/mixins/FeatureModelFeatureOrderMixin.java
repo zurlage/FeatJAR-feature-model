@@ -1,11 +1,11 @@
-package org.spldev.featuremodel.mixin;
+package org.spldev.featuremodel.mixins;
 
 import org.spldev.featuremodel.Feature;
 import org.spldev.featuremodel.FeatureOrder;
 
 import java.util.List;
 
-public interface FeatureOrderMixin extends FeatureTreeMixin {
+public interface FeatureModelFeatureOrderMixin extends FeatureModelFeatureTreeMixin {
     FeatureOrder getFeatureOrder();
 
     default List<Feature> getOrderedFeatures() {

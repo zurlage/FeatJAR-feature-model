@@ -1,10 +1,8 @@
 package org.spldev.featuremodel;
 
-import org.spldev.featuremodel.mixin.*;
+import org.spldev.featuremodel.mixins.*;
 
 import java.util.*;
-import java.util.function.Consumer;
-import java.util.function.Function;
 
 /**
  * Feature model
@@ -15,27 +13,20 @@ import java.util.function.Function;
  * @author Marcus Pinnecke
  * @author Elias Kuiter
  */
-public class FeatureModel extends Element implements FeatureTreeMixin, ConstraintMixin, FeatureModelTreeMixin, FeatureOrderMixin, AttributeMixin, CacheMixin, Cloneable {
-	protected final FeatureModelTree featureModelTree;
+public class FeatureModel extends Element implements FeatureModelFeatureTreeMixin, FeatureModelConstraintMixin, FeatureModelFeatureOrderMixin, CommonAttributesMixin, MutableMixin<FeatureModel, FeatureModel.Mutator>, Cloneable { // CacheMixin
 	protected final FeatureTree featureTree;
 	protected final List<Constraint> constraints = Collections.synchronizedList(new ArrayList<>());
 	protected FeatureOrder featureOrder = FeatureOrder.ofPreOrder();
 	protected final Map<Identifier<?>, Element> elementCache = Collections.synchronizedMap(new LinkedHashMap<>());
 	protected final Set<Feature> featureCache = Collections.synchronizedSet(new HashSet<>());
 	protected final Set<FeatureModel> featureModelCache = Collections.synchronizedSet(new HashSet<>());
-	protected final Mutator mutator = new Mutator(this);
+	protected Mutator mutator = null;
 
 	public FeatureModel(Identifier<?> identifier) {
 		super(identifier);
 		final Feature root = new Feature(this);
-		featureModelTree = new FeatureModelTree(this);
 		featureTree = root.getFeatureTree();
-		invalidateCaches();
-	}
-
-	@Override
-	public FeatureModelTree getFeatureModelTree() {
-		return featureModelTree;
+		//invalidateCaches();
 	}
 
 	@Override
@@ -53,36 +44,24 @@ public class FeatureModel extends Element implements FeatureTreeMixin, Constrain
 		return featureOrder;
 	}
 
-	@Override
-	public Map<Identifier<?>, Element> getElementCache() {
-		return elementCache;
-	}
+//	@Override
+//	public Map<Identifier<?>, Element> getElementCache() {
+//		return elementCache;
+//	}
+//
+//	@Override
+//	public Set<Feature> getFeatureCache() {
+//		return featureCache;
+//	}
+//
+//	@Override
+//	public Set<FeatureModel> getFeatureModelCache() {
+//		return featureModelCache;
+//	}
 
 	@Override
-	public Set<Feature> getFeatureCache() {
-		return featureCache;
-	}
-
-	@Override
-	public Set<FeatureModel> getFeatureModelCache() {
-		return featureModelCache;
-	}
-
-	public FeatureModel mutate(Consumer<Mutator> mutatorConsumer) {
-		mutatorConsumer.accept(mutator);
-		return this;
-	}
-
-	public <T> T mutateReturn(Function<Mutator, T> mutatorFunction) {
-		return mutatorFunction.apply(mutator);
-	}
-
-	public void unsafeMutate(Runnable r) {
-		try {
-			r.run();
-		} finally {
-			invalidateCaches();
-		}
+	public Mutator getMutator() {
+		return mutator == null ? (mutator = new Mutator()) : mutator;
 	}
 
 	// todo
@@ -101,22 +80,15 @@ public class FeatureModel extends Element implements FeatureTreeMixin, Constrain
 		throw new RuntimeException();
 	}
 
-	public static class Mutator implements FeatureTreeMixin.Mutator, ConstraintMixin.Mutator, FeatureOrderMixin.Mutator, AttributeMixin.Mutator {
-		protected final FeatureModel featureModel;
-
-		public Mutator(FeatureModel featureModel) {
-			this.featureModel = featureModel;
-		}
-
+	public class Mutator implements MutableMixin.Mutator<FeatureModel>, FeatureModelFeatureTreeMixin.Mutator, FeatureModelConstraintMixin.Mutator, FeatureModelFeatureOrderMixin.Mutator, CommonAttributesMixin.Mutator<FeatureModel> {
 		@Override
-		public FeatureModel getFeatureModel() {
-			return featureModel;
+		public FeatureModel getMutable() {
+			return FeatureModel.this;
 		}
 
 		@Override
 		public void setFeatureOrder(FeatureOrder featureOrder) {
-			featureModel.featureOrder = featureOrder;
+			FeatureModel.this.featureOrder = featureOrder;
 		}
 	}
-
 }

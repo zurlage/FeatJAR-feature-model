@@ -1,6 +1,6 @@
 package org.spldev.featuremodel;
 
-import org.spldev.featuremodel.mixin.FeatureTreeMixin;
+import org.spldev.featuremodel.mixins.FeatureModelFeatureTreeMixin;
 import org.spldev.util.tree.Trees;
 
 import java.util.Comparator;
@@ -14,7 +14,7 @@ import java.util.stream.Stream;
  *
  * @author Elias Kuiter
  */
-public interface FeatureOrder extends Function<FeatureTreeMixin, List<Feature>> {
+public interface FeatureOrder extends Function<FeatureModelFeatureTreeMixin, List<Feature>> {
     static FeatureOrder ofPreOrder() {
         return featureModel -> Trees.preOrderStream(featureModel.getFeatureTree())
                 .map(FeatureTree::getFeature)

@@ -1,7 +1,9 @@
 package org.spldev.featuremodel;
 
-import java.util.Optional;
-import java.util.Set;
+import org.spldev.featuremodel.mixins.CommonAttributesMixin;
+import org.spldev.featuremodel.mixins.MutableMixin;
+
+import java.util.Objects;
 
 /**
  * Feature
@@ -11,32 +13,24 @@ import java.util.Set;
  * @author Marcus Pinnecke
  * @author Elias Kuiter
  */
-public class Feature extends Element {
+public class Feature extends Element implements CommonAttributesMixin, MutableMixin<Feature, Feature.Mutator> {
+	protected final FeatureModel featureModel;
 	protected final FeatureTree featureTree;
+	protected Mutator mutator = null;
 
 	public Feature(FeatureModel featureModel) {
 		super(featureModel.getNewIdentifier());
-		featureTree = new FeatureTree(this, featureModel);
+		Objects.requireNonNull(featureModel);
+		this.featureModel = featureModel;
+		featureTree = new FeatureTree(this);
+	}
+
+	public FeatureModel getFeatureModel() {
+		return featureModel;
 	}
 
 	public FeatureTree getFeatureTree() {
 		return featureTree;
-	}
-
-	public String getName() {
-		return getAttributeValue(Attributes.NAME);
-	}
-
-	public void setName(String name) {
-		setAttributeValue(Attributes.NAME, name);
-	}
-
-	public Optional<String> getDescription() {
-		return getAttributeValue(Attributes.DESCRIPTION);
-	}
-
-	public void setDescription(String description) {
-		setAttributeValue(Attributes.DESCRIPTION, description);
 	}
 
 	public boolean isAbstract() {
@@ -47,10 +41,6 @@ public class Feature extends Element {
 		return !isAbstract();
 	}
 
-	public void setAbstract(boolean value) {
-		setAttributeValue(Attributes.ABSTRACT, value);
-	}
-
 	public boolean isHidden() {
 		return getAttributeValue(Attributes.HIDDEN);
 	}
@@ -59,7 +49,23 @@ public class Feature extends Element {
 		return !isHidden();
 	}
 
-	public void setHidden(boolean value) {
-		setAttributeValue(Attributes.HIDDEN, value);
+	@Override
+	public Mutator getMutator() {
+		return mutator == null ? (mutator = new Mutator()) : mutator;
+	}
+
+	public class Mutator implements MutableMixin.Mutator<Feature>, CommonAttributesMixin.Mutator<Feature> {
+		@Override
+		public Feature getMutable() {
+			return Feature.this;
+		}
+
+		public void setAbstract(boolean value) {
+			setAttributeValue(Attributes.ABSTRACT, value);
+		}
+
+		public void setHidden(boolean value) {
+			setAttributeValue(Attributes.HIDDEN, value);
+		}
 	}
 }

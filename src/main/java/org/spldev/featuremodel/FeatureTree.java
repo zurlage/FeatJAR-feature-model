@@ -19,8 +19,6 @@ public class FeatureTree extends RootedTree<FeatureTree> {
 	 */
 	protected final Feature feature;
 
-	protected final FeatureModel featureModel;
-
 	/**
 	 * Whether this tree's feature is mandatory or optional.
 	 */
@@ -38,19 +36,13 @@ public class FeatureTree extends RootedTree<FeatureTree> {
 
 	protected Set<Constraint> containingConstraintsCache = new HashSet<>();
 
-	public FeatureTree(Feature feature, FeatureModel featureModel) {
+	public FeatureTree(Feature feature) {
 		Objects.requireNonNull(feature);
-		Objects.requireNonNull(featureModel);
 		this.feature = feature;
-		this.featureModel = featureModel;
 	}
 
 	public Feature getFeature() {
 		return feature;
-	}
-
-	public FeatureModel getFeatureModel() {
-		return featureModel;
 	}
 
 	public boolean isMandatory() {
@@ -104,13 +96,13 @@ public class FeatureTree extends RootedTree<FeatureTree> {
 		groupMaximum = Long.MAX_VALUE;
 	}
 
-	public Set<Constraint> getRelevantConstraints() {
+	public Set<Constraint> getContainingConstraints() {
 		refreshContainingConstraints();
 		return containingConstraintsCache;
 	}
 
 	public void refreshContainingConstraints() {
-		containingConstraintsCache = featureModel.getConstraints().stream()
+		containingConstraintsCache = feature.getFeatureModel().getConstraints().stream()
 				.filter(constraint -> constraint.getContainedFeatures().stream()
 						.anyMatch(feature::equals)).collect(Collectors.toSet());
 	}
