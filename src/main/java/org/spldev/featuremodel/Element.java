@@ -1,11 +1,17 @@
 package org.spldev.featuremodel;
 
+import org.spldev.featuremodel.util.Attributable;
+import org.spldev.featuremodel.util.Attribute;
+import org.spldev.featuremodel.util.Identifiable;
+import org.spldev.featuremodel.util.Identifier;
+
 import java.util.*;
 
 /**
- * Feature model element
+ * Implements identification and attribute valuation.
+ * Each {@link FeatureModel} and all its {@link Feature features} and {@link Constraint constraints} are uniquely identified by an {@link Identifier}.
+ * Also, each element can be annotated with arbirtrary {@link Attribute attributes}.
  *
- * @author Sebastian Krieter
  * @author Elias Kuiter
  */
 public abstract class Element implements Identifiable, Attributable {

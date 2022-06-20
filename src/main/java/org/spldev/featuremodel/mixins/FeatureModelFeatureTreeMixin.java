@@ -3,7 +3,8 @@ package org.spldev.featuremodel.mixins;
 import org.spldev.featuremodel.Feature;
 import org.spldev.featuremodel.FeatureModel;
 import org.spldev.featuremodel.FeatureTree;
-import org.spldev.featuremodel.Identifier;
+import org.spldev.featuremodel.util.Identifier;
+import org.spldev.featuremodel.util.Mutable;
 import org.spldev.util.tree.Trees;
 
 import java.util.Objects;
@@ -11,11 +12,16 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+/**
+ * Implements a {@link FeatureModel} mixin for common operations on the {@link FeatureTree}.
+ *
+ * @author Elias Kuiter
+ */
 public interface FeatureModelFeatureTreeMixin {
     FeatureTree getFeatureTree();
 
     default Set<Feature> getFeatures() {
-        return Trees.parallelStream(getFeatureTree()).map(FeatureTree::getFeature).collect(Collectors.toSet());
+        return Trees.preOrderStream(getFeatureTree()).map(FeatureTree::getFeature).collect(Collectors.toSet());
     }
 
     default int getNumberOfFeatures() {
@@ -39,7 +45,7 @@ public interface FeatureModelFeatureTreeMixin {
         return hasFeature(feature.getIdentifier());
     }
 
-    interface Mutator extends MutableMixin.Mutator<FeatureModel> {
+    interface Mutator extends Mutable.Mutator<FeatureModel> {
         default void addFeatureBelow(Feature newFeature, Feature parentFeature, int index) {
             Objects.requireNonNull(newFeature);
             Objects.requireNonNull(parentFeature);
@@ -93,13 +99,15 @@ public interface FeatureModelFeatureTreeMixin {
             final FeatureTree parentFeatureTree = feature.getFeatureTree().getParent().get();
 
             if (parentFeatureTree.getNumberOfChildren() == 1) {
-                if (feature.getFeatureTree().isAnd()) {
-                    parentFeatureTree.setAnd();
-                } else if (feature.getFeatureTree().isAlternative()) {
-                    parentFeatureTree.setAlternative();
-                } else {
-                    parentFeatureTree.setOr();
-                }
+                parentFeatureTree.mutate(mutator -> {
+                    if (feature.getFeatureTree().isAnd()) {
+                        mutator.setAnd();
+                    } else if (feature.getFeatureTree().isAlternative()) {
+                        mutator.setAlternative();
+                    } else {
+                        mutator.setOr();
+                    }
+                });
             }
 
             final int index = feature.getFeatureTree().getIndex().get();

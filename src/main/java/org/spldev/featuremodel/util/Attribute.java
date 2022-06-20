@@ -1,4 +1,6 @@
-package org.spldev.featuremodel;
+package org.spldev.featuremodel.util;
+
+import org.spldev.featuremodel.Feature;
 
 import java.util.Map;
 import java.util.Objects;
@@ -6,8 +8,11 @@ import java.util.Optional;
 import java.util.function.Function;
 
 /**
- * Attribute
+ * An attribute describes what metadata can be attached to an object.
+ * For example, {@link Feature features} can have names, be abstract, or be hidden; all of these are attributes.
+ * This class does not store any attribute values, but merely acts as a key or descriptor.
  *
+ * @param <T> the type of values that are valid for this attribute (usually String, Boolean, or Integer)
  * @author Elias Kuiter
  */
 public class Attribute<T> implements Function<Map<Attribute<?>, Object>, Optional<T>> {

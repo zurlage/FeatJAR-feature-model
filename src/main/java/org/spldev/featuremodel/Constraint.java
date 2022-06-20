@@ -4,22 +4,19 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 import org.spldev.featuremodel.mixins.CommonAttributesMixin;
-import org.spldev.featuremodel.mixins.MutableMixin;
+import org.spldev.featuremodel.util.Identifier;
+import org.spldev.featuremodel.util.Mutable;
 import org.spldev.formula.structure.Formula;
 import org.spldev.formula.structure.Formulas;
 
 /**
- * Constraint
+ * A constraint describes some restriction of the valid {@link Configuration configurations} represented by a {@link FeatureModel}.
+ * It is attached to some feature model and represented as a {@link Formula} over {@link Feature features}.
+ * For safe mutation, rely only on the methods of {@link Mutable}.
  *
- * @author Thomas Thuem
- * @author Florian Proksch
- * @author Stefan Krueger
- * @author Marcus Pinnecke
- * @author Marlen Bernier
- * @author Dawid Szczepanski
  * @author Elias Kuiter
  */
-public class Constraint extends Element implements MutableMixin<Constraint, Constraint.Mutator> {
+public class Constraint extends Element implements Mutable<Constraint, Constraint.Mutator> {
 	protected final FeatureModel featureModel;
 	protected Formula formula;
 	protected Set<Feature> containedFeaturesCache = new HashSet<>();
@@ -49,7 +46,12 @@ public class Constraint extends Element implements MutableMixin<Constraint, Cons
 		return mutator == null ? (mutator = new Mutator()) : mutator;
 	}
 
-	public class Mutator implements MutableMixin.Mutator<Constraint>, CommonAttributesMixin.Mutator<Constraint> {
+	@Override
+	public void setMutator(Mutator mutator) {
+		this.mutator = mutator;
+	}
+
+	public class Mutator implements Mutable.Mutator<Constraint>, CommonAttributesMixin.Mutator<Constraint> {
 		@Override
 		public Constraint getMutable() {
 			return Constraint.this;

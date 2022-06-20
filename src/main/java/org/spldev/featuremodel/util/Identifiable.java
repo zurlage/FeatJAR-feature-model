@@ -1,9 +1,9 @@
-package org.spldev.featuremodel;
+package org.spldev.featuremodel.util;
 
 /**
- * Feature model element
+ * An object that is uniquely identified by an {@link Identifier}.
+ * Can generate new identifiers with the identifier's {@link Identifier.Factory}.
  *
- * @author Sebastian Krieter
  * @author Elias Kuiter
  */
 public interface Identifiable {

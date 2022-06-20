@@ -1,5 +1,6 @@
 package org.spldev.featuremodel;
 
+import org.spldev.featuremodel.util.Mutable;
 import org.spldev.util.tree.structure.RootedTree;
 import org.spldev.util.tree.structure.Tree;
 
@@ -7,13 +8,12 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 /**
- * Feature tree
+ * An ordered {@link RootedTree} labeled with {@link Feature features}.
+ * Implements elements of notation from feature-oriented domain analysis, such as mandatory/optional features and groups.
  *
- * @author Sebastian Krieter
- * @author Marcus Pinnecke
  * @author Elias Kuiter
  */
-public class FeatureTree extends RootedTree<FeatureTree> {
+public class FeatureTree extends RootedTree<FeatureTree> implements Mutable<FeatureTree, FeatureTree.Mutator> {
 	/**
 	 * Feature at the root of this feature tree.
 	 */
@@ -36,6 +36,8 @@ public class FeatureTree extends RootedTree<FeatureTree> {
 
 	protected Set<Constraint> containingConstraintsCache = new HashSet<>();
 
+	protected Mutator mutator = null;
+
 	public FeatureTree(Feature feature) {
 		Objects.requireNonNull(feature);
 		this.feature = feature;
@@ -49,51 +51,24 @@ public class FeatureTree extends RootedTree<FeatureTree> {
 		return isMandatory; //todo
 	}
 
-	public void setMandatory(boolean mandatory) {
-		this.isMandatory = mandatory;
-	}
-
 	public long getGroupMinimum() {
 		return groupMinimum;
-	}
-
-	public void setGroupMinimum(long groupMinimum) {
-		this.groupMinimum = groupMinimum;
 	}
 
 	public long getGroupMaximum() {
 		return groupMaximum;
 	}
 
-	public void setGroupMaximum(long groupMaximum) {
-		this.groupMaximum = groupMaximum;
-	}
-
 	public boolean isAnd() {
 		return groupMinimum == 0 && groupMaximum == Long.MAX_VALUE;
-	}
-
-	public void setAnd() {
-		groupMinimum = 0;
-		groupMaximum = Long.MAX_VALUE;
 	}
 
 	public boolean isAlternative() {
 		return groupMinimum == 1 && groupMaximum == 1;
 	}
 
-	public void setAlternative() {
-		groupMinimum = 1;
-		groupMaximum = 1;
-	}
-
 	public boolean isOr() {
 		return groupMinimum == 1 && groupMaximum == Long.MAX_VALUE;
-	}
-
-	public void setOr() {
-		groupMinimum = 1;
-		groupMaximum = Long.MAX_VALUE;
 	}
 
 	public Set<Constraint> getContainingConstraints() {
@@ -110,5 +85,51 @@ public class FeatureTree extends RootedTree<FeatureTree> {
 	@Override
 	public Tree<FeatureTree> cloneNode() {
 		throw new RuntimeException();
+	}
+
+	@Override
+	public Mutator getMutator() {
+		return mutator == null ? (mutator = new Mutator()) : mutator;
+	}
+
+	@Override
+	public void setMutator(Mutator mutator) {
+		this.mutator = mutator;
+	}
+
+	public class Mutator implements Mutable.Mutator<FeatureTree> {
+		@Override
+		public FeatureTree getMutable() {
+			return FeatureTree.this;
+		}
+
+		public void setMandatory(boolean mandatory) {
+			FeatureTree.this.isMandatory = mandatory;
+		}
+
+		public void setGroupMinimum(long groupMinimum) {
+			FeatureTree.this.groupMinimum = groupMinimum;
+		}
+
+		public void setGroupMaximum(long groupMaximum) {
+			FeatureTree.this.groupMaximum = groupMaximum;
+		}
+
+		public void setAnd() {
+			groupMinimum = 0;
+			groupMaximum = Long.MAX_VALUE;
+		}
+
+		public void setAlternative() {
+			groupMinimum = 1;
+			groupMaximum = 1;
+		}
+
+		public void setOr() {
+			groupMinimum = 1;
+			groupMaximum = Long.MAX_VALUE;
+		}
+
+		//todo addfeature... methods?
 	}
 }

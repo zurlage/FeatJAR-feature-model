@@ -10,7 +10,8 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 /**
- * Feature order
+ * Orders features in different ways.
+ * By default, the feature-tree preorder is used.
  *
  * @author Elias Kuiter
  */

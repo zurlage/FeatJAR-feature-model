@@ -1,15 +1,12 @@
-package org.spldev.featuremodel;
+package org.spldev.featuremodel.util;
 
-import org.spldev.featuremodel.mixins.CommonAttributesMixin;
-import org.spldev.featuremodel.mixins.MutableMixin;
-
-import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
-import java.util.Set;
 
 /**
- * Attribute container
+ * An object that can be annotated with {@link Attribute} values.
+ * For example, attributes are used in {@link org.spldev.featuremodel.FeatureModel feature models},
+ * {@link org.spldev.featuremodel.Feature features}, and {@link org.spldev.featuremodel.Constraint constraints} to store additional metadata.
  *
  * @author Elias Kuiter
  */
@@ -24,7 +21,7 @@ public interface Attributable {
 		return attribute.applyWithDefaultValue(getAttributeToValueMap(), this);
 	}
 
-	interface Mutator<T extends Attributable> extends MutableMixin.Mutator<T> {
+	interface Mutator<T extends Attributable> extends Mutable.Mutator<T> {
 		default <U> void setAttributeValue(Attribute<U> attribute, U value) {
 			getMutable().getAttributeToValueMap().put(attribute, value);
 		}

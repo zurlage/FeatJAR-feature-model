@@ -2,7 +2,8 @@ package org.spldev.featuremodel.mixins;
 
 import org.spldev.featuremodel.Constraint;
 import org.spldev.featuremodel.FeatureModel;
-import org.spldev.featuremodel.Identifier;
+import org.spldev.featuremodel.util.Identifier;
+import org.spldev.featuremodel.util.Mutable;
 import org.spldev.formula.structure.Formula;
 import org.spldev.util.data.Result;
 
@@ -10,6 +11,11 @@ import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 
+/**
+ * Implements a {@link FeatureModel} mixin for common operations on {@link Constraint constraints}.
+ *
+ * @author Elias Kuiter
+ */
 public interface FeatureModelConstraintMixin {
     List<Constraint> getConstraints();
 
@@ -35,7 +41,7 @@ public interface FeatureModelConstraintMixin {
         return getConstraints().size();
     }
 
-    interface Mutator extends MutableMixin.Mutator<FeatureModel> {
+    interface Mutator extends Mutable.Mutator<FeatureModel> {
         default void setConstraint(int index, Constraint constraint) {
             Objects.requireNonNull(constraint);
             if (getMutable().hasConstraint(constraint)) {

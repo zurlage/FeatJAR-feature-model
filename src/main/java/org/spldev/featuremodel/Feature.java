@@ -1,19 +1,18 @@
 package org.spldev.featuremodel;
 
 import org.spldev.featuremodel.mixins.CommonAttributesMixin;
-import org.spldev.featuremodel.mixins.MutableMixin;
+import org.spldev.featuremodel.util.Mutable;
 
 import java.util.Objects;
 
 /**
- * Feature
+ * A feature in a {@link FeatureModel} describes some functionality of a software system.
+ * It is attached to some feature model and labels a {@link FeatureTree}.
+ * For safe mutation, rely only on the methods of {@link Mutable}.
  *
- * @author Thomas Thuem
- * @author Sebastian Krieter
- * @author Marcus Pinnecke
  * @author Elias Kuiter
  */
-public class Feature extends Element implements CommonAttributesMixin, MutableMixin<Feature, Feature.Mutator> {
+public class Feature extends Element implements CommonAttributesMixin, Mutable<Feature, Feature.Mutator> {
 	protected final FeatureModel featureModel;
 	protected final FeatureTree featureTree;
 	protected Mutator mutator = null;
@@ -54,7 +53,12 @@ public class Feature extends Element implements CommonAttributesMixin, MutableMi
 		return mutator == null ? (mutator = new Mutator()) : mutator;
 	}
 
-	public class Mutator implements MutableMixin.Mutator<Feature>, CommonAttributesMixin.Mutator<Feature> {
+	@Override
+	public void setMutator(Mutator mutator) {
+		this.mutator = mutator;
+	}
+
+	public class Mutator implements Mutable.Mutator<Feature>, CommonAttributesMixin.Mutator<Feature> {
 		@Override
 		public Feature getMutable() {
 			return Feature.this;

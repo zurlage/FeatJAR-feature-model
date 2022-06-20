@@ -1,42 +1,91 @@
-/* FeatureIDE - A Framework for Feature-Oriented Software Development
- * Copyright (C) 2005-2019  FeatureIDE team, University of Magdeburg, Germany
- *
- * This file is part of FeatureIDE.
- *
- * FeatureIDE is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * FeatureIDE is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Lesser General Public License for more details.
- *
- * You should have received a copy of the GNU Lesser General Public License
- * along with FeatureIDE.  If not, see <http://www.gnu.org/licenses/>.
- *
- * See http://featureide.cs.ovgu.de/ for further information.
- */
 package org.spldev.featuremodel;
 
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.spldev.featuremodel.util.Attribute;
+import org.spldev.featuremodel.util.Identifier;
 
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Optional;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertSame;
 
-/**
- * Tests for the {@link FeatureModel}.
- *
- * @author Elias Kuiter
- */
 public class FeatureModelTest {
+	FeatureModel featureModel;
+
+	@BeforeEach
+	public void createFeatureModel() {
+		featureModel = new FeatureModel(Identifier.newCounter());
+	}
+
 	@Test
-	public void test() {
+	void identifier() {
+		Identifier<?> identifier = Identifier.newCounter();
+		featureModel = new FeatureModel(identifier);
+		assertEquals("1", featureModel.getIdentifier().toString());
+		assertEquals("2", featureModel.getRootFeature().getIdentifier().toString());
+		assertEquals("3", ((Identifier.Factory.Counter) identifier.getFactory()).get().toString());
+		assertEquals("4", featureModel.getRootFeature().getNewIdentifier().toString());
+		featureModel = new FeatureModel(identifier.getNewIdentifier());
+		assertEquals("5", featureModel.getIdentifier().toString());
+		assertEquals("6", featureModel.getRootFeature().getIdentifier().toString());
+		assertEquals("7", featureModel.getNewIdentifier().toString());
+		assertEquals("3", new FeatureModel(Identifier.newCounter()).getNewIdentifier().toString());
+	}
+
+	@Test
+	public void attribute() {
+		Attribute<String> attribute = new Attribute<>("test");
+		Map<Attribute<?>, Object> attributeToValueMap = new HashMap<>();
+		Attribute.WithDefaultValue<String> attributeWithDefaultValue = new Attribute.WithDefaultValue<>("test", "default");
+		assertEquals(Optional.empty(), featureModel.getAttributeValue(attribute));
+		assertEquals("default", featureModel.getAttributeValue(attributeWithDefaultValue));
+		assertEquals(attributeToValueMap, featureModel.getAttributeToValueMap());
+		featureModel.mutate(m -> m.setAttributeValue(attribute, "value"));
+		attributeToValueMap.put(attribute, "value");
+		assertEquals(Optional.of("value"), featureModel.getAttributeValue(attribute));
+		assertEquals(attributeToValueMap, featureModel.getAttributeToValueMap());
+		featureModel.mutate(m -> m.removeAttributeValue(attribute));
+		attributeToValueMap.clear();
+		assertEquals(Optional.empty(), featureModel.getAttributeValue(attribute));
+		assertEquals(attributeToValueMap, featureModel.getAttributeToValueMap());
+	}
+
+	@Test
+	public void mutable() {
+		assertSame(featureModel, featureModel.mutate().getMutable());
+		featureModel.mutate(mutator -> assertSame(mutator, featureModel.getMutator()));
+		featureModel.mutate(mutator -> assertSame(featureModel, mutator.getMutable()));
+		FeatureModel.Mutator mutator = featureModel.new Mutator();
+		featureModel.setMutator(mutator);
+		assertSame(mutator, featureModel.getMutator());
+		assertSame(featureModel, featureModel.mutateAndReturn(m -> featureModel));
+		// todo: mutate unsafely
+	}
+
+	@Test
+	public void commonAttributesMixin() {
+		assertEquals("@1", featureModel.getName());
+		assertEquals(Optional.empty(), featureModel.getDescription());
+		featureModel.mutate(m -> {
+			m.setName("My Model");
+			m.setDescription("awesome description");
+		});
+		assertEquals("My Model", featureModel.getName());
+		assertEquals(Optional.of("awesome description"), featureModel.getDescription());
+	}
+
+	@Test
+	public void featureTree() {
 		final FeatureModel featureModel = new FeatureModel(Identifier.newCounter());
 		final Feature feature = featureModel.mutateAndReturn(mutator -> mutator.createFeatureBelow(featureModel.getRootFeature()));
 		assertSame(feature, feature.getFeatureTree().getFeature());
 		assertSame(featureModel.getRootFeature(), feature.getFeatureTree().getParent().get().getFeature());
 		assertSame(feature.getFeatureTree().getParent().get(), featureModel.getRootFeature().getFeatureTree());
 		assertSame(featureModel.getFeature(feature.getIdentifier()).get(), feature);
+
+		// vision: featureModel.clone().mutate(m -> m.createConstraint(formula)).analyze().getDeadFeatures();
 	}
 }

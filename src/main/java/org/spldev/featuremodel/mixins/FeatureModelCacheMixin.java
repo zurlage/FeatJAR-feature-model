@@ -1,20 +1,16 @@
 package org.spldev.featuremodel.mixins;
 
 import org.spldev.featuremodel.*;
+import org.spldev.featuremodel.util.Identifier;
 
 import java.util.*;
 
 /**
- * Feature model
- * assumes that features/constraints are only added/deleted through the feature model class, not manually
+ * Cache. assumes that features/constraints are only added/deleted through the feature model class, not manually
  *
- * @author Thomas Thuem
- * @author Florian Proksch
- * @author Stefan Krueger
- * @author Marcus Pinnecke
  * @author Elias Kuiter
  */
-public interface CacheMixin extends FeatureModelFeatureTreeMixin, FeatureModelConstraintMixin {
+public interface FeatureModelCacheMixin extends FeatureModelFeatureTreeMixin, FeatureModelConstraintMixin {
 	Map<Identifier<?>, Element> getElementCache();
 	Set<Feature> getFeatureCache();
 	Set<FeatureModel> getFeatureModelCache();

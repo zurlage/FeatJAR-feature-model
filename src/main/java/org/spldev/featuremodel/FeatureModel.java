@@ -1,19 +1,19 @@
 package org.spldev.featuremodel;
 
 import org.spldev.featuremodel.mixins.*;
+import org.spldev.featuremodel.util.Identifier;
+import org.spldev.featuremodel.util.Mutable;
 
 import java.util.*;
 
 /**
- * Feature model
+ * A feature model is a representation of the space of valid {@link Configuration configurations} for a software system.
+ * Here, we implement feature diagrams (i.e., a {@link FeatureTree} labeled with features and a list of {@link Constraint constraints}).
+ * For safe mutation, rely only on the methods of {@link Mutable}.
  *
- * @author Thomas Thuem
- * @author Florian Proksch
- * @author Stefan Krueger
- * @author Marcus Pinnecke
  * @author Elias Kuiter
  */
-public class FeatureModel extends Element implements FeatureModelFeatureTreeMixin, FeatureModelConstraintMixin, FeatureModelFeatureOrderMixin, CommonAttributesMixin, MutableMixin<FeatureModel, FeatureModel.Mutator>, Cloneable { // CacheMixin
+public class FeatureModel extends Element implements FeatureModelFeatureTreeMixin, FeatureModelConstraintMixin, FeatureModelFeatureOrderMixin, CommonAttributesMixin, Mutable<FeatureModel, FeatureModel.Mutator>, Cloneable { // CacheMixin
 	protected final FeatureTree featureTree;
 	protected final List<Constraint> constraints = Collections.synchronizedList(new ArrayList<>());
 	protected FeatureOrder featureOrder = FeatureOrder.ofPreOrder();
@@ -64,6 +64,11 @@ public class FeatureModel extends Element implements FeatureModelFeatureTreeMixi
 		return mutator == null ? (mutator = new Mutator()) : mutator;
 	}
 
+	@Override
+	public void setMutator(Mutator mutator) {
+		this.mutator = mutator;
+	}
+
 	// todo
 	@Override
 	public int hashCode() {
@@ -80,7 +85,7 @@ public class FeatureModel extends Element implements FeatureModelFeatureTreeMixi
 		throw new RuntimeException();
 	}
 
-	public class Mutator implements MutableMixin.Mutator<FeatureModel>, FeatureModelFeatureTreeMixin.Mutator, FeatureModelConstraintMixin.Mutator, FeatureModelFeatureOrderMixin.Mutator, CommonAttributesMixin.Mutator<FeatureModel> {
+	public class Mutator implements Mutable.Mutator<FeatureModel>, FeatureModelFeatureTreeMixin.Mutator, FeatureModelConstraintMixin.Mutator, FeatureModelFeatureOrderMixin.Mutator, CommonAttributesMixin.Mutator<FeatureModel> {
 		@Override
 		public FeatureModel getMutable() {
 			return FeatureModel.this;

@@ -1,8 +1,15 @@
-package org.spldev.featuremodel;
+package org.spldev.featuremodel.util;
 
 import java.util.Objects;
 
-public class Identifier<T> {
+/**
+ * Uniquely identifies an {@link org.spldev.featuremodel.util.Identifiable} object.
+ * Several implementations are available, implementors are responsible for guaranteeing uniqueness.
+ *
+ * @param <T> the type of the wrapped object, which is used for serialization
+ * @author Elias Kuiter
+ */
+public class Identifier<T> extends org.spldev.util.data.Identifier<T> {
     protected T id;
 
     protected Factory<T> factory;
