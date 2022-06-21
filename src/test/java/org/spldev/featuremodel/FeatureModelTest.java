@@ -47,9 +47,12 @@ public class FeatureModelTest {
 
 	@Test
 	public void attribute() {
-		Attribute<String> attribute = new Attribute<>("test");
+		Attribute<String> attribute = new Attribute<>("any","test", String.class);
+		assertEquals("any", attribute.getNamespace());
+		assertEquals("test", attribute.getName());
+		assertEquals(String.class, attribute.getType());
 		Map<Attribute<?>, Object> attributeToValueMap = new HashMap<>();
-		Attribute.WithDefaultValue<String> attributeWithDefaultValue = new Attribute.WithDefaultValue<>("test", "default");
+		Attribute.WithDefaultValue<String> attributeWithDefaultValue = new Attribute.WithDefaultValue<>("test", String.class, "default");
 		assertEquals(Optional.empty(), featureModel.getAttributeValue(attribute));
 		assertEquals("default", featureModel.getAttributeValue(attributeWithDefaultValue));
 		assertEquals(attributeToValueMap, featureModel.getAttributeToValueMap());
@@ -117,6 +120,5 @@ public class FeatureModelTest {
 		String[] featureNames = new String[] {"Car", "Carbody", "Radio", "Ports", "USB", "CD", "Navigation", "DigitalCards", "Europe", "USA", "GPSAntenna", "Bluetooth", "Gearbox", "Manual", "Automatic", "GearboxTest"};
 		assertEquals(Set.of(featureNames), featureModel.getFeatures().stream().map(Feature::getName).collect(Collectors.toSet()));
 		System.out.println(featureModel);
-		;
 	}
 }

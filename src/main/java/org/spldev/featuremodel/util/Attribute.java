@@ -20,18 +20,19 @@ public class Attribute<T> implements Function<Map<Attribute<?>, Object>, Optiona
 
     protected final String namespace;
     protected final String name;
-    // todo: save class of T?
-    // private final Class<? extends Variable<?>> type;
+    protected final Class<T> type;
 
-    public Attribute(String namespace, String name) {
+    public Attribute(String namespace, String name, Class<T> type) {
         Objects.requireNonNull(namespace);
         Objects.requireNonNull(name);
+        Objects.requireNonNull(type);
         this.namespace = namespace;
         this.name = name;
+        this.type = type;
     }
 
-    public Attribute(String name) {
-        this(DEFAULT_NAMESPACE, name);
+    public Attribute(String name, Class<T> type) {
+        this(DEFAULT_NAMESPACE, name, type);
     }
 
     public String getNamespace() {
@@ -40,6 +41,10 @@ public class Attribute<T> implements Function<Map<Attribute<?>, Object>, Optiona
 
     public String getName() {
         return name;
+    }
+
+    public Class<T> getType() {
+        return type;
     }
 
     @Override
@@ -68,23 +73,23 @@ public class Attribute<T> implements Function<Map<Attribute<?>, Object>, Optiona
     public static class WithDefaultValue<T> extends Attribute<T> {
         protected final Function<Attributable, T> defaultValueFunction;
 
-        public WithDefaultValue(String namespace, String name, Function<Attributable, T> defaultValueFunction) {
-            super(namespace, name);
+        public WithDefaultValue(String namespace, String name, Class<T> type, Function<Attributable, T> defaultValueFunction) {
+            super(namespace, name, type);
             Objects.requireNonNull(defaultValueFunction);
             this.defaultValueFunction = defaultValueFunction;
         }
 
-        public WithDefaultValue(String namespace, String name, T defaultValue) {
-            this(namespace, name, attributable -> defaultValue);
+        public WithDefaultValue(String namespace, String name, Class<T> type, T defaultValue) {
+            this(namespace, name, type, attributable -> defaultValue);
             Objects.requireNonNull(defaultValue);
         }
 
-        public WithDefaultValue(String name, Function<Attributable, T> defaultValueFunction) {
-            this(DEFAULT_NAMESPACE, name, defaultValueFunction);
+        public WithDefaultValue(String name, Class<T> type, Function<Attributable, T> defaultValueFunction) {
+            this(DEFAULT_NAMESPACE, name, type, defaultValueFunction);
         }
 
-        public WithDefaultValue(String name, T defaultValue) {
-            this(DEFAULT_NAMESPACE, name, defaultValue);
+        public WithDefaultValue(String name, Class<T> type, T defaultValue) {
+            this(DEFAULT_NAMESPACE, name, type, defaultValue);
         }
 
         public Function<Attributable, T> getDefaultValueFunction() {
