@@ -2,20 +2,25 @@ package org.spldev.featuremodel;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.spldev.featuremodel.io.FeatureModelFormatManager;
+import org.spldev.featuremodel.io.xml.XmlFeatureModelFormat;
 import org.spldev.featuremodel.mixins.FeatureModelFeatureTreeMixin;
 import org.spldev.featuremodel.util.Attribute;
 import org.spldev.featuremodel.util.Identifier;
+import org.spldev.formula.io.FormulaFormatManager;
+import org.spldev.formula.structure.Formula;
 import org.spldev.formula.structure.atomic.literal.Literal;
+import org.spldev.util.data.Result;
 import org.spldev.util.io.FileHandler;
 import org.spldev.util.tree.Trees;
 
 import java.io.IOException;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Optional;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.util.*;
+import java.util.stream.Collectors;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertSame;
+import static org.junit.jupiter.api.Assertions.*;
 
 public class FeatureModelTest {
 	FeatureModel featureModel;
@@ -102,8 +107,15 @@ public class FeatureModelTest {
 		assertSame(featureModel.getRootFeature(), feature.getFeatureTree().getParent().get().getFeature());
 		assertSame(feature.getFeatureTree().getParent().get(), featureModel.getRootFeature().getFeatureTree());
 		assertSame(featureModel.getFeature(feature.getIdentifier()).get(), feature);
+	}
 
-		//featureModel.clone().mutate(m -> m.createConstraint(formula)).analyze().getDeadFeatures();
-		featureModel.mutate(m -> m.createConstraint(Literal.True)).analyze().getDeadFeatures();
+	@Test
+	public void xmlFeatureModelFormat() {
+		Result<FeatureModel> featureModelResult = FileHandler.load(Paths.get("src/test/resources/testFeatureModels/car.xml"), new XmlFeatureModelFormat());
+		assertTrue(featureModelResult.isPresent());
+		FeatureModel featureModel = featureModelResult.get();
+		String[] featureNames = new String[] {"Car", "Carbody", "Radio", "Ports", "USB", "CD", "Navigation", "DigitalCards", "Europe", "USA", "GPSAntenna", "Bluetooth", "Gearbox", "Manual", "Automatic", "GearboxTest"};
+		assertEquals(Set.of(featureNames), featureModel.getFeatures().stream().map(Feature::getName).collect(Collectors.toSet()));
+		System.out.println(featureModel);
 	}
 }

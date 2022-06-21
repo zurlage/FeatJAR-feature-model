@@ -20,6 +20,8 @@ public class Attribute<T> implements Function<Map<Attribute<?>, Object>, Optiona
 
     protected final String namespace;
     protected final String name;
+    // todo: save class of T?
+    // private final Class<? extends Variable<?>> type;
 
     public Attribute(String namespace, String name) {
         Objects.requireNonNull(namespace);
