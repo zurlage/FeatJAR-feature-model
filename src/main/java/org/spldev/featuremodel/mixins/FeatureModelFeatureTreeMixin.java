@@ -3,10 +3,12 @@ package org.spldev.featuremodel.mixins;
 import org.spldev.featuremodel.Feature;
 import org.spldev.featuremodel.FeatureModel;
 import org.spldev.featuremodel.FeatureTree;
+import org.spldev.featuremodel.util.Analyzable;
 import org.spldev.featuremodel.util.Identifier;
 import org.spldev.featuremodel.util.Mutable;
 import org.spldev.util.tree.Trees;
 
+import java.util.Collections;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
@@ -119,5 +121,17 @@ public interface FeatureModelFeatureTreeMixin {
 
             parentFeatureTree.removeChild(feature.getFeatureTree());
         }
+    }
+
+    interface Analyzer extends Analyzable.Analyzer<FeatureModel> {
+        default Set<Feature> getCoreFeatures() {
+            return Collections.emptySet();
+        }
+
+        default Set<Feature> getDeadFeatures() {
+            return Collections.emptySet();
+        }
+
+        //...
     }
 }

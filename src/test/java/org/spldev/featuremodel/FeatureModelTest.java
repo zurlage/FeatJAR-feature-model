@@ -5,6 +5,8 @@ import org.junit.jupiter.api.Test;
 import org.spldev.featuremodel.mixins.FeatureModelFeatureTreeMixin;
 import org.spldev.featuremodel.util.Attribute;
 import org.spldev.featuremodel.util.Identifier;
+import org.spldev.formula.structure.atomic.literal.Literal;
+import org.spldev.formula.structure.atomic.literal.True;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -99,6 +101,7 @@ public class FeatureModelTest {
 		assertSame(feature.getFeatureTree().getParent().get(), featureModel.getRootFeature().getFeatureTree());
 		assertSame(featureModel.getFeature(feature.getIdentifier()).get(), feature);
 
-		// vision: featureModel.clone().mutate(m -> m.createConstraint(formula)).analyze().getDeadFeatures();
+		//featureModel.clone().mutate(m -> m.createConstraint(formula)).analyze().getDeadFeatures();
+		featureModel.mutate(m -> m.createConstraint(Literal.True)).analyze().getDeadFeatures();
 	}
 }

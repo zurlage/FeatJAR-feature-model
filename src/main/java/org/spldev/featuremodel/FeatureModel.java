@@ -1,6 +1,7 @@
 package org.spldev.featuremodel;
 
 import org.spldev.featuremodel.mixins.*;
+import org.spldev.featuremodel.util.Analyzable;
 import org.spldev.featuremodel.util.Identifier;
 import org.spldev.featuremodel.util.Mutable;
 
@@ -13,14 +14,15 @@ import java.util.*;
  *
  * @author Elias Kuiter
  */
-public class FeatureModel extends Element implements FeatureModelFeatureTreeMixin, FeatureModelConstraintMixin, FeatureModelFeatureOrderMixin, CommonAttributesMixin, FeatureModelCacheMixin, Mutable<FeatureModel, FeatureModel.Mutator>, Cloneable { // CacheMixin
+public class FeatureModel extends Element implements FeatureModelFeatureTreeMixin, FeatureModelConstraintMixin, FeatureModelFeatureOrderMixin, CommonAttributesMixin, FeatureModelCacheMixin, Mutable<FeatureModel, FeatureModel.Mutator>, Analyzable<FeatureModel, FeatureModel.Analyzer>, Cloneable { // CacheMixin
 	protected final FeatureTree featureTree;
 	protected final List<Constraint> constraints = Collections.synchronizedList(new ArrayList<>());
 	protected FeatureOrder featureOrder = FeatureOrder.ofPreOrder();
 	protected final Map<Identifier<?>, Element> elementCache = Collections.synchronizedMap(new LinkedHashMap<>());
 	protected final Set<Feature> featureCache = Collections.synchronizedSet(new HashSet<>());
 	protected final Set<FeatureModel> featureModelCache = Collections.synchronizedSet(new HashSet<>());
-	protected Mutator mutator = null;
+	protected Mutator mutator;
+	protected Analyzer analyzer;
 
 	public FeatureModel(Identifier<?> identifier) {
 		super(identifier);
@@ -65,6 +67,16 @@ public class FeatureModel extends Element implements FeatureModelFeatureTreeMixi
 	}
 
 	@Override
+	public Analyzer getAnalyzer() {
+		return analyzer;
+	}
+
+	@Override
+	public void setAnalyzer(Analyzer analyzer) {
+		this.analyzer = analyzer;
+	}
+
+	@Override
 	public void invalidate() {
 		FeatureModelCacheMixin.super.invalidate();
 	}
@@ -88,6 +100,13 @@ public class FeatureModel extends Element implements FeatureModelFeatureTreeMixi
 		@Override
 		public void setFeatureOrder(FeatureOrder featureOrder) {
 			FeatureModel.this.featureOrder = featureOrder;
+		}
+	}
+
+	public class Analyzer implements FeatureModelFeatureTreeMixin.Analyzer, FeatureModelConstraintMixin.Analyzer, Analyzable.Analyzer<FeatureModel> {
+		@Override
+		public FeatureModel getAnalyzable() {
+			return FeatureModel.this;
 		}
 	}
 }

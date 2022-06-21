@@ -1,15 +1,15 @@
 package org.spldev.featuremodel.mixins;
 
 import org.spldev.featuremodel.Constraint;
+import org.spldev.featuremodel.Feature;
 import org.spldev.featuremodel.FeatureModel;
+import org.spldev.featuremodel.util.Analyzable;
 import org.spldev.featuremodel.util.Identifier;
 import org.spldev.featuremodel.util.Mutable;
 import org.spldev.formula.structure.Formula;
 import org.spldev.util.data.Result;
 
-import java.util.List;
-import java.util.Objects;
-import java.util.Optional;
+import java.util.*;
 
 /**
  * Implements a {@link FeatureModel} mixin for common operations on {@link Constraint constraints}.
@@ -91,5 +91,13 @@ public interface FeatureModelConstraintMixin {
         default Constraint removeConstraint(int index) {
             return getMutable().getConstraints().remove(index);
         }
+    }
+
+    interface Analyzer extends Analyzable.Analyzer<FeatureModel> {
+        default Set<Constraint> getRedundantConstraints() {
+            return Collections.emptySet();
+        }
+
+        //...
     }
 }
