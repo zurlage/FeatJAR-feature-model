@@ -6,8 +6,10 @@ import org.spldev.featuremodel.mixins.FeatureModelFeatureTreeMixin;
 import org.spldev.featuremodel.util.Attribute;
 import org.spldev.featuremodel.util.Identifier;
 import org.spldev.formula.structure.atomic.literal.Literal;
-import org.spldev.formula.structure.atomic.literal.True;
+import org.spldev.util.io.FileHandler;
+import org.spldev.util.tree.Trees;
 
+import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;

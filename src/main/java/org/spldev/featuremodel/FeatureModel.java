@@ -14,7 +14,7 @@ import java.util.*;
  *
  * @author Elias Kuiter
  */
-public class FeatureModel extends Element implements FeatureModelFeatureTreeMixin, FeatureModelConstraintMixin, FeatureModelFeatureOrderMixin, CommonAttributesMixin, FeatureModelCacheMixin, Mutable<FeatureModel, FeatureModel.Mutator>, Analyzable<FeatureModel, FeatureModel.Analyzer>, Cloneable { // CacheMixin
+public class FeatureModel extends Element implements FeatureModelFeatureTreeMixin, FeatureModelConstraintMixin, FeatureModelFeatureOrderMixin, CommonAttributesMixin, FeatureModelCacheMixin, Mutable<FeatureModel, FeatureModel.Mutator>, Analyzable<FeatureModel, FeatureModel.Analyzer> { // CacheMixin
 	protected final FeatureTree featureTree;
 	protected final List<Constraint> constraints = Collections.synchronizedList(new ArrayList<>());
 	protected FeatureOrder featureOrder = FeatureOrder.ofPreOrder();
@@ -91,7 +91,7 @@ public class FeatureModel extends Element implements FeatureModelFeatureTreeMixi
 		throw new CloneNotSupportedException(); // todo
 	}
 
-	public class Mutator implements Mutable.Mutator<FeatureModel>, FeatureModelFeatureTreeMixin.Mutator, FeatureModelConstraintMixin.Mutator, FeatureModelFeatureOrderMixin.Mutator, CommonAttributesMixin.Mutator<FeatureModel>, FeatureModelCacheMixin.Mutator {
+	public class Mutator implements org.spldev.featuremodel.util.Mutator<FeatureModel>, FeatureModelFeatureTreeMixin.Mutator, FeatureModelConstraintMixin.Mutator, FeatureModelFeatureOrderMixin.Mutator, CommonAttributesMixin.Mutator<FeatureModel>, FeatureModelCacheMixin.Mutator {
 		@Override
 		public FeatureModel getMutable() {
 			return FeatureModel.this;
@@ -103,7 +103,7 @@ public class FeatureModel extends Element implements FeatureModelFeatureTreeMixi
 		}
 	}
 
-	public class Analyzer implements FeatureModelFeatureTreeMixin.Analyzer, FeatureModelConstraintMixin.Analyzer, Analyzable.Analyzer<FeatureModel> {
+	public class Analyzer implements org.spldev.featuremodel.util.Analyzer<FeatureModel>, FeatureModelFeatureTreeMixin.Analyzer, FeatureModelConstraintMixin.Analyzer {
 		@Override
 		public FeatureModel getAnalyzable() {
 			return FeatureModel.this;

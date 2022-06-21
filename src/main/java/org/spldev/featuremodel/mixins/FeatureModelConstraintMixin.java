@@ -1,11 +1,8 @@
 package org.spldev.featuremodel.mixins;
 
 import org.spldev.featuremodel.Constraint;
-import org.spldev.featuremodel.Feature;
 import org.spldev.featuremodel.FeatureModel;
-import org.spldev.featuremodel.util.Analyzable;
 import org.spldev.featuremodel.util.Identifier;
-import org.spldev.featuremodel.util.Mutable;
 import org.spldev.formula.structure.Formula;
 import org.spldev.util.data.Result;
 
@@ -41,7 +38,7 @@ public interface FeatureModelConstraintMixin {
         return getConstraints().size();
     }
 
-    interface Mutator extends Mutable.Mutator<FeatureModel> {
+    interface Mutator extends org.spldev.featuremodel.util.Mutator<FeatureModel> {
         default void setConstraint(int index, Constraint constraint) {
             Objects.requireNonNull(constraint);
             if (getMutable().hasConstraint(constraint)) {
@@ -93,7 +90,7 @@ public interface FeatureModelConstraintMixin {
         }
     }
 
-    interface Analyzer extends Analyzable.Analyzer<FeatureModel> {
+    interface Analyzer extends org.spldev.featuremodel.util.Analyzer<FeatureModel> {
         default Set<Constraint> getRedundantConstraints() {
             return Collections.emptySet();
         }

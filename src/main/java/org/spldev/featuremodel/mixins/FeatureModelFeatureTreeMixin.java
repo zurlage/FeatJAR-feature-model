@@ -3,9 +3,8 @@ package org.spldev.featuremodel.mixins;
 import org.spldev.featuremodel.Feature;
 import org.spldev.featuremodel.FeatureModel;
 import org.spldev.featuremodel.FeatureTree;
-import org.spldev.featuremodel.util.Analyzable;
 import org.spldev.featuremodel.util.Identifier;
-import org.spldev.featuremodel.util.Mutable;
+import org.spldev.formula.ModelRepresentation;
 import org.spldev.util.tree.Trees;
 
 import java.util.Collections;
@@ -47,7 +46,7 @@ public interface FeatureModelFeatureTreeMixin {
         return hasFeature(feature.getIdentifier());
     }
 
-    interface Mutator extends Mutable.Mutator<FeatureModel> {
+    interface Mutator extends org.spldev.featuremodel.util.Mutator<FeatureModel> {
         default void addFeatureBelow(Feature newFeature, Feature parentFeature, int index) {
             Objects.requireNonNull(newFeature);
             Objects.requireNonNull(parentFeature);
@@ -123,13 +122,13 @@ public interface FeatureModelFeatureTreeMixin {
         }
     }
 
-    interface Analyzer extends Analyzable.Analyzer<FeatureModel> {
+    interface Analyzer extends org.spldev.featuremodel.util.Analyzer<FeatureModel> {
         default Set<Feature> getCoreFeatures() {
             return Collections.emptySet();
         }
 
         default Set<Feature> getDeadFeatures() {
-            return Collections.emptySet();
+            return Collections.emptySet(); // use extensions
         }
 
         //...

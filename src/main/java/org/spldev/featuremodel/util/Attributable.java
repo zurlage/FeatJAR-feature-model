@@ -21,7 +21,7 @@ public interface Attributable {
 		return attribute.applyWithDefaultValue(getAttributeToValueMap(), this);
 	}
 
-	interface Mutator<T extends Attributable> extends Mutable.Mutator<T> {
+	interface Mutator<T extends Attributable> extends org.spldev.featuremodel.util.Mutator<T> {
 		default <U> void setAttributeValue(Attribute<U> attribute, U value) {
 			getMutable().getAttributeToValueMap().put(attribute, value);
 		}

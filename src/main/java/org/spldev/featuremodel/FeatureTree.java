@@ -96,7 +96,7 @@ public class FeatureTree extends RootedTree<FeatureTree> implements Mutable<Feat
 
 	// todo hashcode, equals, tostring, clone
 
-	public class Mutator implements Mutable.Mutator<FeatureTree> {
+	public class Mutator implements org.spldev.featuremodel.util.Mutator<FeatureTree> {
 		@Override
 		public FeatureTree getMutable() {
 			return FeatureTree.this;

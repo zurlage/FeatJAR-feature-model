@@ -11,11 +11,7 @@ import java.util.function.Consumer;
  * @param <U> the type of the mutator object
  * @author Elias Kuiter
  */
-public interface Mutable<T, U extends Mutable.Mutator<T>> extends Cloneable {
-    interface Mutator<T> {
-        T getMutable();
-    }
-
+public interface Mutable<T, U extends Mutator<T>> {
     U getMutator();
 
     void setMutator(U mutator);

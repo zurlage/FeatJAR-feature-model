@@ -10,11 +10,7 @@ import java.util.function.Consumer;
  * @param <U> the type of the analyzer object
  * @author Elias Kuiter
  */
-public interface Analyzable<T, U extends Analyzable.Analyzer<T>> {
-    interface Analyzer<T> {
-        T getAnalyzable();
-    }
-
+public interface Analyzable<T, U extends Analyzer<T>> {
     U getAnalyzer();
 
     void setAnalyzer(U analyzer);

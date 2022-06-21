@@ -4,6 +4,7 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 import org.spldev.featuremodel.mixins.CommonAttributesMixin;
+import org.spldev.featuremodel.util.Analyzable;
 import org.spldev.featuremodel.util.Identifier;
 import org.spldev.featuremodel.util.Mutable;
 import org.spldev.formula.structure.Formula;
@@ -16,11 +17,12 @@ import org.spldev.formula.structure.Formulas;
  *
  * @author Elias Kuiter
  */
-public class Constraint extends Element implements Mutable<Constraint, Constraint.Mutator> {
+public class Constraint extends Element implements Mutable<Constraint, Constraint.Mutator>, Analyzable<Constraint, Constraint.Analyzer> {
 	protected final FeatureModel featureModel;
 	protected Formula formula;
 	protected Set<Feature> containedFeaturesCache = new HashSet<>();
-	protected Mutator mutator = null;
+	protected Mutator mutator;
+	protected Analyzer analyzer;
 
 	public Constraint(FeatureModel featureModel, Formula formula) {
 		super(featureModel.getNewIdentifier());
@@ -60,7 +62,17 @@ public class Constraint extends Element implements Mutable<Constraint, Constrain
 		return String.format("Constraint{formula=%s}", formula);
 	}
 
-	public class Mutator implements Mutable.Mutator<Constraint>, CommonAttributesMixin.Mutator<Constraint> {
+	@Override
+	public Analyzer getAnalyzer() {
+		return analyzer;
+	}
+
+	@Override
+	public void setAnalyzer(Analyzer analyzer) {
+		this.analyzer = analyzer;
+	}
+
+	public class Mutator implements org.spldev.featuremodel.util.Mutator<Constraint>, CommonAttributesMixin.Mutator<Constraint> {
 		@Override
 		public Constraint getMutable() {
 			return Constraint.this;
@@ -82,5 +94,18 @@ public class Constraint extends Element implements Mutable<Constraint, Constrain
 					.collect(Collectors.toSet());
 			Constraint.this.formula = formula;
 		}
+	}
+
+	public class Analyzer implements org.spldev.featuremodel.util.Analyzer<Constraint> {
+		@Override
+		public Constraint getAnalyzable() {
+			return Constraint.this;
+		}
+
+		public boolean isRedundant() {
+			return false;
+		}
+
+		// ...
 	}
 }

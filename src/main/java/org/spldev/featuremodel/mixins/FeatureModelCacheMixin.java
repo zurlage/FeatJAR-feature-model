@@ -2,7 +2,6 @@ package org.spldev.featuremodel.mixins;
 
 import org.spldev.featuremodel.*;
 import org.spldev.featuremodel.util.Identifier;
-import org.spldev.featuremodel.util.Mutable;
 
 import java.util.*;
 import java.util.stream.Stream;
@@ -55,7 +54,7 @@ public interface FeatureModelCacheMixin extends FeatureModelFeatureTreeMixin, Fe
 		return Optional.of((Constraint) element);
 	}
 
-	interface Mutator extends Mutable.Mutator<FeatureModel>, FeatureModelFeatureTreeMixin.Mutator, FeatureModelConstraintMixin.Mutator {
+	interface Mutator extends org.spldev.featuremodel.util.Mutator<FeatureModel>, FeatureModelFeatureTreeMixin.Mutator, FeatureModelConstraintMixin.Mutator {
 		@Override
 		default void addFeatureBelow(Feature newFeature, Feature parentFeature, int index) {
 			FeatureModelFeatureTreeMixin.Mutator.super.addFeatureBelow(newFeature, parentFeature, index);
