@@ -32,11 +32,11 @@ public class FeatureModelTest {
 
 	@Test
 	void identifier() {
-		Identifier<?> identifier = Identifier.newCounter();
+		Identifier identifier = Identifier.newCounter();
 		featureModel = new FeatureModel(identifier);
 		assertEquals("1", featureModel.getIdentifier().toString());
 		assertEquals("2", featureModel.getRootFeature().getIdentifier().toString());
-		assertEquals("3", ((Identifier.Factory.Counter) identifier.getFactory()).get().toString());
+		assertEquals("3", identifier.getFactory().get().toString());
 		assertEquals("4", featureModel.getRootFeature().getNewIdentifier().toString());
 		featureModel = new FeatureModel(identifier.getNewIdentifier());
 		assertEquals("5", featureModel.getIdentifier().toString());

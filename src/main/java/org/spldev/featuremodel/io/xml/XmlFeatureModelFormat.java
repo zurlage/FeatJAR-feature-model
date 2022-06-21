@@ -53,7 +53,7 @@ import static org.spldev.formula.io.xml.XmlFeatureModelFormat.*;
 public class XmlFeatureModelFormat implements Format<FeatureModel> {
 	protected final FeatureModel featureModel = new FeatureModel(Identifier.newCounter());
 	protected final VariableMap variableMap = VariableMap.emptyMap();
-	protected final Map<String, Identifier<?>> nameToIdentifierMap = new HashMap<>();
+	protected final Map<String, Identifier> nameToIdentifierMap = new HashMap<>();
 	protected List<Problem> parseProblems = new ArrayList<>();
 
 	@Override

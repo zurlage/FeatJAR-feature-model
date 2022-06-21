@@ -18,13 +18,13 @@ public class FeatureModel extends Element implements FeatureModelFeatureTreeMixi
 	protected final FeatureTree featureTree;
 	protected final List<Constraint> constraints = Collections.synchronizedList(new ArrayList<>());
 	protected FeatureOrder featureOrder = FeatureOrder.ofPreOrder();
-	protected final Map<Identifier<?>, Element> elementCache = Collections.synchronizedMap(new LinkedHashMap<>());
+	protected final Map<Identifier, Element> elementCache = Collections.synchronizedMap(new LinkedHashMap<>());
 	protected final Set<Feature> featureCache = Collections.synchronizedSet(new HashSet<>());
 	protected final Set<FeatureModel> featureModelCache = Collections.synchronizedSet(new HashSet<>());
 	protected Mutator mutator;
 	protected Analyzer analyzer;
 
-	public FeatureModel(Identifier<?> identifier) {
+	public FeatureModel(Identifier identifier) {
 		super(identifier);
 		final Feature root = new Feature(this);
 		featureTree = root.getFeatureTree();
@@ -47,7 +47,7 @@ public class FeatureModel extends Element implements FeatureModelFeatureTreeMixi
 	}
 
 	@Override
-	public Map<Identifier<?>, Element> getElementCache() {
+	public Map<Identifier, Element> getElementCache() {
 		return elementCache;
 	}
 

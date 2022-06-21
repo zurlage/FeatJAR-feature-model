@@ -7,9 +7,9 @@ package org.spldev.featuremodel.util;
  * @author Elias Kuiter
  */
 public interface Identifiable {
-	Identifier<?> getIdentifier();
+	Identifier getIdentifier();
 
-	default Identifier<?> getNewIdentifier() {
+	default Identifier getNewIdentifier() {
 		return getIdentifier().getFactory().get();
 	}
 }

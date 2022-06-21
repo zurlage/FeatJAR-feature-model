@@ -80,10 +80,10 @@ public class Constraint extends Element implements Mutable<Constraint, Constrain
 
 		public void setFormula(Formula formula) {
 			Objects.requireNonNull(formula);
-			Set<Identifier<?>> identifiers = Formulas.getVariableNames(formula).stream()
+			Set<Identifier> identifiers = Formulas.getVariableNames(formula).stream()
 					.map(getIdentifier().getFactory()::fromString)
 					.collect(Collectors.toSet());
-			Optional<Identifier<?>> unknownIdentifier =
+			Optional<Identifier> unknownIdentifier =
 					identifiers.stream().filter(identifier -> !featureModel.hasFeature(identifier)).findAny();
 			if (unknownIdentifier.isPresent()) {
 				throw new RuntimeException("encountered unknown identifier " + unknownIdentifier.get()); // todo multimodel?

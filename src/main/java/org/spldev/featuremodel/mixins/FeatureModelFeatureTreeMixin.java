@@ -33,12 +33,12 @@ public interface FeatureModelFeatureTreeMixin {
         return getFeatureTree().getRoot().getFeature();
     }
 
-    default Optional<Feature> getFeature(Identifier<?> identifier) {
+    default Optional<Feature> getFeature(Identifier identifier) {
         Objects.requireNonNull(identifier);
         return getFeatures().stream().filter(feature -> feature.getIdentifier().equals(identifier)).findFirst();
     }
 
-    default boolean hasFeature(Identifier<?> identifier) {
+    default boolean hasFeature(Identifier identifier) {
         return getFeature(identifier).isPresent();
     }
 

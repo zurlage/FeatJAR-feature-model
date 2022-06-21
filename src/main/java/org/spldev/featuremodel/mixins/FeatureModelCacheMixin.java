@@ -12,7 +12,7 @@ import java.util.stream.Stream;
  * @author Elias Kuiter
  */
 public interface FeatureModelCacheMixin extends FeatureModelFeatureTreeMixin, FeatureModelConstraintMixin {
-	Map<Identifier<?>, Element> getElementCache();
+	Map<Identifier, Element> getElementCache();
 	Set<Feature> getFeatureCache();
 	//Set<FeatureModel> getFeatureModelCache(); todo
 
@@ -37,7 +37,7 @@ public interface FeatureModelCacheMixin extends FeatureModelFeatureTreeMixin, Fe
 	}
 
 	@Override
-	default Optional<Feature> getFeature(Identifier<?> identifier) {
+	default Optional<Feature> getFeature(Identifier identifier) {
 		Objects.requireNonNull(identifier);
 		Element element = getElementCache().get(identifier);
 		if (!(element instanceof Feature))
@@ -46,7 +46,7 @@ public interface FeatureModelCacheMixin extends FeatureModelFeatureTreeMixin, Fe
 	}
 
 	@Override
-	default Optional<Constraint> getConstraint(Identifier<?> identifier) {
+	default Optional<Constraint> getConstraint(Identifier identifier) {
 		Objects.requireNonNull(identifier);
 		Element element = getElementCache().get(identifier);
 		if (!(element instanceof Constraint))

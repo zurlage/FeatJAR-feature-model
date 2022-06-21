@@ -15,15 +15,15 @@ import java.util.*;
  * @author Elias Kuiter
  */
 public abstract class Element implements Identifiable, Attributable {
-	protected final Identifier<?> identifier;
+	protected final Identifier identifier;
 	protected final Map<Attribute<?>, Object> attributeToValueMap = new HashMap<>();
 
-	public Element(Identifier<?> identifier) {
+	public Element(Identifier identifier) {
 		Objects.requireNonNull(identifier);
 		this.identifier = identifier;
 	}
 
-	public Identifier<?> getIdentifier() {
+	public Identifier getIdentifier() {
 		return identifier;
 	}
 

@@ -16,12 +16,12 @@ import java.util.*;
 public interface FeatureModelConstraintMixin {
     List<Constraint> getConstraints();
 
-    default Optional<Constraint> getConstraint(Identifier<?> identifier) {
+    default Optional<Constraint> getConstraint(Identifier identifier) {
         Objects.requireNonNull(identifier);
         return getConstraints().stream().filter(constraint -> constraint.getIdentifier().equals(identifier)).findFirst();
     }
 
-    default boolean hasConstraint(Identifier<?> identifier) {
+    default boolean hasConstraint(Identifier identifier) {
         return getConstraint(identifier).isPresent();
     }
 
