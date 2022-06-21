@@ -38,6 +38,11 @@ public interface FeatureModelFeatureTreeMixin {
         return getFeatures().stream().filter(feature -> feature.getIdentifier().equals(identifier)).findFirst();
     }
 
+    default Set<Feature> getFeatures(String name) {
+        Objects.requireNonNull(name);
+        return getFeatures().stream().filter(feature -> feature.getName().equals(name)).collect(Collectors.toSet());
+    }
+
     default boolean hasFeature(Identifier identifier) {
         return getFeature(identifier).isPresent();
     }

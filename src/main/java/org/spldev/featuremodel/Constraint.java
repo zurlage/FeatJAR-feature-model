@@ -86,7 +86,7 @@ public class Constraint extends Element implements Mutable<Constraint, Constrain
 			Optional<Identifier> unknownIdentifier =
 					identifiers.stream().filter(identifier -> !featureModel.hasFeature(identifier)).findAny();
 			if (unknownIdentifier.isPresent()) {
-				throw new RuntimeException("encountered unknown identifier " + unknownIdentifier.get()); // todo multimodel?
+				throw new RuntimeException("encountered unknown identifier " + unknownIdentifier.get());
 			}
 			containedFeaturesCache = identifiers.stream()
 					.map(featureModel::getFeature)

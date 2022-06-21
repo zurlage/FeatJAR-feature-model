@@ -119,6 +119,5 @@ public class FeatureModelTest {
 		FeatureModel featureModel = featureModelResult.get();
 		String[] featureNames = new String[] {"Car", "Carbody", "Radio", "Ports", "USB", "CD", "Navigation", "DigitalCards", "Europe", "USA", "GPSAntenna", "Bluetooth", "Gearbox", "Manual", "Automatic", "GearboxTest"};
 		assertEquals(Set.of(featureNames), featureModel.getFeatures().stream().map(Feature::getName).collect(Collectors.toSet()));
-		System.out.println(featureModel);
 	}
 }

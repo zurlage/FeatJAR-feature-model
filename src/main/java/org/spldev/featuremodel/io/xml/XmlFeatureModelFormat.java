@@ -40,7 +40,6 @@ import org.xml.sax.InputSource;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.SAXParserFactory;
 import java.util.*;
-import java.util.function.Function;
 
 import static org.spldev.formula.io.xml.XmlFeatureModelFormat.*;
 

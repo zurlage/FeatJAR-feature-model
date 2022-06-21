@@ -128,7 +128,5 @@ public class FeatureTree extends RootedTree<FeatureTree> implements Mutable<Feat
 			groupMinimum = 1;
 			groupMaximum = Long.MAX_VALUE;
 		}
-
-		//todo addfeature... methods?
 	}
 }
