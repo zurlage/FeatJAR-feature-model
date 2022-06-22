@@ -26,7 +26,6 @@ import org.spldev.featuremodel.Feature;
 import org.spldev.featuremodel.FeatureModel;
 import org.spldev.featuremodel.util.Identifier;
 import org.spldev.formula.structure.atomic.literal.VariableMap;
-import org.spldev.formula.structure.term.Variable;
 import org.spldev.util.data.Problem;
 import org.spldev.util.data.Problem.Severity;
 import org.spldev.util.data.Result;

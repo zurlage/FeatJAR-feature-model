@@ -14,7 +14,7 @@ import java.util.*;
  * @author Elias Kuiter
  */
 public interface FeatureModelConstraintMixin {
-    List<Constraint> getConstraints();
+    List<Constraint> getConstraints(); // todo return also of submodels
 
     default Optional<Constraint> getConstraint(Identifier identifier) {
         Objects.requireNonNull(identifier);

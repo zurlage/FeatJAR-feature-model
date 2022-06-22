@@ -96,7 +96,7 @@ public interface FeatureModelFeatureTreeMixin {
             return newFeature;
         }
 
-        default void removeFeature(Feature feature) {
+        default void removeFeature(Feature feature) { // todo what about the containing constraints?
             Objects.requireNonNull(feature);
             if (feature.equals(getMutable().getRootFeature()) || !getMutable().hasFeature(feature)) {
                 throw new IllegalArgumentException();

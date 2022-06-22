@@ -20,9 +20,10 @@ public class FeatureModel extends Element implements FeatureModelFeatureTreeMixi
 	protected FeatureOrder featureOrder = FeatureOrder.ofPreOrder();
 	protected final Map<Identifier, Element> elementCache = Collections.synchronizedMap(new LinkedHashMap<>());
 	protected final Set<Feature> featureCache = Collections.synchronizedSet(new HashSet<>());
-	protected final Set<FeatureModel> featureModelCache = Collections.synchronizedSet(new HashSet<>());
+	protected final Set<FeatureModel> featureModelCache = Collections.synchronizedSet(new HashSet<>()); //todo calculate from tree
 	protected Mutator mutator;
 	protected Analyzer analyzer;
+	//todo inv: this featuretree (w/o submodels) has one variablemap. variablemap == features.
 
 	public FeatureModel(Identifier identifier) {
 		super(identifier);
