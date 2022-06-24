@@ -7,25 +7,27 @@ import java.util.*;
 import java.util.stream.Stream;
 
 /**
- * Cache. assumes that features/constraints are only added/deleted through the feature model class, not manually
+ * Cache. assumes that features/constraints are only added/deleted through the
+ * feature model class, not manually
  *
  * @author Elias Kuiter
  */
 public interface FeatureModelCacheMixin extends FeatureModelFeatureTreeMixin, FeatureModelConstraintMixin {
 	Map<Identifier, Element> getElementCache();
-	Set<Feature> getFeatureCache();
-	//Set<FeatureModel> getFeatureModelCache(); todo
 
-	default void invalidate() {
+	Set<Feature> getFeatureCache();
+	// Set<FeatureModel> getFeatureModelCache(); todo
+
+	default void finishInternalMutation() {
 		Set<Feature> features = FeatureModelFeatureTreeMixin.super.getFeatures();
 
 		getElementCache().clear();
 		Stream.concat(features.stream(), getConstraints().stream())
-				.forEach(element -> {
-					if (getElementCache().get(element.getIdentifier()) != null)
-						throw new RuntimeException("duplicate identifier " + element.getIdentifier());
-					getElementCache().put(element.getIdentifier(), element);
-				});
+			.forEach(element -> {
+				if (getElementCache().get(element.getIdentifier()) != null)
+					throw new RuntimeException("duplicate identifier " + element.getIdentifier());
+				getElementCache().put(element.getIdentifier(), element);
+			});
 
 		getFeatureCache().clear();
 		getFeatureCache().addAll(features);
@@ -54,7 +56,8 @@ public interface FeatureModelCacheMixin extends FeatureModelFeatureTreeMixin, Fe
 		return Optional.of((Constraint) element);
 	}
 
-	interface Mutator extends org.spldev.featuremodel.util.Mutator<FeatureModel>, FeatureModelFeatureTreeMixin.Mutator, FeatureModelConstraintMixin.Mutator {
+	interface Mutator extends org.spldev.featuremodel.util.Mutator<FeatureModel>, FeatureModelFeatureTreeMixin.Mutator,
+		FeatureModelConstraintMixin.Mutator {
 		@Override
 		default void addFeatureBelow(Feature newFeature, Feature parentFeature, int index) {
 			FeatureModelFeatureTreeMixin.Mutator.super.addFeatureBelow(newFeature, parentFeature, index);

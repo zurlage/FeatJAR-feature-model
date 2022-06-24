@@ -1,8 +1,8 @@
 package org.spldev.featuremodel.util;
 
 /**
- * An object that is uniquely identified by an {@link Identifier}.
- * Can generate new identifiers with the identifier's {@link Identifier.Factory}.
+ * An object that is uniquely identified by an {@link Identifier}. Can generate
+ * new identifiers with the identifier's {@link Identifier.Factory}.
  *
  * @author Elias Kuiter
  */

@@ -7,18 +7,19 @@ import org.spldev.featuremodel.FeatureOrder;
 import java.util.List;
 
 /**
- * Implements a {@link FeatureModel} mixin for considering a {@link FeatureOrder}.
+ * Implements a {@link FeatureModel} mixin for considering a
+ * {@link FeatureOrder}.
  *
  * @author Elias Kuiter
  */
 public interface FeatureModelFeatureOrderMixin extends FeatureModelFeatureTreeMixin {
-    FeatureOrder getFeatureOrder();
+	FeatureOrder getFeatureOrder();
 
-    default List<Feature> getOrderedFeatures() {
-        return getFeatureOrder().apply(this);
-    }
+	default List<Feature> getOrderedFeatures() {
+		return getFeatureOrder().apply(this);
+	}
 
-    interface Mutator {
-        void setFeatureOrder(FeatureOrder featureOrder);
-    }
+	interface Mutator {
+		void setFeatureOrder(FeatureOrder featureOrder);
+	}
 }

@@ -7,5 +7,5 @@ package org.spldev.featuremodel.util;
  * @author Elias Kuiter
  */
 public interface Analyzer<T> {
-    T getAnalyzable();
+	T getAnalyzable();
 }

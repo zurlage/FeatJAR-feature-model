@@ -9,7 +9,8 @@ import java.util.stream.Collectors;
 
 /**
  * An ordered {@link RootedTree} labeled with {@link Feature features}.
- * Implements elements of notation from feature-oriented domain analysis, such as mandatory/optional features and groups.
+ * Implements elements of notation from feature-oriented domain analysis, such
+ * as mandatory/optional features and groups.
  *
  * @author Elias Kuiter
  */
@@ -46,7 +47,7 @@ public class FeatureTree extends RootedTree<FeatureTree> implements Mutable<Feat
 	}
 
 	public boolean isMandatory() {
-		return isMandatory; //todo
+		return isMandatory; // todo
 	}
 
 	public long getGroupMinimum() {
@@ -71,8 +72,8 @@ public class FeatureTree extends RootedTree<FeatureTree> implements Mutable<Feat
 
 	public Set<Constraint> getContainingConstraints() {
 		return feature.getFeatureModel().getConstraints().stream()
-				.filter(constraint -> constraint.getContainedFeatures().stream()
-						.anyMatch(feature::equals)).collect(Collectors.toSet());
+			.filter(constraint -> constraint.getContainedFeatures().stream()
+				.anyMatch(feature::equals)).collect(Collectors.toSet());
 	}
 
 	@Override
@@ -88,10 +89,6 @@ public class FeatureTree extends RootedTree<FeatureTree> implements Mutable<Feat
 	@Override
 	public void setMutator(Mutator mutator) {
 		this.mutator = mutator;
-	}
-
-	@Override
-	public void invalidate() {
 	}
 
 	// todo hashcode, equals, tostring, clone

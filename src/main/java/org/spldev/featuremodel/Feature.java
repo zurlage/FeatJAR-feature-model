@@ -7,13 +7,15 @@ import org.spldev.featuremodel.util.Mutable;
 import java.util.Objects;
 
 /**
- * A feature in a {@link FeatureModel} describes some functionality of a software system.
- * It is attached to some feature model and labels a {@link FeatureTree}.
- * For safe mutation, rely only on the methods of {@link Mutable}.
+ * A feature in a {@link FeatureModel} describes some functionality of a
+ * software system. It is attached to some feature model and labels a
+ * {@link FeatureTree}. For safe mutation, rely only on the methods of
+ * {@link Mutable}.
  *
  * @author Elias Kuiter
  */
-public class Feature extends Element implements CommonAttributesMixin, Mutable<Feature, Feature.Mutator>, Analyzable<Feature, Feature.Analyzer> {
+public class Feature extends Element implements CommonAttributesMixin, Mutable<Feature, Feature.Mutator>,
+	Analyzable<Feature, Feature.Analyzer> {
 	protected final FeatureModel featureModel;
 	protected final FeatureTree featureTree;
 	protected Mutator mutator;
@@ -71,15 +73,12 @@ public class Feature extends Element implements CommonAttributesMixin, Mutable<F
 	}
 
 	@Override
-	public void invalidate() {
-	}
-
-	@Override
 	public String toString() {
 		return String.format("Feature{name=%s}", getName());
 	}
 
-	public class Mutator implements org.spldev.featuremodel.util.Mutator<Feature>, CommonAttributesMixin.Mutator<Feature> {
+	public class Mutator implements org.spldev.featuremodel.util.Mutator<Feature>,
+		CommonAttributesMixin.Mutator<Feature> {
 		@Override
 		public Feature getMutable() {
 			return Feature.this;
@@ -91,6 +90,14 @@ public class Feature extends Element implements CommonAttributesMixin, Mutable<F
 
 		public void setHidden(boolean value) {
 			setAttributeValue(Attributes.HIDDEN, value);
+		}
+
+		public boolean toggleAbstract() {
+			return toggleAttributeValue(Attributes.ABSTRACT);
+		}
+
+		public boolean toggleHidden() {
+			return toggleAttributeValue(Attributes.HIDDEN);
 		}
 
 		public void addFeatureBelow(Feature newFeature, int index) {

@@ -11,13 +11,15 @@ import org.spldev.formula.structure.Formula;
 import org.spldev.formula.structure.Formulas;
 
 /**
- * A constraint describes some restriction of the valid {@link Configuration configurations} represented by a {@link FeatureModel}.
- * It is attached to some feature model and represented as a {@link Formula} over {@link Feature features}.
- * For safe mutation, rely only on the methods of {@link Mutable}.
+ * A constraint describes some restriction of the valid {@link Configuration
+ * configurations} represented by a {@link FeatureModel}. It is attached to some
+ * feature model and represented as a {@link Formula} over {@link Feature
+ * features}. For safe mutation, rely only on the methods of {@link Mutable}.
  *
  * @author Elias Kuiter
  */
-public class Constraint extends Element implements Mutable<Constraint, Constraint.Mutator>, Analyzable<Constraint, Constraint.Analyzer> {
+public class Constraint extends Element implements Mutable<Constraint, Constraint.Mutator>,
+	Analyzable<Constraint, Constraint.Analyzer> {
 	protected final FeatureModel featureModel;
 	protected Formula formula;
 	protected Set<Feature> containedFeaturesCache = new HashSet<>();
@@ -54,10 +56,6 @@ public class Constraint extends Element implements Mutable<Constraint, Constrain
 	}
 
 	@Override
-	public void invalidate() {
-	}
-
-	@Override
 	public String toString() {
 		return String.format("Constraint{formula=%s}", formula);
 	}
@@ -72,7 +70,8 @@ public class Constraint extends Element implements Mutable<Constraint, Constrain
 		this.analyzer = analyzer;
 	}
 
-	public class Mutator implements org.spldev.featuremodel.util.Mutator<Constraint>, CommonAttributesMixin.Mutator<Constraint> {
+	public class Mutator implements org.spldev.featuremodel.util.Mutator<Constraint>,
+		CommonAttributesMixin.Mutator<Constraint> {
 		@Override
 		public Constraint getMutable() {
 			return Constraint.this;
@@ -81,17 +80,17 @@ public class Constraint extends Element implements Mutable<Constraint, Constrain
 		public void setFormula(Formula formula) {
 			Objects.requireNonNull(formula);
 			Set<Identifier> identifiers = Formulas.getVariableNames(formula).stream()
-					.map(getIdentifier().getFactory()::fromString)
-					.collect(Collectors.toSet());
-			Optional<Identifier> unknownIdentifier =
-					identifiers.stream().filter(identifier -> !featureModel.hasFeature(identifier)).findAny();
+				.map(getIdentifier().getFactory()::parse)
+				.collect(Collectors.toSet());
+			Optional<Identifier> unknownIdentifier = identifiers.stream().filter(identifier -> !featureModel.hasFeature(
+				identifier)).findAny();
 			if (unknownIdentifier.isPresent()) {
 				throw new RuntimeException("encountered unknown identifier " + unknownIdentifier.get());
 			}
 			containedFeaturesCache = identifiers.stream()
-					.map(featureModel::getFeature)
-					.map(Optional::get)
-					.collect(Collectors.toSet());
+				.map(featureModel::getFeature)
+				.map(Optional::get)
+				.collect(Collectors.toSet());
 			Constraint.this.formula = formula;
 		}
 	}

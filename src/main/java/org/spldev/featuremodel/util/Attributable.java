@@ -4,9 +4,11 @@ import java.util.Map;
 import java.util.Optional;
 
 /**
- * An object that can be annotated with {@link Attribute} values.
- * For example, attributes are used in {@link org.spldev.featuremodel.FeatureModel feature models},
- * {@link org.spldev.featuremodel.Feature features}, and {@link org.spldev.featuremodel.Constraint constraints} to store additional metadata.
+ * An object that can be annotated with {@link Attribute} values. For example,
+ * attributes are used in {@link org.spldev.featuremodel.FeatureModel feature
+ * models}, {@link org.spldev.featuremodel.Feature features}, and
+ * {@link org.spldev.featuremodel.Constraint constraints} to store additional
+ * metadata.
  *
  * @author Elias Kuiter
  */
@@ -28,6 +30,12 @@ public interface Attributable {
 
 		default <U> Object removeAttributeValue(Attribute<U> attribute) {
 			return getMutable().getAttributeToValueMap().remove(attribute);
+		}
+
+		default boolean toggleAttributeValue(Attribute.WithDefaultValue<Boolean> attribute) {
+			boolean value = getMutable().getAttributeValue(attribute);
+			setAttributeValue(attribute, !value);
+			return !value;
 		}
 	}
 }

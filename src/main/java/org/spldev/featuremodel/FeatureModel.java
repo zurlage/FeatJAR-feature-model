@@ -8,28 +8,35 @@ import org.spldev.featuremodel.util.Mutable;
 import java.util.*;
 
 /**
- * A feature model is a representation of the space of valid {@link Configuration configurations} for a software system.
- * Here, we implement feature diagrams (i.e., a {@link FeatureTree} labeled with features and a list of {@link Constraint constraints}).
- * For safe mutation, rely only on the methods of {@link Mutable}.
+ * A feature model is a representation of the space of valid
+ * {@link Configuration configurations} for a software system. Here, we
+ * implement feature diagrams (i.e., a {@link FeatureTree} labeled with features
+ * and a list of {@link Constraint constraints}). For safe mutation, rely only
+ * on the methods of {@link Mutable}.
  *
  * @author Elias Kuiter
  */
-public class FeatureModel extends Element implements FeatureModelFeatureTreeMixin, FeatureModelConstraintMixin, FeatureModelFeatureOrderMixin, CommonAttributesMixin, FeatureModelCacheMixin, Mutable<FeatureModel, FeatureModel.Mutator>, Analyzable<FeatureModel, FeatureModel.Analyzer> { // CacheMixin
+public class FeatureModel extends Element implements FeatureModelFeatureTreeMixin, FeatureModelConstraintMixin,
+	FeatureModelFeatureOrderMixin, CommonAttributesMixin, FeatureModelCacheMixin,
+	Mutable<FeatureModel, FeatureModel.Mutator>, Analyzable<FeatureModel, FeatureModel.Analyzer> { // CacheMixin
 	protected final FeatureTree featureTree;
 	protected final List<Constraint> constraints = Collections.synchronizedList(new ArrayList<>());
 	protected FeatureOrder featureOrder = FeatureOrder.ofPreOrder();
 	protected final Map<Identifier, Element> elementCache = Collections.synchronizedMap(new LinkedHashMap<>());
 	protected final Set<Feature> featureCache = Collections.synchronizedSet(new HashSet<>());
-	protected final Set<FeatureModel> featureModelCache = Collections.synchronizedSet(new HashSet<>()); //todo calculate from tree
+	protected final Set<FeatureModel> featureModelCache = Collections.synchronizedSet(new HashSet<>()); // todo
+																										// calculate
+																										// from tree
 	protected Mutator mutator;
 	protected Analyzer analyzer;
-	//todo inv: this featuretree (w/o submodels) has one variablemap. variablemap == features.
+	// todo inv: this featuretree (w/o submodels) has one variablemap. variablemap
+	// == features.
 
 	public FeatureModel(Identifier identifier) {
 		super(identifier);
 		final Feature root = new Feature(this);
 		featureTree = root.getFeatureTree();
-		invalidate();
+		finishInternalMutation();
 	}
 
 	@Override
@@ -78,8 +85,8 @@ public class FeatureModel extends Element implements FeatureModelFeatureTreeMixi
 	}
 
 	@Override
-	public void invalidate() {
-		FeatureModelCacheMixin.super.invalidate();
+	public void finishInternalMutation() {
+		FeatureModelCacheMixin.super.finishInternalMutation();
 	}
 
 	@Override
@@ -92,7 +99,10 @@ public class FeatureModel extends Element implements FeatureModelFeatureTreeMixi
 		throw new CloneNotSupportedException(); // todo
 	}
 
-	public class Mutator implements org.spldev.featuremodel.util.Mutator<FeatureModel>, FeatureModelFeatureTreeMixin.Mutator, FeatureModelConstraintMixin.Mutator, FeatureModelFeatureOrderMixin.Mutator, CommonAttributesMixin.Mutator<FeatureModel>, FeatureModelCacheMixin.Mutator {
+	public class Mutator implements org.spldev.featuremodel.util.Mutator<FeatureModel>,
+		FeatureModelFeatureTreeMixin.Mutator, FeatureModelConstraintMixin.Mutator,
+		FeatureModelFeatureOrderMixin.Mutator, CommonAttributesMixin.Mutator<FeatureModel>,
+		FeatureModelCacheMixin.Mutator {
 		@Override
 		public FeatureModel getMutable() {
 			return FeatureModel.this;
@@ -104,7 +114,8 @@ public class FeatureModel extends Element implements FeatureModelFeatureTreeMixi
 		}
 	}
 
-	public class Analyzer implements org.spldev.featuremodel.util.Analyzer<FeatureModel>, FeatureModelFeatureTreeMixin.Analyzer, FeatureModelConstraintMixin.Analyzer {
+	public class Analyzer implements org.spldev.featuremodel.util.Analyzer<FeatureModel>,
+		FeatureModelFeatureTreeMixin.Analyzer, FeatureModelConstraintMixin.Analyzer {
 		@Override
 		public FeatureModel getAnalyzable() {
 			return FeatureModel.this;

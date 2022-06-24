@@ -84,10 +84,10 @@ public class XmlFeatureModelFormat implements Format<FeatureModel> {
 			final Element e = elementList.get(0);
 			parseStruct(getElement(e, STRUCT));
 			new org.spldev.formula.io.xml.XmlFeatureModelFormat().parseConstraints(
-					getElement(e, CONSTRAINTS),
-					name -> variableMap.getVariable(nameToIdentifierMap.get(name).toString()),
-					parseProblems,
-					formula -> featureModel.mutate().createConstraint(formula));
+				getElement(e, CONSTRAINTS),
+				name -> variableMap.getVariable(nameToIdentifierMap.get(name).toString()),
+				parseProblems,
+				formula -> featureModel.mutate().createConstraint(formula));
 		} else if (elementList.isEmpty()) {
 			throw new ParseException("Not a feature model xml element!");
 		} else {
