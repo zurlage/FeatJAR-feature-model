@@ -124,7 +124,7 @@ public class Feature extends Element implements CommonAttributesMixin, Mutable<F
 			return getFeatureModel().mutate().createFeatureNextTo(Feature.this);
 		}
 
-		public void removeFeature(Feature feature) {
+		public void remove() {
 			getFeatureModel().mutate().removeFeature(Feature.this);
 		}
 	}

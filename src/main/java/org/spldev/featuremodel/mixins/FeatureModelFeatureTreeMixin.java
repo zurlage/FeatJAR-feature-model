@@ -4,7 +4,6 @@ import org.spldev.featuremodel.Feature;
 import org.spldev.featuremodel.FeatureModel;
 import org.spldev.featuremodel.FeatureTree;
 import org.spldev.featuremodel.util.Identifier;
-import org.spldev.formula.ModelRepresentation;
 import org.spldev.util.tree.Trees;
 
 import java.util.Collections;
@@ -39,7 +38,7 @@ public interface FeatureModelFeatureTreeMixin {
 		return getFeatures().stream().filter(feature -> feature.getIdentifier().equals(identifier)).findFirst();
 	}
 
-	default Set<Feature> getFeatures(String name) {
+	default Set<Feature> getFeaturesByName(String name) {
 		Objects.requireNonNull(name);
 		return getFeatures().stream().filter(feature -> feature.getName().equals(name)).collect(Collectors.toSet());
 	}

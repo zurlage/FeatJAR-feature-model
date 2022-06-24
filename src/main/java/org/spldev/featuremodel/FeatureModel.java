@@ -18,7 +18,7 @@ import java.util.*;
  */
 public class FeatureModel extends Element implements FeatureModelFeatureTreeMixin, FeatureModelConstraintMixin,
 	FeatureModelFeatureOrderMixin, CommonAttributesMixin, FeatureModelCacheMixin,
-	Mutable<FeatureModel, FeatureModel.Mutator>, Analyzable<FeatureModel, FeatureModel.Analyzer> { // CacheMixin
+	Mutable<FeatureModel, FeatureModel.Mutator>, Analyzable<FeatureModel, FeatureModel.Analyzer> {
 	protected final FeatureTree featureTree;
 	protected final List<Constraint> constraints = Collections.synchronizedList(new ArrayList<>());
 	protected FeatureOrder featureOrder = FeatureOrder.ofPreOrder();

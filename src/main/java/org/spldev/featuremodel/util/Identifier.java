@@ -59,6 +59,10 @@ public abstract class Identifier extends org.spldev.util.data.Identifier<Identif
 			this.counter = counter;
 		}
 
+		public long getCounter() {
+			return counter;
+		}
+
 		@Override
 		public String toString() {
 			return String.valueOf(counter);
@@ -85,6 +89,10 @@ public abstract class Identifier extends org.spldev.util.data.Identifier<Identif
 		public UUID(java.util.UUID uuid, Factory factory) {
 			super(factory);
 			this.uuid = uuid;
+		}
+
+		public java.util.UUID getUUID() {
+			return uuid;
 		}
 
 		@Override

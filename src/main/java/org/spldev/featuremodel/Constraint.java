@@ -93,6 +93,10 @@ public class Constraint extends Element implements Mutable<Constraint, Constrain
 				.collect(Collectors.toSet());
 			Constraint.this.formula = formula;
 		}
+
+		public void remove() {
+			getFeatureModel().mutate().removeConstraint(Constraint.this);
+		}
 	}
 
 	public class Analyzer implements org.spldev.featuremodel.util.Analyzer<Constraint> {

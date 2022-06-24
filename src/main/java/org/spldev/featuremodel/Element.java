@@ -39,7 +39,7 @@ public abstract class Element implements Identifiable, Attributable {
 			return true;
 		if (o == null || getClass() != o.getClass())
 			return false;
-		Constraint that = (Constraint) o;
+		Element that = (Element) o;
 		return getIdentifier().equals(that.getIdentifier());
 	}
 
