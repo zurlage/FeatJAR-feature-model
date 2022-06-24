@@ -88,7 +88,8 @@ public class FeatureModelTest {
 		assertEquals(Arrays.asList(childFeature, rootFeature), featureModel.getOrderedFeatures());
 		featureModel.mutate().setFeatureOrder(FeatureOrder.ofList(Collections.singletonList(rootFeature)));
 		assertEquals(Arrays.asList(rootFeature, childFeature), featureModel.getOrderedFeatures());
-		Comparator<Feature> comparator = Comparator.comparingLong(f -> ((Identifier.Counter) f.getIdentifier()).getCounter());
+		Comparator<Feature> comparator = Comparator.comparingLong(f -> ((Identifier.Counter) f.getIdentifier())
+			.getCounter());
 		featureModel.mutate().setFeatureOrder(FeatureOrder.ofComparator(comparator));
 		assertEquals(Arrays.asList(rootFeature, childFeature), featureModel.getOrderedFeatures());
 		featureModel.mutate().setFeatureOrder(FeatureOrder.ofComparator(comparator.reversed()));
