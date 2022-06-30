@@ -23,9 +23,21 @@ public interface Attributable {
 		return attribute.applyWithDefaultValue(getAttributeToValueMap(), this);
 	}
 
+	default boolean hasAttributeValue(Attribute<?> attribute) {
+		return getAttributeValue(attribute).isPresent();
+	}
+
 	interface Mutator<T extends Attributable> extends org.spldev.featuremodel.util.Mutator<T> {
 		default <U> void setAttributeValue(Attribute<U> attribute, U value) {
-			getMutable().getAttributeToValueMap().put(attribute, value);
+			if (value == null)
+				removeAttributeValue(attribute);
+			else
+				getMutable().getAttributeToValueMap().put(attribute, value);
+		}
+
+		default void setArbitraryAttributeValue(Attribute<?> attribute, Object value) {
+			if (!attribute.getType().equals(value.getClass()))
+				throw new IllegalArgumentException("cannot set attribute of type " + attribute.getType() + " to value of type " + value.getClass());
 		}
 
 		default <U> Object removeAttributeValue(Attribute<U> attribute) {

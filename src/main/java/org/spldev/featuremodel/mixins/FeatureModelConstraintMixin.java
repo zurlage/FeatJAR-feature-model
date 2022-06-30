@@ -79,6 +79,12 @@ public interface FeatureModelConstraintMixin {
 			return newConstraint;
 		}
 
+		default Constraint createConstraint() {
+			Constraint newConstraint = new Constraint(getMutable());
+			addConstraint(newConstraint);
+			return newConstraint;
+		}
+
 		default void removeConstraint(Constraint constraint) {
 			Objects.requireNonNull(constraint);
 			if (!getMutable().hasConstraint(constraint)) {

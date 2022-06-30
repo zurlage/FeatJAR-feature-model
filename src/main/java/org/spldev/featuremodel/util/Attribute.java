@@ -2,6 +2,7 @@ package org.spldev.featuremodel.util;
 
 import org.spldev.featuremodel.Feature;
 
+import java.util.HashSet;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
@@ -18,23 +19,19 @@ import java.util.function.Function;
  * @author Elias Kuiter
  */
 public class Attribute<T> implements Function<Map<Attribute<?>, Object>, Optional<T>> {
-	public static final String DEFAULT_NAMESPACE = "org.spldev.featuremodel";
+	public static final String DEFAULT_NAMESPACE = "<default>";
 
 	protected final String namespace;
 	protected final String name;
-	protected final Class<T> type;
+	protected final Class<?> type;
 
-	public Attribute(String namespace, String name, Class<T> type) {
+	public Attribute(String namespace, String name, Class<?> type) {
 		Objects.requireNonNull(namespace);
 		Objects.requireNonNull(name);
 		Objects.requireNonNull(type);
 		this.namespace = namespace;
 		this.name = name;
 		this.type = type;
-	}
-
-	public Attribute(String name, Class<T> type) {
-		this(DEFAULT_NAMESPACE, name, type);
 	}
 
 	public String getNamespace() {
@@ -45,7 +42,7 @@ public class Attribute<T> implements Function<Map<Attribute<?>, Object>, Optiona
 		return name;
 	}
 
-	public Class<T> getType() {
+	public Class<?> getType() {
 		return type;
 	}
 
@@ -77,24 +74,16 @@ public class Attribute<T> implements Function<Map<Attribute<?>, Object>, Optiona
 	public static class WithDefaultValue<T> extends Attribute<T> {
 		protected final Function<Attributable, T> defaultValueFunction;
 
-		public WithDefaultValue(String namespace, String name, Class<T> type,
-			Function<Attributable, T> defaultValueFunction) {
+		public WithDefaultValue(String namespace, String name, Class<?> type,
+								Function<Attributable, T> defaultValueFunction) {
 			super(namespace, name, type);
 			Objects.requireNonNull(defaultValueFunction);
 			this.defaultValueFunction = defaultValueFunction;
 		}
 
-		public WithDefaultValue(String namespace, String name, Class<T> type, T defaultValue) {
+		public WithDefaultValue(String namespace, String name, Class<?> type, T defaultValue) {
 			this(namespace, name, type, attributable -> defaultValue);
 			Objects.requireNonNull(defaultValue);
-		}
-
-		public WithDefaultValue(String name, Class<T> type, Function<Attributable, T> defaultValueFunction) {
-			this(DEFAULT_NAMESPACE, name, type, defaultValueFunction);
-		}
-
-		public WithDefaultValue(String name, Class<T> type, T defaultValue) {
-			this(DEFAULT_NAMESPACE, name, type, defaultValue);
 		}
 
 		public Function<Attributable, T> getDefaultValueFunction() {
@@ -107,6 +96,12 @@ public class Attribute<T> implements Function<Map<Attribute<?>, Object>, Optiona
 
 		public T applyWithDefaultValue(Map<Attribute<?>, Object> attributeToValueMap, Attributable attributable) {
 			return (T) attributeToValueMap.getOrDefault(this, defaultValueFunction.apply(attributable));
+		}
+	}
+
+	public static class Set<T> extends WithDefaultValue<java.util.Set<T>> {
+		public Set(String namespace, String name) {
+			super(namespace, name, Set.class, new HashSet<>());
 		}
 	}
 }

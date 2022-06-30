@@ -1,13 +1,17 @@
 package org.spldev.featuremodel.io;
 
 import org.junit.jupiter.api.Test;
+import org.spldev.featuremodel.Attributes;
 import org.spldev.featuremodel.Feature;
 import org.spldev.featuremodel.FeatureModel;
 import org.spldev.featuremodel.io.xml.XMLFeatureModelFormat;
+import org.spldev.formula.structure.Formulas;
+import org.spldev.formula.structure.compound.And;
 import org.spldev.util.data.Result;
 import org.spldev.util.io.FileHandler;
 
 import java.nio.file.Paths;
+import java.util.ArrayList;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -26,5 +30,9 @@ public class XMLFeatureModelFormatTest {
 			"GearboxTest" };
 		assertEquals(Set.of(featureNames), featureModel.getFeatures().stream().map(Feature::getName).collect(Collectors
 			.toSet()));
+
+		System.out.println(Attributes.TAGS);
+
+		Formulas.xyz(new ArrayList<>() , And::new);
 	}
 }

@@ -1,6 +1,7 @@
 package org.spldev.featuremodel;
 
 import org.spldev.featuremodel.mixins.FeatureModelFeatureTreeMixin;
+import org.spldev.featuremodel.util.Mutable;
 import org.spldev.util.tree.Trees;
 
 import java.util.Comparator;
@@ -15,22 +16,65 @@ import java.util.stream.Stream;
  *
  * @author Elias Kuiter
  */
-public interface FeatureOrder extends Function<FeatureModelFeatureTreeMixin, List<Feature>> {
-	static FeatureOrder ofPreOrder() {
-		return featureModel -> Trees.preOrderStream(featureModel.getFeatureTree())
-			.map(FeatureTree::getFeature)
-			.collect(Collectors.toList());
+public abstract class FeatureOrder implements Function<FeatureModelFeatureTreeMixin, List<Feature>>, Mutable<FeatureOrder, FeatureOrder.Mutator> {
+	protected boolean isUserDefined;
+	protected Mutator mutator;
+
+	public boolean isUserDefined() {
+		return isUserDefined;
 	}
 
-	static FeatureOrder ofComparator(Comparator<Feature> featureComparator) {
-		return featureModel -> featureModel.getFeatures().stream()
-			.sorted(featureComparator)
-			.collect(Collectors.toList());
+	@Override
+	public FeatureOrder.Mutator getMutator() {
+		return mutator == null ? (mutator = new FeatureOrder.Mutator()) : mutator;
 	}
 
-	static FeatureOrder ofList(List<Feature> featureList) {
-		return featureModel -> Stream.concat(featureList.stream().filter(featureModel.getFeatures()::contains),
-			featureModel.getFeatures().stream().filter(feature -> !featureList.contains(feature)))
-			.collect(Collectors.toList());
+	@Override
+	public void setMutator(FeatureOrder.Mutator mutator) {
+		this.mutator = mutator;
+	}
+
+	public static FeatureOrder ofPreOrder() {
+		return new FeatureOrder() {
+			@Override
+			public List<Feature> apply(FeatureModelFeatureTreeMixin featureModel) {
+				return Trees.preOrderStream(featureModel.getFeatureTree())
+						.map(FeatureTree::getFeature)
+						.collect(Collectors.toList());
+			}
+		};
+	}
+
+	public static FeatureOrder ofComparator(Comparator<Feature> featureComparator) {
+		return new FeatureOrder() {
+			@Override
+			public List<Feature> apply(FeatureModelFeatureTreeMixin featureModel) {
+				return featureModel.getFeatures().stream()
+						.sorted(featureComparator)
+						.collect(Collectors.toList());
+			}
+		};
+	}
+
+	public static FeatureOrder ofList(List<Feature> featureList) { // todo: maybe make this list mutable for easier editing?
+		return new FeatureOrder() {
+			@Override
+			public List<Feature> apply(FeatureModelFeatureTreeMixin featureModel) {
+				return Stream.concat(featureList.stream().filter(featureModel.getFeatures()::contains),
+								featureModel.getFeatures().stream().filter(feature -> !featureList.contains(feature)))
+						.collect(Collectors.toList());
+			}
+		};
+	}
+
+	public class Mutator implements org.spldev.featuremodel.util.Mutator<FeatureOrder> {
+		@Override
+		public FeatureOrder getMutable() {
+			return FeatureOrder.this;
+		}
+
+		public void setUserDefined(boolean userDefined) {
+			FeatureOrder.this.isUserDefined = userDefined;
+		}
 	}
 }

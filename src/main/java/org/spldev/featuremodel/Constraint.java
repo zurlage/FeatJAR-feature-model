@@ -9,6 +9,7 @@ import org.spldev.featuremodel.util.Identifier;
 import org.spldev.featuremodel.util.Mutable;
 import org.spldev.formula.structure.Formula;
 import org.spldev.formula.structure.Formulas;
+import org.spldev.formula.structure.atomic.literal.Literal;
 
 /**
  * A constraint describes some restriction of the valid {@link Configuration
@@ -22,7 +23,7 @@ public class Constraint extends Element implements Mutable<Constraint, Constrain
 	Analyzable<Constraint, Constraint.Analyzer> {
 	protected final FeatureModel featureModel;
 	protected Formula formula;
-	protected Set<Feature> containedFeaturesCache = new HashSet<>();
+	protected final Set<Feature> containedFeaturesCache = new HashSet<>();
 	protected Mutator mutator;
 	protected Analyzer analyzer;
 
@@ -31,6 +32,13 @@ public class Constraint extends Element implements Mutable<Constraint, Constrain
 		Objects.requireNonNull(featureModel);
 		this.featureModel = featureModel;
 		getMutator().setFormula(formula); // todo efficient?
+	}
+
+	public Constraint(FeatureModel featureModel) {
+		super(featureModel.getNewIdentifier());
+		Objects.requireNonNull(featureModel);
+		this.featureModel = featureModel;
+		this.formula = Literal.True;
 	}
 
 	public FeatureModel getFeatureModel() {
@@ -43,6 +51,10 @@ public class Constraint extends Element implements Mutable<Constraint, Constrain
 
 	public Set<Feature> getContainedFeatures() {
 		return containedFeaturesCache;
+	}
+
+	public Set<String> getTags() {
+		return getAttributeValue(Attributes.TAGS);
 	}
 
 	@Override
@@ -87,11 +99,16 @@ public class Constraint extends Element implements Mutable<Constraint, Constrain
 			if (unknownIdentifier.isPresent()) {
 				throw new RuntimeException("encountered unknown identifier " + unknownIdentifier.get());
 			}
-			containedFeaturesCache = identifiers.stream()
+			containedFeaturesCache.clear();
+			containedFeaturesCache.addAll(identifiers.stream()
 				.map(featureModel::getFeature)
 				.map(Optional::get)
-				.collect(Collectors.toSet());
+				.collect(Collectors.toSet()));
 			Constraint.this.formula = formula;
+		}
+
+		public void setTags(Set<String> tags) {
+			setAttributeValue(Attributes.TAGS, tags);
 		}
 
 		public void remove() {
