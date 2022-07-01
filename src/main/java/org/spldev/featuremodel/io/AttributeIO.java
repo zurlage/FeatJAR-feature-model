@@ -34,6 +34,23 @@ public class AttributeIO {
 		return Optional.empty();
 	}
 
+	public static Optional<String> getTypeString(Class<?> type) {
+		if (String.class.equals(type)) {
+			return Optional.of("string");
+		} else if (Boolean.class.equals(type)) {
+			return Optional.of("boolean");
+		} else if (Integer.class.equals(type)) {
+			return Optional.of("integer");
+		} else if (Long.class.equals(type)) {
+			return Optional.of("long");
+		} else if (Float.class.equals(type)) {
+			return Optional.of("float");
+		} else if (Double.class.equals(type)) {
+			return Optional.of("double");
+		}
+		return Optional.empty();
+	}
+
 	public static Optional<Attribute<?>> parseAttribute(String namespace, String name, String typeString) {
 		return getType(typeString).map(type -> new Attribute<>(namespace, name, type));
 	}

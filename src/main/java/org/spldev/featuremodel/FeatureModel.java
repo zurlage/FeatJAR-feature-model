@@ -4,6 +4,7 @@ import org.spldev.featuremodel.mixins.*;
 import org.spldev.featuremodel.util.Analyzable;
 import org.spldev.featuremodel.util.Identifier;
 import org.spldev.featuremodel.util.Mutable;
+import org.spldev.formula.structure.atomic.literal.VariableMap;
 
 import java.util.*;
 
@@ -22,10 +23,12 @@ public class FeatureModel extends Element implements FeatureModelFeatureTreeMixi
 	protected final FeatureTree featureTree;
 	protected final List<Constraint> constraints = Collections.synchronizedList(new ArrayList<>());
 	protected FeatureOrder featureOrder = FeatureOrder.ofPreOrder();
+
+	protected final VariableMap variableMap = VariableMap.emptyMap(); // todo: get, set, mutate correctly (checks), pass map to createConstraint as Function<...>
 	protected final Map<Identifier, Element> elementCache = Collections.synchronizedMap(new LinkedHashMap<>());
 	protected final Set<Feature> featureCache = Collections.synchronizedSet(new HashSet<>());
 	protected final Set<FeatureModel> featureModelCache = Collections.synchronizedSet(new HashSet<>()); // todo
-																										// calculate
+	// calculate
 																										// from tree
 	protected Mutator mutator;
 	protected Analyzer analyzer;
@@ -52,6 +55,11 @@ public class FeatureModel extends Element implements FeatureModelFeatureTreeMixi
 	@Override
 	public FeatureOrder getFeatureOrder() {
 		return featureOrder;
+	}
+
+	//@Override //constraint mixin?
+	public VariableMap getVariableMap() {
+		return variableMap;
 	}
 
 	@Override

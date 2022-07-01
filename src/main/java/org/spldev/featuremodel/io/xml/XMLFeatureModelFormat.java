@@ -60,6 +60,7 @@ public class XMLFeatureModelFormat extends AbstractXMLFeatureModelFormat<Feature
 	protected static final String KEY = "key";
 	protected static final String VALUE = "value";
 	protected static final String DATA_TYPE = "data-type";
+	protected static final String NAMESPACE_TAG = "namespace";
 
 	protected static final String PROPERTIES = "properties";
 	protected static final String CALCULATIONS = "calculations";
@@ -69,9 +70,9 @@ public class XMLFeatureModelFormat extends AbstractXMLFeatureModelFormat<Feature
 	protected static final String CALCULATE_CONSTRAINTS = "Constraints";
 	protected static final String CALCULATE_AUTO = "Auto";
 
-	protected final FeatureModel featureModel = new FeatureModel(Identifier.newCounter());
-	protected final VariableMap variableMap = VariableMap.emptyMap();
-	protected final Map<String, Identifier> nameToIdentifierMap = new HashMap<>();
+	protected FeatureModel featureModel;
+	protected Map<String, Identifier> nameToIdentifierMap;
+	private VariableMap variableMap; // todo remove in favor of FeatureModel.variableMap
 
 	@Override
 	public XMLFeatureModelFormat getInstance() {
@@ -90,11 +91,14 @@ public class XMLFeatureModelFormat extends AbstractXMLFeatureModelFormat<Feature
 
 	@Override
 	public boolean supportsSerialize() {
-		return false;
+		return true;
 	}
 
 	@Override
 	public FeatureModel parseDocument(Document document) throws ParseException {
+		featureModel = new FeatureModel(Identifier.newCounter());
+		variableMap = VariableMap.emptyMap();
+		nameToIdentifierMap = new HashMap<>();
 		final Element featureModelElement = getDocumentElement(document, FEATURE_MODEL);
 		parseFeatureTree(getElement(featureModelElement, STRUCT));
 		Optional<Element> element = getOptionalElement(featureModelElement, CONSTRAINTS);
@@ -121,11 +125,6 @@ public class XMLFeatureModelFormat extends AbstractXMLFeatureModelFormat<Feature
 	protected Optional<Variable<?>> getVariable(String name) {
 		return variableMap.getVariable(
 				Optional.ofNullable(nameToIdentifierMap.get(name)).map(Identifier::toString).orElse(""));
-	}
-
-	@Override
-	public void writeDocument(FeatureModel object, Document doc) {
-		throw new UnsupportedOperationException();
 	}
 
 	@Override
@@ -276,11 +275,12 @@ public class XMLFeatureModelFormat extends AbstractXMLFeatureModelFormat<Feature
 		return new HashSet<>(Arrays.asList(tagArray));
 	}
 
-	protected void parseProperty(org.spldev.featuremodel.Element element, Element e, String namespace) throws ParseException {
+	protected void parseProperty(org.spldev.featuremodel.Element element, Element e, String fallbackNamespace) throws ParseException {
 		if (!e.hasAttribute(KEY) || !e.hasAttribute(VALUE)) {
 			addParseProblem("Missing one of the required attributes: " + KEY + " or " + VALUE, e, Problem.Severity.WARNING);
 		} else {
 			String typeString = e.hasAttribute(DATA_TYPE) ? e.getAttribute(DATA_TYPE) : "string";
+			final String namespace = e.hasAttribute(NAMESPACE_TAG) ? e.getAttribute(NAMESPACE_TAG) : fallbackNamespace;
 			final String name = e.getAttribute(KEY);
 			final String valueString = e.getAttribute(VALUE);
 			parseProblems.addAll(AttributeIO.parseAndSetAttributeValue(element, namespace, name, typeString, valueString));
@@ -318,4 +318,241 @@ public class XMLFeatureModelFormat extends AbstractXMLFeatureModelFormat<Feature
 		}
 	}
 
+	@Override
+	public void writeDocument(FeatureModel featureModel, Document doc) {
+		throw new UnsupportedOperationException();
+	}
+
+//	@Override
+//	public void writeDocument(FeatureModel featureModel, Document doc) {
+//		this.featureModel = featureModel;
+//		nameToIdentifierMap = new HashMap<>();
+//		final Element root = doc.createElement(FEATURE_MODEL);
+//		doc.appendChild(root);
+//
+//		writeProperties(doc, root);
+//		writeFeatures(doc, root);
+//		writeConstraints(doc, root);
+//		writeComments(doc, root);
+//		writeFeatureOrder(doc, root);
+//	}
+//
+//
+//	protected void writeProperties(Document doc, final Element root) {
+//		if (!featureModel.getAttributeToValueMap().isEmpty()) {
+//			final Element properties = doc.createElement(PROPERTIES);
+//			root.appendChild(properties);
+//			addProperties(doc, featureModel, properties);
+//		}
+//	}
+//
+//	protected void writeFeatures(Document doc, final Element root) {
+//		final Element struct = doc.createElement(STRUCT);
+//		root.appendChild(struct);
+//		writeFeatureTreeRec(doc, struct, FeatureUtils.getRoot(object));
+//	}
+//
+//	protected void writeConstraints(Document doc, final Element root) {
+//		if (!featureModel.getConstraints().isEmpty()) {
+//			final Element constraints = doc.createElement(CONSTRAINTS);
+//			root.appendChild(constraints);
+//			for (final IConstraint constraint : featureModel.getConstraints()) {
+//				Element rule;
+//				rule = doc.createElement(RULE);
+//
+//				constraints.appendChild(rule);
+//				addDescription(doc, constraint.getDescription(), rule);
+//				addProperties(doc, constraint.getCustomProperties(), rule);
+//				addTags(doc, constraint.getTags(), rule);
+//				createPropositionalConstraints(doc, rule, constraint.getNode());
+//			}
+//		}
+//	}
+////
+////	protected void writeComments(Document doc, final Element root) {
+////		if (!featureModel.getProperty().getComments().isEmpty()) {
+////			final Element comments = doc.createElement(COMMENTS);
+////			root.appendChild(comments);
+////			for (final String comment : featureModel.getProperty().getComments()) {
+////				final Element c = doc.createElement(C);
+////				comments.appendChild(c);
+////				final Text text = doc.createTextNode(comment);
+////				c.appendChild(text);
+////			}
+////		}
+////	}
+////
+////	protected void writeFeatureOrder(Document doc, final Element root) {
+////		if (featureModel.isFeatureOrderUserDefined()) {
+////			final Element order = doc.createElement(FEATURE_ORDER);
+////			order.setAttribute(USER_DEFINED, Boolean.toString(featureModel.isFeatureOrderUserDefined()));
+////			root.appendChild(order);
+////			Collection<String> featureOrderList = featureModel.getFeatureOrderList();
+////
+////			if (featureOrderList.isEmpty()) {
+////				featureOrderList = FeatureUtils.extractConcreteFeaturesAsStringList(object);
+////			}
+////
+////			for (final String featureName : featureOrderList) {
+////				final Element feature = doc.createElement(FEATURE);
+////				feature.setAttribute(NAME, featureName);
+////				order.appendChild(feature);
+////			}
+////		}
+////	}
+////
+////	/**
+////	 * Inserts the tags concerning propositional constraints into the DOM document representation
+////	 *
+////	 * @param doc
+////	 * @param node Parent node for the propositional nodes
+////	 */
+////	protected void createPropositionalConstraints(Document doc, Element xmlNode, org.prop4j.Node node) {
+////		if (node == null) {
+////			return;
+////		}
+////
+////		final Element op;
+////		if (node instanceof Literal) {
+////			final Literal literal = (Literal) node;
+////			if (!literal.positive) {
+////				final Element opNot = doc.createElement(NOT);
+////				xmlNode.appendChild(opNot);
+////				xmlNode = opNot;
+////			}
+////			op = doc.createElement(VAR);
+////			op.appendChild(doc.createTextNode(String.valueOf(literal.var)));
+////			xmlNode.appendChild(op);
+////			return;
+////		} else if (node instanceof Or) {
+////			op = doc.createElement(DISJ);
+////		} else if (node instanceof Equals) {
+////			op = doc.createElement(EQ);
+////		} else if (node instanceof Implies) {
+////			op = doc.createElement(IMP);
+////		} else if (node instanceof And) {
+////			op = doc.createElement(CONJ);
+////		} else if (node instanceof Not) {
+////			op = doc.createElement(NOT);
+////		} else if (node instanceof AtMost) {
+////			op = doc.createElement(ATMOST1);
+////		} else {
+////			op = doc.createElement(UNKNOWN);
+////		}
+////		xmlNode.appendChild(op);
+////
+////		for (final org.prop4j.Node child : node.getChildren()) {
+////			createPropositionalConstraints(doc, op, child);
+////		}
+////	}
+////
+////	/**
+////	 * Creates document based on feature model step by step
+////	 *
+////	 * @param doc document to write
+////	 * @param node parent node
+////	 * @param feat current feature
+////	 */
+////	protected void writeFeatureTreeRec(Document doc, Element node, IFeature feat) {
+////		if (feat == null) {
+////			return;
+////		}
+////
+////		final List<IFeature> children = FeatureUtils.convertToFeatureList(feat.getStructure().getChildren());
+////
+////		final Element fnod;
+////		if (children.isEmpty()) {
+////			fnod = doc.createElement(FEATURE);
+////			writeFeatureProperties(doc, node, feat, fnod);
+////		} else {
+////			if (feat.getStructure().isAnd()) {
+////				fnod = doc.createElement(AND);
+////			} else if (feat.getStructure().isOr()) {
+////				fnod = doc.createElement(OR);
+////			} else if (feat.getStructure().isAlternative()) {
+////				fnod = doc.createElement(ALT);
+////			} else {
+////				fnod = doc.createElement(UNKNOWN);// Logger.logInfo("creatXMlDockRec: Unexpected error!");
+////			}
+////
+////			writeFeatureProperties(doc, node, feat, fnod);
+////
+////			for (final IFeature feature : children) {
+////				writeFeatureTreeRec(doc, fnod, feature);
+////			}
+////
+////		}
+////
+////	}
+////
+////	protected void writeFeatureProperties(Document doc, Element node, IFeature feat, final Element fnod) {
+////		addDescription(doc, feat.getProperty().getDescription(), fnod);
+////		addProperties(doc, feat.getCustomProperties(), fnod);
+////		writeAttributes(node, fnod, feat);
+////	}
+////
+////	protected void addDescription(Document doc, String description, Element fnod) {
+////		if ((description != null) && !description.trim().isEmpty()) {
+////			final Element descr = doc.createElement(DESCRIPTION);
+////			descr.setTextContent(description);
+////			fnod.appendChild(descr);
+////		}
+////	}
+////
+//	protected void addProperties(Document doc, org.spldev.featuremodel.Element element, Element fnod) {
+//		for (final Map.Entry<Attribute<?>, Object> property : element.getAttributeToValueMap().entrySet()) {
+//			final Element propNode;
+//			String namespace = property.getKey().getNamespace();
+//			if (GRAPHICS_NAMESPACE.equals(namespace)) {
+//				propNode = doc.createElement(GRAPHICS);
+//			} else if (CALCULATIONS_NAMESPACE.equals(namespace)) {
+//				propNode = doc.createElement(CALCULATIONS);
+//			} else {
+//				propNode = doc.createElement(PROPERTY);
+//				propNode.setAttribute(NAMESPACE_TAG, property.getKey().getNamespace());
+//				propNode.setAttribute(DATA_TYPE, AttributeIO.getTypeString(property.getKey().getType()).orElseThrow(IllegalArgumentException::new)); // todo
+//			}
+//			propNode.setAttribute(KEY, property.getKey().getName());
+//			propNode.setAttribute(VALUE, property.getValue().toString()); // todo
+//			fnod.appendChild(propNode);
+//		}
+//	}
+////
+////	/**
+////	 * Adds the tags of a constraint to the xml file
+////	 */
+////	private void addTags(Document doc, Set<String> tags, Element fnod) {
+////		if ((tags != null) && !tags.isEmpty()) {
+////			final Element tag = doc.createElement(TAGS);
+////			String finalTags = "";
+////			for (final String tagString : tags) {
+////				if (finalTags.equals("")) {
+////					finalTags += tagString;
+////					continue;
+////				}
+////				finalTags += "," + tagString;
+////			}
+////			tag.setTextContent(finalTags);
+////			fnod.appendChild(tag);
+////		}
+////	}
+////
+////	protected void writeAttributes(Element node, Element fnod, IFeature feat) {
+////		fnod.setAttribute(NAME, feat.getName());
+////		if (feat.getStructure().isHidden()) {
+////			fnod.setAttribute(HIDDEN, TRUE);
+////		}
+////		if (feat.getStructure().isMandatory()) {
+////			if ((feat.getStructure().getParent() != null) && feat.getStructure().getParent().isAnd()) {
+////				fnod.setAttribute(MANDATORY, TRUE);
+////			} else if (feat.getStructure().getParent() == null) {
+////				fnod.setAttribute(MANDATORY, TRUE);
+////			}
+////		}
+////		if (feat.getStructure().isAbstract()) {
+////			fnod.setAttribute(ABSTRACT, TRUE);
+////		}
+////
+////		node.appendChild(fnod);
+////	}
 }
