@@ -12,7 +12,7 @@ import java.nio.file.Paths;
 
 public class GraphVizFeatureModelFormatTest {
 	@Test
-	public void xmlFeatureModelFormat() throws IOException {
+	public void graphVizFeatureModelFormat() throws IOException {
 		FeatureModel featureModel = FileHandler.load(Paths.get(
 			"src/test/resources/testFeatureModels/car.xml"), new XMLFeatureModelFormat()).get();
 		Assertions.assertTrue(FileHandler.print(featureModel, new GraphVizFeatureModelFormat()).startsWith("digraph {"));

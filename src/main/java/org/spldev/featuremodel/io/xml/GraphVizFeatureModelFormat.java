@@ -25,9 +25,14 @@ package org.spldev.featuremodel.io.xml;
 import org.spldev.featuremodel.Feature;
 import org.spldev.featuremodel.FeatureModel;
 import org.spldev.featuremodel.FeatureTree;
+import org.spldev.util.io.FileHandler;
 import org.spldev.util.io.format.Format;
 import org.spldev.util.tree.Trees;
 
+import java.awt.*;
+import java.io.IOException;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -42,6 +47,16 @@ public class GraphVizFeatureModelFormat implements Format<FeatureModel> {
     @Override
     public GraphVizFeatureModelFormat getInstance() {
         return new GraphVizFeatureModelFormat();
+    }
+
+    public static void openInBrowser(FeatureModel featureModel) {
+        try {
+            String dot = FileHandler.print(featureModel, new GraphVizFeatureModelFormat());
+            URI uri = new URI("https", "edotor.net", "", "engine=dot", dot);
+            Desktop.getDesktop().browse(uri);
+        } catch (IOException | URISyntaxException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     @Override
