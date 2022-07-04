@@ -70,6 +70,10 @@ public class FeatureTree extends RootedTree<FeatureTree> implements Mutable<Feat
 		return groupMinimum == 1 && groupMaximum == Long.MAX_VALUE;
 	}
 
+	public boolean isGroup() {
+		return !isAnd();
+	}
+
 	public Set<Constraint> getContainingConstraints() {
 		return feature.getFeatureModel().getConstraints().stream()
 			.filter(constraint -> constraint.getContainedFeatures().stream()

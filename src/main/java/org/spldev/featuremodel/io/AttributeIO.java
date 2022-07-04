@@ -73,7 +73,7 @@ public class AttributeIO {
 	}
 
 	public static Optional<Object> parseAttributeValue(String typeString, String valueString) {
-		return getType(typeString).map(type -> parseAttributeValue(type, valueString));
+		return getType(typeString).flatMap(type -> parseAttributeValue(type, valueString));
 	}
 
 	public static List<Problem> parseAndSetAttributeValue(Attributable attributable, String namespace, String name, String typeString, String valueString) {
