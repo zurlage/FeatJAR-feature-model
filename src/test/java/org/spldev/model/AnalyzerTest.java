@@ -21,7 +21,7 @@ public class AnalyzerTest {
 	}
 
 	@Test
-	public void mutable() {
+	public void analyzable() {
 		assertSame(featureModel.analyze(), featureModel.getAnalyzer());
 		assertSame(featureModel, featureModel.analyze().getAnalyzable());
 		FeatureModel.Analyzer analyzer = featureModel.new Analyzer();

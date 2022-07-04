@@ -28,6 +28,7 @@ package org.spldev.model.io.xml;
  * @author Sebastian Krieter
  * @author Marlen Bernier
  * @author Dawid Szczepanski
+ * @deprecated
  */
 public class OldXmlFeatureModelFormat {
 //	@Override

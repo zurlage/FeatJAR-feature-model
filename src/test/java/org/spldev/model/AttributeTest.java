@@ -37,7 +37,7 @@ public class AttributeTest {
 	public void attributableGetSet() {
 		Map<Attribute<?>, Object> attributeToValueMap = new HashMap<>();
 		Attribute.WithDefaultValue<String> attributeWithDefaultValue = new Attribute.WithDefaultValue<>(
-				Attribute.DEFAULT_NAMESPACE, "test", String.class, "default");
+			Attribute.DEFAULT_NAMESPACE, "test", String.class, "default");
 		assertEquals(Optional.empty(), featureModel.getAttributeValue(attribute));
 		assertEquals("default", featureModel.getAttributeValue(attributeWithDefaultValue));
 		assertEquals(attributeToValueMap, featureModel.getAttributeToValueMap());
@@ -55,7 +55,7 @@ public class AttributeTest {
 	@Test
 	public void attributableToggle() {
 		Attribute.WithDefaultValue<Boolean> booleanAttribute = new Attribute.WithDefaultValue<>(
-				Attribute.DEFAULT_NAMESPACE, "test", Boolean.class, false);
+			Attribute.DEFAULT_NAMESPACE, "test", Boolean.class, false);
 		assertEquals(false, featureModel.getAttributeValue(booleanAttribute));
 		featureModel.mutate().toggleAttributeValue(booleanAttribute);
 		assertEquals(true, featureModel.getAttributeValue(booleanAttribute));

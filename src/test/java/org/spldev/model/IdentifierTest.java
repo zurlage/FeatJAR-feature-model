@@ -8,8 +8,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotEquals;
 
 /**
- * Tests for {@link Identifier} and
- * {@link org.spldev.model.util.Identifiable}.
+ * Tests for {@link Identifier} and {@link org.spldev.model.util.Identifiable}.
  *
  * @author Elias Kuiter
  */

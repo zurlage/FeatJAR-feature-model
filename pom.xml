@@ -13,7 +13,7 @@
 
 	<name>Feature Modeling Lib</name>
 	<description>Feature models, configurations, and projects</description>
-	<url>https://github.com/ekuiter/fm</url>
+	<url>https://github.com/ekuiter/model</url>
 
 	<dependencies>
 		<dependency>

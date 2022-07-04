@@ -30,6 +30,8 @@ import org.spldev.formula.structure.Formula;
 import org.spldev.formula.structure.atomic.literal.VariableMap;
 import org.spldev.formula.structure.term.Variable;
 import org.spldev.util.data.Problem;
+import org.spldev.util.data.Result;
+import org.spldev.util.io.format.Input;
 import org.spldev.util.io.format.ParseException;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
@@ -37,9 +39,9 @@ import org.w3c.dom.NamedNodeMap;
 import org.w3c.dom.Node;
 
 import java.util.*;
+import java.util.function.Supplier;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
-
 
 /**
  * Parses and writes feature models from and to FeatureIDE XML files.
@@ -67,7 +69,6 @@ public class XMLFeatureModelFormat extends AbstractXMLFeatureModelFormat<Feature
 	protected static final String CALCULATE_TAUTOLOGY = "Tautology";
 	protected static final String CALCULATE_CONSTRAINTS = "Constraints";
 	protected static final String CALCULATE_AUTO = "Auto";
-
 	protected FeatureModel featureModel;
 	protected Map<String, Identifier> nameToIdentifierMap;
 	private VariableMap variableMap; // todo remove in favor of FeatureModel.variableMap
@@ -93,8 +94,15 @@ public class XMLFeatureModelFormat extends AbstractXMLFeatureModelFormat<Feature
 	}
 
 	@Override
+	public Result<FeatureModel> parse(Input source, Supplier<FeatureModel> supplier) {
+		featureModel = supplier.get();
+		return parse(source);
+	}
+
+	@Override
 	public FeatureModel parseDocument(Document document) throws ParseException {
-		featureModel = new FeatureModel(Identifier.newCounter());
+		if (featureModel != null)
+			featureModel = new FeatureModel(Identifier.newCounter());
 		variableMap = VariableMap.emptyMap();
 		nameToIdentifierMap = new HashMap<>();
 		final Element featureModelElement = getDocumentElement(document, FEATURE_MODEL);
@@ -122,7 +130,7 @@ public class XMLFeatureModelFormat extends AbstractXMLFeatureModelFormat<Feature
 
 	protected Optional<Variable<?>> getVariable(String name) {
 		return variableMap.getVariable(
-				Optional.ofNullable(nameToIdentifierMap.get(name)).map(Identifier::toString).orElse(""));
+			Optional.ofNullable(nameToIdentifierMap.get(name)).map(Identifier::toString).orElse(""));
 	}
 
 	@Override
@@ -131,7 +139,8 @@ public class XMLFeatureModelFormat extends AbstractXMLFeatureModelFormat<Feature
 	}
 
 	@Override
-	protected Feature createFeatureLabel(String name, Feature parentFeatureLabel, boolean mandatory, boolean _abstract, boolean hidden) throws ParseException {
+	protected Feature createFeatureLabel(String name, Feature parentFeatureLabel, boolean mandatory, boolean _abstract,
+		boolean hidden) throws ParseException {
 		Feature feature;
 		if (parentFeatureLabel == null) {
 			feature = featureModel.getRootFeature();
@@ -170,15 +179,15 @@ public class XMLFeatureModelFormat extends AbstractXMLFeatureModelFormat<Feature
 	@Override
 	protected void addFeatureMetadata(Feature featureLabel, Element e) throws ParseException {
 		switch (e.getNodeName()) {
-			case DESCRIPTION:
-				featureLabel.mutate().setDescription(getDescription(e));
-				break;
-			case GRAPHICS:
-				parseProperty(featureLabel, e, GRAPHICS_NAMESPACE);
-				break;
-			case PROPERTY:
-				parseProperty(featureLabel, e, NAMESPACE);
-				break;
+		case DESCRIPTION:
+			featureLabel.mutate().setDescription(getDescription(e));
+			break;
+		case GRAPHICS:
+			parseProperty(featureLabel, e, GRAPHICS_NAMESPACE);
+			break;
+		case PROPERTY:
+			parseProperty(featureLabel, e, NAMESPACE);
+			break;
 		}
 	}
 
@@ -195,24 +204,25 @@ public class XMLFeatureModelFormat extends AbstractXMLFeatureModelFormat<Feature
 	@Override
 	protected void addConstraintMetadata(Constraint constraintLabel, Element e) throws ParseException {
 		switch (e.getNodeName()) {
-			case DESCRIPTION:
-				constraintLabel.mutate().setDescription(getDescription(e));
-				break;
-			case GRAPHICS:
-				parseProperty(constraintLabel, e, GRAPHICS_NAMESPACE);
-				break;
-			case PROPERTY:
-				parseProperty(constraintLabel, e, NAMESPACE);
-				break;
-			case TAGS:
-				constraintLabel.mutate().setTags(getTags(e));
+		case DESCRIPTION:
+			constraintLabel.mutate().setDescription(getDescription(e));
+			break;
+		case GRAPHICS:
+			parseProperty(constraintLabel, e, GRAPHICS_NAMESPACE);
+			break;
+		case PROPERTY:
+			parseProperty(constraintLabel, e, NAMESPACE);
+			break;
+		case TAGS:
+			constraintLabel.mutate().setTags(getTags(e));
 		}
 	}
 
 	protected void parseComments(Element element) throws ParseException {
 		for (final Element e1 : getElements(element.getChildNodes())) {
 			if (e1.getNodeName().equals(C)) {
-				featureModel.mutate().setDescription(featureModel.getDescription().orElse("") + "\n" + e1.getTextContent());
+				featureModel.mutate().setDescription(featureModel.getDescription().orElse("") + "\n" + e1
+					.getTextContent());
 			} else {
 				addParseProblem("Unknown comment attribute: " + e1.getNodeName(), e1, Problem.Severity.WARNING);
 			}
@@ -235,7 +245,8 @@ public class XMLFeatureModelFormat extends AbstractXMLFeatureModelFormat<Feature
 						if (getFeature(attributeValue).isPresent()) {
 							order.add(attributeValue);
 						} else {
-							addParseProblem("Feature \"" + attributeValue + "\" does not exists", e, Problem.Severity.ERROR);
+							addParseProblem("Feature \"" + attributeValue + "\" does not exists", e,
+								Problem.Severity.ERROR);
 						}
 					} else {
 						addParseProblem("Unknown feature order attribute: " + attributeName, e, Problem.Severity.ERROR);
@@ -249,10 +260,10 @@ public class XMLFeatureModelFormat extends AbstractXMLFeatureModelFormat<Feature
 		}
 		if (!order.isEmpty()) {
 			List<Feature> featureList = order.stream()
-					.map(nameToIdentifierMap::get)
-					.map(featureModel::getFeature)
-					.map(Optional::orElseThrow)
-					.collect(Collectors.toList());
+				.map(nameToIdentifierMap::get)
+				.map(featureModel::getFeature)
+				.map(Optional::orElseThrow)
+				.collect(Collectors.toList());
 			featureModel.mutate().setFeatureOrder(FeatureOrder.ofList(featureList));
 		}
 		featureModel.getFeatureOrder().mutate().setUserDefined(userDefined);
@@ -260,7 +271,8 @@ public class XMLFeatureModelFormat extends AbstractXMLFeatureModelFormat<Feature
 
 	protected String getDescription(Node e) {
 		String description = e.getTextContent();
-		// NOTE: THe following code is used for backwards compatibility. It replaces spaces and tabs that were added to the XML for indentation, but don't
+		// NOTE: THe following code is used for backwards compatibility. It replaces
+		// spaces and tabs that were added to the XML for indentation, but don't
 		// belong to the actual description.
 		if (description != null) {
 			description = description.replaceAll("(\r\n|\r|\n)\\s*", "\n").replaceAll("\\A\n|\n\\Z", "");
@@ -273,15 +285,18 @@ public class XMLFeatureModelFormat extends AbstractXMLFeatureModelFormat<Feature
 		return new HashSet<>(Arrays.asList(tagArray));
 	}
 
-	protected void parseProperty(org.spldev.model.Element element, Element e, String fallbackNamespace) throws ParseException {
+	protected void parseProperty(org.spldev.model.Element element, Element e, String fallbackNamespace)
+		throws ParseException {
 		if (!e.hasAttribute(KEY) || !e.hasAttribute(VALUE)) {
-			addParseProblem("Missing one of the required attributes: " + KEY + " or " + VALUE, e, Problem.Severity.WARNING);
+			addParseProblem("Missing one of the required attributes: " + KEY + " or " + VALUE, e,
+				Problem.Severity.WARNING);
 		} else {
 			String typeString = e.hasAttribute(DATA_TYPE) ? e.getAttribute(DATA_TYPE) : "string";
 			final String namespace = e.hasAttribute(NAMESPACE_TAG) ? e.getAttribute(NAMESPACE_TAG) : fallbackNamespace;
 			final String name = e.getAttribute(KEY);
 			final String valueString = e.getAttribute(VALUE);
-			parseProblems.addAll(AttributeIO.parseAndSetAttributeValue(element, namespace, name, typeString, valueString));
+			parseProblems.addAll(AttributeIO.parseAndSetAttributeValue(element, namespace, name, typeString,
+				valueString));
 		}
 	}
 
@@ -289,15 +304,15 @@ public class XMLFeatureModelFormat extends AbstractXMLFeatureModelFormat<Feature
 		for (final Element propertyElement : getElements(e.getChildNodes())) {
 			final String nodeName = propertyElement.getNodeName();
 			switch (nodeName) {
-				case GRAPHICS:
-					parseProperty(featureModel, propertyElement, GRAPHICS_NAMESPACE);
-					break;
-				case CALCULATIONS:
-					parseProperty(featureModel, propertyElement, CALCULATIONS_NAMESPACE);
-					break;
-				case PROPERTY:
-					parseProperty(featureModel, propertyElement, NAMESPACE);
-					break;
+			case GRAPHICS:
+				parseProperty(featureModel, propertyElement, GRAPHICS_NAMESPACE);
+				break;
+			case CALCULATIONS:
+				parseProperty(featureModel, propertyElement, CALCULATIONS_NAMESPACE);
+				break;
+			case PROPERTY:
+				parseProperty(featureModel, propertyElement, NAMESPACE);
+				break;
 			}
 		}
 	}
@@ -312,7 +327,8 @@ public class XMLFeatureModelFormat extends AbstractXMLFeatureModelFormat<Feature
 
 	private void parseAttribute(final Element e, final String key) {
 		if (e.hasAttribute(key)) {
-			parseProblems.addAll(AttributeIO.parseAndSetAttributeValue(featureModel, CALCULATIONS_NAMESPACE, key, "bool", e.getAttribute(key)));
+			parseProblems.addAll(AttributeIO.parseAndSetAttributeValue(featureModel, CALCULATIONS_NAMESPACE, key,
+				"bool", e.getAttribute(key)));
 		}
 	}
 

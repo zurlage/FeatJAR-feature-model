@@ -24,6 +24,7 @@ package org.spldev.model.io.xml;
  * Provides the XML tags for {@link OldXmlFeatureModelFormat}.
  *
  * @author Jens Meinicke
+ * @deprecated
  */
 public interface XMLFeatureModelTags {
 //
@@ -53,6 +54,5 @@ public interface XMLFeatureModelTags {
 //	static final String ATTRIBUTE_RECURSIVE = "recursive";
 //	static final String ATTRIBUTE_CONFIGURABLE = "configurable";
 //
-
 
 }

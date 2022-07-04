@@ -75,7 +75,7 @@ public class Attribute<T> implements Function<Map<Attribute<?>, Object>, Optiona
 		protected final Function<Attributable, T> defaultValueFunction;
 
 		public WithDefaultValue(String namespace, String name, Class<?> type,
-								Function<Attributable, T> defaultValueFunction) {
+			Function<Attributable, T> defaultValueFunction) {
 			super(namespace, name, type);
 			Objects.requireNonNull(defaultValueFunction);
 			this.defaultValueFunction = defaultValueFunction;

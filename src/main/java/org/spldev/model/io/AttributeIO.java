@@ -16,20 +16,20 @@ import java.util.Optional;
 public class AttributeIO {
 	public static Optional<Class<?>> getType(String typeString) {
 		switch (typeString.toLowerCase()) {
-			case "string":
-				return Optional.of(String.class);
-			case "bool":
-			case "boolean":
-				return Optional.of(Boolean.class);
-			case "int":
-			case "integer":
-				return Optional.of(Integer.class);
-			case "long":
-				return Optional.of(Long.class);
-			case "float":
-				return Optional.of(Float.class);
-			case "double":
-				return Optional.of(Double.class);
+		case "string":
+			return Optional.of(String.class);
+		case "bool":
+		case "boolean":
+			return Optional.of(Boolean.class);
+		case "int":
+		case "integer":
+			return Optional.of(Integer.class);
+		case "long":
+			return Optional.of(Long.class);
+		case "float":
+			return Optional.of(Float.class);
+		case "double":
+			return Optional.of(Double.class);
 		}
 		return Optional.empty();
 	}
@@ -76,7 +76,8 @@ public class AttributeIO {
 		return getType(typeString).flatMap(type -> parseAttributeValue(type, valueString));
 	}
 
-	public static List<Problem> parseAndSetAttributeValue(Attributable attributable, String namespace, String name, String typeString, String valueString) {
+	public static List<Problem> parseAndSetAttributeValue(Attributable attributable, String namespace, String name,
+		String typeString, String valueString) {
 		List<Problem> problems = new ArrayList<>();
 		Optional<Attribute<?>> attribute = AttributeIO.parseAttribute(namespace, name, typeString);
 		Optional<?> value = parseAttributeValue(typeString, valueString);
@@ -87,7 +88,8 @@ public class AttributeIO {
 		} else if (attributable.hasAttributeValue(attribute.get())) {
 			problems.add(new Problem("already has value for attribute " + name, Problem.Severity.WARNING));
 		} else {
-			((Attributable.Mutator<Attributable>) () -> attributable).setArbitraryAttributeValue(attribute.get(), value.get());
+			((Attributable.Mutator<Attributable>) () -> attributable).setArbitraryAttributeValue(attribute.get(), value
+				.get());
 		}
 		return problems;
 	}

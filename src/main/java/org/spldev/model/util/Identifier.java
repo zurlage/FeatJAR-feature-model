@@ -3,9 +3,9 @@ package org.spldev.model.util;
 import java.util.Objects;
 
 /**
- * Uniquely identifies an {@link org.spldev.model.util.Identifiable}
- * object. Several implementations are available, implementors are responsible
- * for guaranteeing uniqueness. Is distinguished from
+ * Uniquely identifies an {@link org.spldev.model.util.Identifiable} object.
+ * Several implementations are available, implementors are responsible for
+ * guaranteeing uniqueness. Is distinguished from
  * {@link org.spldev.util.data.Identifier}, as it can also be parsed from a
  * {@link String}.
  *

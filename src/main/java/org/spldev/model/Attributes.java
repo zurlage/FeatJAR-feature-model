@@ -17,8 +17,10 @@ public class Attributes {
 		"name", String.class, identifiable -> "@" + ((Identifiable) identifiable).getIdentifier().toString());
 	public static final Attribute<String> DESCRIPTION = new Attribute<>(NAMESPACE, "description", String.class);
 	public static final Attribute.Set<String> TAGS = new Attribute.Set<>(NAMESPACE, "tags");
-	public static final Attribute.WithDefaultValue<Boolean> HIDDEN = new Attribute.WithDefaultValue<>(NAMESPACE, "hidden",
+	public static final Attribute.WithDefaultValue<Boolean> HIDDEN = new Attribute.WithDefaultValue<>(NAMESPACE,
+		"hidden",
 		Boolean.class, false);
-	public static final Attribute.WithDefaultValue<Boolean> ABSTRACT = new Attribute.WithDefaultValue<>(NAMESPACE, "abstract",
-			Boolean.class, false);
+	public static final Attribute.WithDefaultValue<Boolean> ABSTRACT = new Attribute.WithDefaultValue<>(NAMESPACE,
+		"abstract",
+		Boolean.class, false);
 }

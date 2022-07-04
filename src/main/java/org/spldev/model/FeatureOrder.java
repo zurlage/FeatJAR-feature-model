@@ -16,7 +16,8 @@ import java.util.stream.Stream;
  *
  * @author Elias Kuiter
  */
-public abstract class FeatureOrder implements Function<FeatureModelFeatureTreeMixin, List<Feature>>, Mutable<FeatureOrder, FeatureOrder.Mutator> {
+public abstract class FeatureOrder implements Function<FeatureModelFeatureTreeMixin, List<Feature>>,
+	Mutable<FeatureOrder, FeatureOrder.Mutator> {
 	protected boolean isUserDefined;
 	protected Mutator mutator;
 
@@ -39,8 +40,8 @@ public abstract class FeatureOrder implements Function<FeatureModelFeatureTreeMi
 			@Override
 			public List<Feature> apply(FeatureModelFeatureTreeMixin featureModel) {
 				return Trees.preOrderStream(featureModel.getFeatureTree())
-						.map(FeatureTree::getFeature)
-						.collect(Collectors.toList());
+					.map(FeatureTree::getFeature)
+					.collect(Collectors.toList());
 			}
 		};
 	}
@@ -50,19 +51,20 @@ public abstract class FeatureOrder implements Function<FeatureModelFeatureTreeMi
 			@Override
 			public List<Feature> apply(FeatureModelFeatureTreeMixin featureModel) {
 				return featureModel.getFeatures().stream()
-						.sorted(featureComparator)
-						.collect(Collectors.toList());
+					.sorted(featureComparator)
+					.collect(Collectors.toList());
 			}
 		};
 	}
 
-	public static FeatureOrder ofList(List<Feature> featureList) { // todo: maybe make this list mutable for easier editing?
+	public static FeatureOrder ofList(List<Feature> featureList) { // todo: maybe make this list mutable for easier
+																	// editing?
 		return new FeatureOrder() {
 			@Override
 			public List<Feature> apply(FeatureModelFeatureTreeMixin featureModel) {
 				return Stream.concat(featureList.stream().filter(featureModel.getFeatures()::contains),
-								featureModel.getFeatures().stream().filter(feature -> !featureList.contains(feature)))
-						.collect(Collectors.toList());
+					featureModel.getFeatures().stream().filter(feature -> !featureList.contains(feature)))
+					.collect(Collectors.toList());
 			}
 		};
 	}

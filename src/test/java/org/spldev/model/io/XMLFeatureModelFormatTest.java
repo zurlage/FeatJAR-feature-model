@@ -27,7 +27,5 @@ public class XMLFeatureModelFormatTest {
 			"GearboxTest" };
 		assertEquals(Set.of(featureNames), featureModel.getFeatures().stream().map(Feature::getName).collect(Collectors
 			.toSet()));
-
-		System.out.println(Attributes.TAGS);
 	}
 }

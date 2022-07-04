@@ -5,10 +5,9 @@ import java.util.Optional;
 
 /**
  * An object that can be annotated with {@link Attribute} values. For example,
- * attributes are used in {@link org.spldev.model.FeatureModel feature
- * models}, {@link org.spldev.model.Feature features}, and
- * {@link org.spldev.model.Constraint constraints} to store additional
- * metadata.
+ * attributes are used in {@link org.spldev.model.FeatureModel feature models},
+ * {@link org.spldev.model.Feature features}, and
+ * {@link org.spldev.model.Constraint constraints} to store additional metadata.
  *
  * @author Elias Kuiter
  */
@@ -37,7 +36,8 @@ public interface Attributable {
 
 		default void setArbitraryAttributeValue(Attribute<?> attribute, Object value) {
 			if (!attribute.getType().equals(value.getClass()))
-				throw new IllegalArgumentException("cannot set attribute of type " + attribute.getType() + " to value of type " + value.getClass());
+				throw new IllegalArgumentException("cannot set attribute of type " + attribute.getType()
+					+ " to value of type " + value.getClass());
 		}
 
 		default <U> Object removeAttributeValue(Attribute<U> attribute) {

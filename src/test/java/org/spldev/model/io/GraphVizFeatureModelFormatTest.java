@@ -15,6 +15,7 @@ public class GraphVizFeatureModelFormatTest {
 	public void graphVizFeatureModelFormat() throws IOException {
 		FeatureModel featureModel = FileHandler.load(Paths.get(
 			"src/test/resources/testFeatureModels/car.xml"), new XMLFeatureModelFormat()).get();
-		Assertions.assertTrue(FileHandler.print(featureModel, new GraphVizFeatureModelFormat()).startsWith("digraph {"));
+		Assertions.assertTrue(FileHandler.print(featureModel, new GraphVizFeatureModelFormat()).startsWith(
+			"digraph {"));
 	}
 }

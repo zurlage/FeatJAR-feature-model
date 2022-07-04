@@ -74,7 +74,7 @@ public class Constraint extends Element implements Mutable<Constraint, Constrain
 
 	@Override
 	public Analyzer getAnalyzer() {
-		return analyzer;
+		return analyzer == null ? (analyzer = new Analyzer()) : analyzer;
 	}
 
 	@Override

@@ -35,7 +35,7 @@ public class FeatureTree extends RootedTree<FeatureTree> implements Mutable<Feat
 	 */
 	protected long groupMaximum = Long.MAX_VALUE;
 
-	protected Mutator mutator = null;
+	protected Mutator mutator;
 
 	public FeatureTree(Feature feature) {
 		Objects.requireNonNull(feature);

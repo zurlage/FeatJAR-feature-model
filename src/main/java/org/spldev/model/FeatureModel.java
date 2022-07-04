@@ -24,12 +24,13 @@ public class FeatureModel extends Element implements FeatureModelFeatureTreeMixi
 	protected final List<Constraint> constraints = Collections.synchronizedList(new ArrayList<>());
 	protected FeatureOrder featureOrder = FeatureOrder.ofPreOrder();
 
-	protected final VariableMap variableMap = VariableMap.emptyMap(); // todo: get, set, mutate correctly (checks), pass map to createConstraint as Function<...>
+	protected final VariableMap variableMap = VariableMap.emptyMap(); // todo: get, set, mutate correctly (checks), pass
+																		// map to createConstraint as Function<...>
 	protected final Map<Identifier, Element> elementCache = Collections.synchronizedMap(new LinkedHashMap<>());
 	protected final Set<Feature> featureCache = Collections.synchronizedSet(new HashSet<>());
 	protected final Set<FeatureModel> featureModelCache = Collections.synchronizedSet(new HashSet<>()); // todo
 	// calculate
-																										// from tree
+	// from tree
 	protected Mutator mutator;
 	protected Analyzer analyzer;
 	// todo inv: this featuretree (w/o submodels) has one variablemap. variablemap
@@ -57,7 +58,7 @@ public class FeatureModel extends Element implements FeatureModelFeatureTreeMixi
 		return featureOrder;
 	}
 
-	//@Override //constraint mixin?
+	// @Override //constraint mixin?
 	public VariableMap getVariableMap() {
 		return variableMap;
 	}
@@ -84,7 +85,7 @@ public class FeatureModel extends Element implements FeatureModelFeatureTreeMixi
 
 	@Override
 	public Analyzer getAnalyzer() {
-		return analyzer;
+		return analyzer == null ? (analyzer = new Analyzer()) : analyzer;
 	}
 
 	@Override

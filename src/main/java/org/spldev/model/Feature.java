@@ -64,7 +64,7 @@ public class Feature extends Element implements CommonAttributesMixin, Mutable<F
 
 	@Override
 	public Analyzer getAnalyzer() {
-		return analyzer;
+		return analyzer == null ? (analyzer = new Analyzer()) : analyzer;
 	}
 
 	@Override
