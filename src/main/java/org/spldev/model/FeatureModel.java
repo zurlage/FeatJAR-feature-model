@@ -48,8 +48,14 @@ public class FeatureModel extends Element implements FeatureModelFeatureTreeMixi
 		return featureTree;
 	}
 
+	//every model returns only its own constraints/features
 	@Override
 	public List<Constraint> getConstraints() {
+		return constraints;
+	}
+
+	// TODO? returns constraints of all submodels
+	public List<Constraint> getALLConstraints() {
 		return constraints;
 	}
 
