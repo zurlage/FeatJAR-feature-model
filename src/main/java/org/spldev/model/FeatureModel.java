@@ -24,8 +24,8 @@ public class FeatureModel extends Element implements FeatureModelFeatureTreeMixi
 	protected final List<Constraint> constraints = Collections.synchronizedList(new ArrayList<>());
 	protected FeatureOrder featureOrder = FeatureOrder.ofPreOrder();
 
-	protected final VariableMap variableMap = VariableMap.emptyMap(); // todo: get, set, mutate correctly (checks), pass
-																		// map to createConstraint as Function<...>
+	protected final VariableMap variableMap = new VariableMap(); // todo: get, set, mutate correctly (checks), pass
+																	// map to createConstraint as Function<...>
 	protected final Map<Identifier, Element> elementCache = Collections.synchronizedMap(new LinkedHashMap<>());
 	protected final Set<Feature> featureCache = Collections.synchronizedSet(new HashSet<>());
 	protected final Set<FeatureModel> featureModelCache = Collections.synchronizedSet(new HashSet<>()); // todo
@@ -48,7 +48,7 @@ public class FeatureModel extends Element implements FeatureModelFeatureTreeMixi
 		return featureTree;
 	}
 
-	//every model returns only its own constraints/features
+	// every model returns only its own constraints/features
 	@Override
 	public List<Constraint> getConstraints() {
 		return constraints;

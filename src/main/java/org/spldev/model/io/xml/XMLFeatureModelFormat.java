@@ -28,11 +28,11 @@ import org.spldev.model.util.Identifier;
 import org.spldev.formula.io.xml.AbstractXMLFeatureModelFormat;
 import org.spldev.formula.structure.Formula;
 import org.spldev.formula.structure.atomic.literal.VariableMap;
-import org.spldev.formula.structure.term.Variable;
 import org.spldev.util.data.Problem;
 import org.spldev.util.data.Result;
-import org.spldev.util.io.format.Input;
+import org.spldev.util.io.format.Source;
 import org.spldev.util.io.format.ParseException;
+import org.spldev.util.io.format.SourceMapper;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.NamedNodeMap;
@@ -94,22 +94,22 @@ public class XMLFeatureModelFormat extends AbstractXMLFeatureModelFormat<Feature
 	}
 
 	@Override
-	public Result<FeatureModel> parse(Input source, Supplier<FeatureModel> supplier) {
+	public Result<FeatureModel> parse(SourceMapper sourceMapper, Supplier<FeatureModel> supplier) {
 		featureModel = supplier.get();
-		return parse(source);
+		return parse(sourceMapper);
 	}
 
 	@Override
 	public FeatureModel parseDocument(Document document) throws ParseException {
 		if (featureModel != null)
 			featureModel = new FeatureModel(Identifier.newCounter());
-		variableMap = VariableMap.emptyMap();
+		variableMap = new VariableMap();
 		nameToIdentifierMap = new HashMap<>();
 		final Element featureModelElement = getDocumentElement(document, FEATURE_MODEL);
 		parseFeatureTree(getElement(featureModelElement, STRUCT));
 		Optional<Element> element = getOptionalElement(featureModelElement, CONSTRAINTS);
 		if (element.isPresent())
-			parseConstraints(element.get(), this::getVariable);
+			parseConstraints(element.get(), variableMap);
 		element = getOptionalElement(featureModelElement, COMMENTS);
 		if (element.isPresent())
 			parseComments(element.get());
@@ -128,7 +128,7 @@ public class XMLFeatureModelFormat extends AbstractXMLFeatureModelFormat<Feature
 		return Optional.ofNullable(nameToIdentifierMap.get(name)).flatMap(featureModel::getFeature);
 	}
 
-	protected Optional<Variable<?>> getVariable(String name) {
+	protected Optional<VariableMap.Variable> getVariable(String name) {
 		return variableMap.getVariable(
 			Optional.ofNullable(nameToIdentifierMap.get(name)).map(Identifier::toString).orElse(""));
 	}
