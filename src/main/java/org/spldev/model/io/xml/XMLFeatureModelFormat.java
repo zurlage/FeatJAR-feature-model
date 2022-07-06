@@ -30,9 +30,8 @@ import org.spldev.formula.structure.Formula;
 import org.spldev.formula.structure.atomic.literal.VariableMap;
 import org.spldev.util.data.Problem;
 import org.spldev.util.data.Result;
-import org.spldev.util.io.format.Source;
+import org.spldev.util.io.file.InputFileMapper;
 import org.spldev.util.io.format.ParseException;
-import org.spldev.util.io.format.SourceMapper;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.NamedNodeMap;
@@ -94,9 +93,9 @@ public class XMLFeatureModelFormat extends AbstractXMLFeatureModelFormat<Feature
 	}
 
 	@Override
-	public Result<FeatureModel> parse(SourceMapper sourceMapper, Supplier<FeatureModel> supplier) {
+	public Result<FeatureModel> parse(InputFileMapper inputFileMapper, Supplier<FeatureModel> supplier) {
 		featureModel = supplier.get();
-		return parse(sourceMapper);
+		return parse(inputFileMapper);
 	}
 
 	@Override
