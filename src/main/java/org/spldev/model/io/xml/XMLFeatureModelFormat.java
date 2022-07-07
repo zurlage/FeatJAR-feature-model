@@ -100,7 +100,7 @@ public class XMLFeatureModelFormat extends AbstractXMLFeatureModelFormat<Feature
 
 	@Override
 	public FeatureModel parseDocument(Document document) throws ParseException {
-		if (featureModel != null)
+		if (featureModel == null)
 			featureModel = new FeatureModel(Identifier.newCounter());
 		variableMap = new VariableMap();
 		nameToIdentifierMap = new HashMap<>();
