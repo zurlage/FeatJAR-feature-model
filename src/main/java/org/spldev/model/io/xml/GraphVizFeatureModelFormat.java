@@ -25,7 +25,7 @@ package org.spldev.model.io.xml;
 import org.spldev.model.Feature;
 import org.spldev.model.FeatureModel;
 import org.spldev.model.FeatureTree;
-import org.spldev.util.io.FileHandler;
+import org.spldev.util.io.IO;
 import org.spldev.util.io.format.Format;
 import org.spldev.util.tree.Trees;
 
@@ -50,7 +50,7 @@ public class GraphVizFeatureModelFormat implements Format<FeatureModel> {
 
 	public static void openInBrowser(FeatureModel featureModel) {
 		try {
-			String dot = FileHandler.print(featureModel, new GraphVizFeatureModelFormat());
+			String dot = IO.print(featureModel, new GraphVizFeatureModelFormat());
 			URI uri = new URI("https", "edotor.net", "", "engine=dot", dot);
 			Desktop.getDesktop().browse(uri);
 		} catch (IOException | URISyntaxException e) {

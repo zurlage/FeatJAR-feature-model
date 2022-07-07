@@ -5,7 +5,7 @@ import org.spldev.model.Feature;
 import org.spldev.model.FeatureModel;
 import org.spldev.model.io.xml.XMLFeatureModelFormat;
 import org.spldev.util.data.Result;
-import org.spldev.util.io.FileHandler;
+import org.spldev.util.io.IO;
 
 import java.nio.file.Paths;
 import java.util.Set;
@@ -17,7 +17,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 public class XMLFeatureModelFormatTest {
 	@Test
 	public void xmlFeatureModelFormat() {
-		Result<FeatureModel> featureModelResult = FileHandler.load(Paths.get(
+		Result<FeatureModel> featureModelResult = IO.load(Paths.get(
 			"src/test/resources/testFeatureModels/car.xml"), new XMLFeatureModelFormat());
 		assertTrue(featureModelResult.isPresent());
 		FeatureModel featureModel = featureModelResult.get();
