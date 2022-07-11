@@ -1,8 +1,8 @@
 <?xml version="1.0"?>
 <extensions>
-    <point id="org.spldev.model.io.FeatureModelFormatManager">
-        <extension id="org.spldev.model.io.xml.XMLFeatureModelFormat" />
+    <point id="de.featjar.model.io.FeatureModelFormatManager">
+        <extension id="de.featjar.model.io.xml.XMLFeatureModelFormat" />
     </point>
-    <point id="org.spldev.configuration.io.ConfigurationFormatManager">
+    <point id="de.featjar.configuration.io.ConfigurationFormatManager">
     </point>
 </extensions>
