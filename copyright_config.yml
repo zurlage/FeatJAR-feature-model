@@ -1,9 +1,0 @@
-license:
-  name: lgpl
-  version: 3
-program:
-  name: Feature Modeling Lib
-  description: Feature models, configurations, and projects
-  authors: Elias Kuiter
-  url: https://github.com/ekuiter/model
-  year: 2022
