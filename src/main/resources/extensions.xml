@@ -3,6 +3,4 @@
     <point id="de.featjar.model.io.FeatureModelFormatManager">
         <extension id="de.featjar.model.io.xml.XMLFeatureModelFormat" />
     </point>
-    <point id="de.featjar.configuration.io.ConfigurationFormatManager">
-    </point>
 </extensions>
