@@ -33,7 +33,7 @@ import java.util.*;
 
 /**
  * A feature model is a representation of the space of valid
- * {@link Configuration configurations} for a software system. Here, we
+ * configurations for a software system. Here, we
  * implement feature diagrams (i.e., a {@link FeatureTree} labeled with features
  * and a list of {@link Constraint constraints}). For safe mutation, rely only
  * on the methods of {@link Mutable}.
