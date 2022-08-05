@@ -32,11 +32,11 @@ import de.featjar.model.util.Mutable;
 import java.util.*;
 
 /**
- * A feature model is a representation of the space of valid
- * configurations for a software system. Here, we
- * implement feature diagrams (i.e., a {@link FeatureTree} labeled with features
- * and a list of {@link Constraint constraints}). For safe mutation, rely only
- * on the methods of {@link Mutable}.
+ * A feature model is a representation of the space of valid configurations for
+ * a software system. Here, we implement feature diagrams (i.e., a
+ * {@link FeatureTree} labeled with features and a list of {@link Constraint
+ * constraints}). For safe mutation, rely only on the methods of
+ * {@link Mutable}.
  *
  * @author Elias Kuiter
  */
