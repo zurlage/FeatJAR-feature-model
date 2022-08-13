@@ -1,5 +1,4 @@
-/* -----------------------------------------------------------------------------
- * model - Feature models and configurations
+/*
  * Copyright (C) 2022 Elias Kuiter
  *
  * This file is part of model.
@@ -18,7 +17,6 @@
  * along with model. If not, see <https://www.gnu.org/licenses/>.
  *
  * See <https://github.com/FeatJAR/model> for further information.
- * -----------------------------------------------------------------------------
  */
 package de.featjar.model;
 
