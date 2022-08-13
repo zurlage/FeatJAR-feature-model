@@ -5,3 +5,10 @@ plugins {
 dependencies {
     api 'de.featjar:formula'
 }
+
+license {
+    ext {
+        author = 'Elias Kuiter'
+        url = 'https://github.com/FeatJAR/model'
+    }
+}
