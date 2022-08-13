@@ -20,31 +20,46 @@
  */
 package de.featjar.model.io;
 
-import org.junit.jupiter.api.Test;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
 import de.featjar.model.Feature;
 import de.featjar.model.FeatureModel;
 import de.featjar.model.io.xml.XMLFeatureModelFormat;
 import de.featjar.util.data.Result;
 import de.featjar.util.io.IO;
-
 import java.nio.file.Paths;
 import java.util.Set;
 import java.util.stream.Collectors;
-
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import org.junit.jupiter.api.Test;
 
 public class XMLFeatureModelFormatTest {
-	@Test
-	public void xmlFeatureModelFormat() {
-		Result<FeatureModel> featureModelResult = IO.load(Paths.get(
-			"src/test/resources/testFeatureModels/car.xml"), new XMLFeatureModelFormat());
-		assertTrue(featureModelResult.isPresent());
-		FeatureModel featureModel = featureModelResult.get();
-		String[] featureNames = new String[] { "Car", "Carbody", "Radio", "Ports", "USB", "CD", "Navigation",
-			"DigitalCards", "Europe", "USA", "GPSAntenna", "Bluetooth", "Gearbox", "Manual", "Automatic",
-			"GearboxTest" };
-		assertEquals(Set.of(featureNames), featureModel.getFeatures().stream().map(Feature::getName).collect(Collectors
-			.toSet()));
-	}
+    @Test
+    public void xmlFeatureModelFormat() {
+        Result<FeatureModel> featureModelResult =
+                IO.load(Paths.get("src/test/resources/testFeatureModels/car.xml"), new XMLFeatureModelFormat());
+        assertTrue(featureModelResult.isPresent());
+        FeatureModel featureModel = featureModelResult.get();
+        String[] featureNames = new String[] {
+            "Car",
+            "Carbody",
+            "Radio",
+            "Ports",
+            "USB",
+            "CD",
+            "Navigation",
+            "DigitalCards",
+            "Europe",
+            "USA",
+            "GPSAntenna",
+            "Bluetooth",
+            "Gearbox",
+            "Manual",
+            "Automatic",
+            "GearboxTest"
+        };
+        assertEquals(
+                Set.of(featureNames),
+                featureModel.getFeatures().stream().map(Feature::getName).collect(Collectors.toSet()));
+    }
 }

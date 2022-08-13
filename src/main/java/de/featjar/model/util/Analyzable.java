@@ -32,17 +32,16 @@ import java.util.function.Consumer;
  * @author Elias Kuiter
  */
 public interface Analyzable<T, U extends Analyzer<T>> {
-	U getAnalyzer();
+    U getAnalyzer();
 
-	void setAnalyzer(U analyzer);
+    void setAnalyzer(U analyzer);
 
-	default U analyze() {
-		return getAnalyzer();
-	}
+    default U analyze() {
+        return getAnalyzer();
+    }
 
-	default T analyze(Consumer<U> analyzerConsumer) {
-		analyzerConsumer.accept(getAnalyzer());
-		return getAnalyzer().getAnalyzable();
-	}
-
+    default T analyze(Consumer<U> analyzerConsumer) {
+        analyzerConsumer.accept(getAnalyzer());
+        return getAnalyzer().getAnalyzable();
+    }
 }

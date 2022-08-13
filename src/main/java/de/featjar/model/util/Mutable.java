@@ -34,29 +34,26 @@ import java.util.function.Consumer;
  * @author Elias Kuiter
  */
 public interface Mutable<T, U extends Mutator<T>> {
-	U getMutator();
+    U getMutator();
 
-	void setMutator(U mutator);
+    void setMutator(U mutator);
 
-	default void finishInternalMutation() {
+    default void finishInternalMutation() {}
 
-	}
+    default U mutate() {
+        return getMutator();
+    }
 
-	default U mutate() {
-		return getMutator();
-	}
+    default T mutate(Consumer<U> mutatorConsumer) {
+        mutatorConsumer.accept(getMutator());
+        return getMutator().getMutable();
+    }
 
-	default T mutate(Consumer<U> mutatorConsumer) {
-		mutatorConsumer.accept(getMutator());
-		return getMutator().getMutable();
-	}
-
-	default void mutateInternal(Runnable r) {
-		try {
-			r.run();
-		} finally {
-			finishInternalMutation();
-		}
-	}
-
+    default void mutateInternal(Runnable r) {
+        try {
+            r.run();
+        } finally {
+            finishInternalMutation();
+        }
+    }
 }

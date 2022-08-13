@@ -20,13 +20,13 @@
  */
 package de.featjar.model;
 
+import static org.junit.jupiter.api.Assertions.assertSame;
+
 import de.featjar.model.util.Analyzable;
 import de.featjar.model.util.Analyzer;
 import de.featjar.model.util.Identifier;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-
-import static org.junit.jupiter.api.Assertions.assertSame;
 
 /**
  * Tests for {@link Analyzer} and {@link Analyzable}.
@@ -34,19 +34,19 @@ import static org.junit.jupiter.api.Assertions.assertSame;
  * @author Elias Kuiter
  */
 public class AnalyzerTest {
-	FeatureModel featureModel;
+    FeatureModel featureModel;
 
-	@BeforeEach
-	public void createFeatureModel() {
-		featureModel = new FeatureModel(Identifier.newCounter());
-	}
+    @BeforeEach
+    public void createFeatureModel() {
+        featureModel = new FeatureModel(Identifier.newCounter());
+    }
 
-	@Test
-	public void analyzable() {
-		assertSame(featureModel.analyze(), featureModel.getAnalyzer());
-		assertSame(featureModel, featureModel.analyze().getAnalyzable());
-		FeatureModel.Analyzer analyzer = featureModel.new Analyzer();
-		featureModel.setAnalyzer(analyzer);
-		assertSame(analyzer, featureModel.getAnalyzer());
-	}
+    @Test
+    public void analyzable() {
+        assertSame(featureModel.analyze(), featureModel.getAnalyzer());
+        assertSame(featureModel, featureModel.analyze().getAnalyzable());
+        FeatureModel.Analyzer analyzer = featureModel.new Analyzer();
+        featureModel.setAnalyzer(analyzer);
+        assertSame(analyzer, featureModel.getAnalyzer());
+    }
 }

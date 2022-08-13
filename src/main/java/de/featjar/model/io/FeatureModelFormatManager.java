@@ -29,12 +29,11 @@ import de.featjar.util.io.format.FormatManager;
  * @author Sebastian Krieter
  */
 public class FeatureModelFormatManager extends FormatManager<FeatureModel> {
-	private static FeatureModelFormatManager INSTANCE = new FeatureModelFormatManager();
+    private static FeatureModelFormatManager INSTANCE = new FeatureModelFormatManager();
 
-	public static FeatureModelFormatManager getInstance() {
-		return INSTANCE;
-	}
+    public static FeatureModelFormatManager getInstance() {
+        return INSTANCE;
+    }
 
-	private FeatureModelFormatManager() {
-	}
+    private FeatureModelFormatManager() {}
 }

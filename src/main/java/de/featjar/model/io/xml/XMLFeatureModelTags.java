@@ -27,32 +27,32 @@ package de.featjar.model.io.xml;
  * @deprecated
  */
 public interface XMLFeatureModelTags {
-//
-//	static final String EXTENDED_FEATURE_MODEL = "extendedFeatureModel";
-//	static final String STRUCT = "struct";
-//	static final String FEATURE_ORDER = "featureOrder";
-//	static final String CONSTRAINTS = "constraints";
-//	static final String CONSTRAINT = "constraint";
-//	static final String COLLAPSED = "collapsed";
-//	static final String FEATURES = "features";
-//	static final String CHOSEN_LAYOUT_ALGORITHM = "chosenLayoutAlgorithm";
-//	static final String NAME = "name";
-//	static final String FALSE = "false";
-//	static final String SHOW_COLLAPSED_CONSTRAINTS = "showCollapsedConstraints";
-//	static final String LEGEND = "legend";
-//	static final String LEGEND_AUTO_LAYOUT = "autoLayout";
-//	static final String LEGEND_HIDDEN = "hidden";
-//	static final String SHOW_SHORT_NAMES = "showShortNames";
-//	static final String HORIZONTAL_LAYOUT = "horizontalLayout";
-//	static final String RULE = "rule";
-//	static final String UNKNOWN = "unknown";
-//	static final String ATMOST1 = "atmost1";
-//	static final String ATTRIBUTE = "attribute";
-//	static final String ATTRIBUTE_UNIT = "unit";
-//	static final String ATTRIBUTE_TYPE = "type";
-//	static final String ATTRIBUTE_VALUE = "value";
-//	static final String ATTRIBUTE_RECURSIVE = "recursive";
-//	static final String ATTRIBUTE_CONFIGURABLE = "configurable";
-//
+    //
+    //	static final String EXTENDED_FEATURE_MODEL = "extendedFeatureModel";
+    //	static final String STRUCT = "struct";
+    //	static final String FEATURE_ORDER = "featureOrder";
+    //	static final String CONSTRAINTS = "constraints";
+    //	static final String CONSTRAINT = "constraint";
+    //	static final String COLLAPSED = "collapsed";
+    //	static final String FEATURES = "features";
+    //	static final String CHOSEN_LAYOUT_ALGORITHM = "chosenLayoutAlgorithm";
+    //	static final String NAME = "name";
+    //	static final String FALSE = "false";
+    //	static final String SHOW_COLLAPSED_CONSTRAINTS = "showCollapsedConstraints";
+    //	static final String LEGEND = "legend";
+    //	static final String LEGEND_AUTO_LAYOUT = "autoLayout";
+    //	static final String LEGEND_HIDDEN = "hidden";
+    //	static final String SHOW_SHORT_NAMES = "showShortNames";
+    //	static final String HORIZONTAL_LAYOUT = "horizontalLayout";
+    //	static final String RULE = "rule";
+    //	static final String UNKNOWN = "unknown";
+    //	static final String ATMOST1 = "atmost1";
+    //	static final String ATTRIBUTE = "attribute";
+    //	static final String ATTRIBUTE_UNIT = "unit";
+    //	static final String ATTRIBUTE_TYPE = "type";
+    //	static final String ATTRIBUTE_VALUE = "value";
+    //	static final String ATTRIBUTE_RECURSIVE = "recursive";
+    //	static final String ATTRIBUTE_CONFIGURABLE = "configurable";
+    //
 
 }

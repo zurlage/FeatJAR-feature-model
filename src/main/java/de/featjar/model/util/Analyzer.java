@@ -27,5 +27,5 @@ package de.featjar.model.util;
  * @author Elias Kuiter
  */
 public interface Analyzer<T> {
-	T getAnalyzable();
+    T getAnalyzable();
 }

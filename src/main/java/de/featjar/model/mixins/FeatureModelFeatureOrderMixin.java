@@ -23,7 +23,6 @@ package de.featjar.model.mixins;
 import de.featjar.model.Feature;
 import de.featjar.model.FeatureModel;
 import de.featjar.model.FeatureOrder;
-
 import java.util.List;
 
 /**
@@ -33,13 +32,13 @@ import java.util.List;
  * @author Elias Kuiter
  */
 public interface FeatureModelFeatureOrderMixin extends FeatureModelFeatureTreeMixin {
-	FeatureOrder getFeatureOrder();
+    FeatureOrder getFeatureOrder();
 
-	default List<Feature> getOrderedFeatures() {
-		return getFeatureOrder().apply(this);
-	}
+    default List<Feature> getOrderedFeatures() {
+        return getFeatureOrder().apply(this);
+    }
 
-	interface Mutator {
-		void setFeatureOrder(FeatureOrder featureOrder);
-	}
+    interface Mutator {
+        void setFeatureOrder(FeatureOrder featureOrder);
+    }
 }

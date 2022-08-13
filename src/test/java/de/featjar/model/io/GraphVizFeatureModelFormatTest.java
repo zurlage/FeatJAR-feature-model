@@ -20,25 +20,24 @@
  */
 package de.featjar.model.io;
 
-import de.featjar.model.io.xml.GraphVizFeatureModelFormat;
-import org.junit.jupiter.api.Test;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
 import de.featjar.model.FeatureModel;
+import de.featjar.model.io.xml.GraphVizFeatureModelFormat;
 import de.featjar.model.io.xml.XMLFeatureModelFormat;
 import de.featjar.util.data.Result;
 import de.featjar.util.io.IO;
-
 import java.io.IOException;
 import java.nio.file.Paths;
-
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import org.junit.jupiter.api.Test;
 
 public class GraphVizFeatureModelFormatTest {
-	@Test
-	public void graphVizFeatureModelFormat() throws IOException {
-		Result<FeatureModel> featureModel = IO.load(Paths.get(
-			"src/test/resources/testFeatureModels/car.xml"), new XMLFeatureModelFormat());
-		assertTrue(featureModel.isPresent());
-		assertTrue(IO.print(featureModel.get(), new GraphVizFeatureModelFormat()).startsWith(
-			"digraph {"));
-	}
+    @Test
+    public void graphVizFeatureModelFormat() throws IOException {
+        Result<FeatureModel> featureModel =
+                IO.load(Paths.get("src/test/resources/testFeatureModels/car.xml"), new XMLFeatureModelFormat());
+        assertTrue(featureModel.isPresent());
+        assertTrue(
+                IO.print(featureModel.get(), new GraphVizFeatureModelFormat()).startsWith("digraph {"));
+    }
 }

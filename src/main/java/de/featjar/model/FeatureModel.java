@@ -22,11 +22,9 @@ package de.featjar.model;
 
 import de.featjar.formula.structure.atomic.literal.VariableMap;
 import de.featjar.model.mixins.*;
-import de.featjar.model.mixins.*;
 import de.featjar.model.util.Analyzable;
 import de.featjar.model.util.Identifier;
 import de.featjar.model.util.Mutable;
-
 import java.util.*;
 
 /**
@@ -38,123 +36,133 @@ import java.util.*;
  *
  * @author Elias Kuiter
  */
-public class FeatureModel extends Element implements FeatureModelFeatureTreeMixin, FeatureModelConstraintMixin,
-	FeatureModelFeatureOrderMixin, CommonAttributesMixin, FeatureModelCacheMixin,
-	Mutable<FeatureModel, FeatureModel.Mutator>, Analyzable<FeatureModel, FeatureModel.Analyzer> {
-	protected final FeatureTree featureTree;
-	protected final List<Constraint> constraints = Collections.synchronizedList(new ArrayList<>());
-	protected FeatureOrder featureOrder = FeatureOrder.ofPreOrder();
+public class FeatureModel extends Element
+        implements FeatureModelFeatureTreeMixin,
+                FeatureModelConstraintMixin,
+                FeatureModelFeatureOrderMixin,
+                CommonAttributesMixin,
+                FeatureModelCacheMixin,
+                Mutable<FeatureModel, FeatureModel.Mutator>,
+                Analyzable<FeatureModel, FeatureModel.Analyzer> {
+    protected final FeatureTree featureTree;
+    protected final List<Constraint> constraints = Collections.synchronizedList(new ArrayList<>());
+    protected FeatureOrder featureOrder = FeatureOrder.ofPreOrder();
 
-	protected final VariableMap variableMap = new VariableMap(); // todo: get, set, mutate correctly (checks), pass
-																	// map to createConstraint as Function<...>
-	protected final Map<Identifier, Element> elementCache = Collections.synchronizedMap(new LinkedHashMap<>());
-	protected final Set<Feature> featureCache = Collections.synchronizedSet(new HashSet<>());
-	protected final Set<FeatureModel> featureModelCache = Collections.synchronizedSet(new HashSet<>()); // todo
-	// calculate
-	// from tree
-	protected Mutator mutator;
-	protected Analyzer analyzer;
-	// todo inv: this featuretree (w/o submodels) has one variablemap. variablemap
-	// == features.
+    protected final VariableMap variableMap = new VariableMap(); // todo: get, set, mutate correctly (checks), pass
+    // map to createConstraint as Function<...>
+    protected final Map<Identifier, Element> elementCache = Collections.synchronizedMap(new LinkedHashMap<>());
+    protected final Set<Feature> featureCache = Collections.synchronizedSet(new HashSet<>());
+    protected final Set<FeatureModel> featureModelCache = Collections.synchronizedSet(new HashSet<>()); // todo
+    // calculate
+    // from tree
+    protected Mutator mutator;
+    protected Analyzer analyzer;
+    // todo inv: this featuretree (w/o submodels) has one variablemap. variablemap
+    // == features.
 
-	public FeatureModel(Identifier identifier) {
-		super(identifier);
-		final Feature root = new Feature(this);
-		featureTree = root.getFeatureTree();
-		finishInternalMutation();
-	}
+    public FeatureModel(Identifier identifier) {
+        super(identifier);
+        final Feature root = new Feature(this);
+        featureTree = root.getFeatureTree();
+        finishInternalMutation();
+    }
 
-	@Override
-	public FeatureTree getFeatureTree() {
-		return featureTree;
-	}
+    @Override
+    public FeatureTree getFeatureTree() {
+        return featureTree;
+    }
 
-	// every model returns only its own constraints/features
-	@Override
-	public List<Constraint> getConstraints() {
-		return constraints;
-	}
+    // every model returns only its own constraints/features
+    @Override
+    public List<Constraint> getConstraints() {
+        return constraints;
+    }
 
-	// TODO? returns constraints of all submodels
-	public List<Constraint> getALLConstraints() {
-		return constraints;
-	}
+    // TODO? returns constraints of all submodels
+    public List<Constraint> getALLConstraints() {
+        return constraints;
+    }
 
-	@Override
-	public FeatureOrder getFeatureOrder() {
-		return featureOrder;
-	}
+    @Override
+    public FeatureOrder getFeatureOrder() {
+        return featureOrder;
+    }
 
-	// @Override //constraint mixin?
-	public VariableMap getVariableMap() {
-		return variableMap;
-	}
+    // @Override //constraint mixin?
+    public VariableMap getVariableMap() {
+        return variableMap;
+    }
 
-	@Override
-	public Map<Identifier, Element> getElementCache() {
-		return elementCache;
-	}
+    @Override
+    public Map<Identifier, Element> getElementCache() {
+        return elementCache;
+    }
 
-	@Override
-	public Set<Feature> getFeatureCache() {
-		return featureCache;
-	}
+    @Override
+    public Set<Feature> getFeatureCache() {
+        return featureCache;
+    }
 
-	@Override
-	public Mutator getMutator() {
-		return mutator == null ? (mutator = new Mutator()) : mutator;
-	}
+    @Override
+    public Mutator getMutator() {
+        return mutator == null ? (mutator = new Mutator()) : mutator;
+    }
 
-	@Override
-	public void setMutator(Mutator mutator) {
-		this.mutator = mutator;
-	}
+    @Override
+    public void setMutator(Mutator mutator) {
+        this.mutator = mutator;
+    }
 
-	@Override
-	public Analyzer getAnalyzer() {
-		return analyzer == null ? (analyzer = new Analyzer()) : analyzer;
-	}
+    @Override
+    public Analyzer getAnalyzer() {
+        return analyzer == null ? (analyzer = new Analyzer()) : analyzer;
+    }
 
-	@Override
-	public void setAnalyzer(Analyzer analyzer) {
-		this.analyzer = analyzer;
-	}
+    @Override
+    public void setAnalyzer(Analyzer analyzer) {
+        this.analyzer = analyzer;
+    }
 
-	@Override
-	public void finishInternalMutation() {
-		FeatureModelCacheMixin.super.finishInternalMutation();
-	}
+    @Override
+    public void finishInternalMutation() {
+        FeatureModelCacheMixin.super.finishInternalMutation();
+    }
 
-	@Override
-	public String toString() {
-		return String.format("FeatureModel{features=%s, constraints=%s}", getFeatures(), constraints);
-	}
+    @Override
+    public String toString() {
+        return String.format("FeatureModel{features=%s, constraints=%s}", getFeatures(), constraints);
+    }
 
-	@Override
-	protected Object clone() throws CloneNotSupportedException {
-		throw new CloneNotSupportedException(); // todo
-	}
+    @Override
+    protected Object clone() throws CloneNotSupportedException {
+        throw new CloneNotSupportedException(); // todo
+    }
 
-	public class Mutator implements de.featjar.model.util.Mutator<FeatureModel>,
-		FeatureModelFeatureTreeMixin.Mutator, FeatureModelConstraintMixin.Mutator,
-		FeatureModelFeatureOrderMixin.Mutator, CommonAttributesMixin.Mutator<FeatureModel>,
-		FeatureModelCacheMixin.Mutator {
-		@Override
-		public FeatureModel getMutable() {
-			return FeatureModel.this;
-		}
+    public class Mutator
+            implements de.featjar.model.util.Mutator<FeatureModel>,
+                    FeatureModelFeatureTreeMixin.Mutator,
+                    FeatureModelConstraintMixin.Mutator,
+                    FeatureModelFeatureOrderMixin.Mutator,
+                    CommonAttributesMixin.Mutator<FeatureModel>,
+                    FeatureModelCacheMixin.Mutator {
+        @Override
+        public FeatureModel getMutable() {
+            return FeatureModel.this;
+        }
 
-		@Override
-		public void setFeatureOrder(FeatureOrder featureOrder) {
-			FeatureModel.this.featureOrder = featureOrder;
-		}
-	}
+        @Override
+        public void setFeatureOrder(FeatureOrder featureOrder) {
+            FeatureModel.this.featureOrder = featureOrder;
+        }
+    }
 
-	public class Analyzer implements de.featjar.model.util.Analyzer<FeatureModel>,
-		FeatureModelFeatureTreeMixin.Analyzer, FeatureModelConstraintMixin.Analyzer {
-		@Override
-		public FeatureModel getAnalyzable() {
-			return FeatureModel.this;
-		}
-	}
+    public class Analyzer
+            implements de.featjar.model.util.Analyzer<FeatureModel>,
+                    FeatureModelFeatureTreeMixin.Analyzer,
+                    FeatureModelConstraintMixin.Analyzer {
+        @Override
+        public FeatureModel getAnalyzable() {
+            return FeatureModel.this;
+        }
+    }
 }

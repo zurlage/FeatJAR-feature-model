@@ -27,5 +27,5 @@ package de.featjar.model.util;
  * @author Elias Kuiter
  */
 public interface Mutator<T> {
-	T getMutable();
+    T getMutable();
 }

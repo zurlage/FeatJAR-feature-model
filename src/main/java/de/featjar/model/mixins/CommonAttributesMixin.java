@@ -20,13 +20,12 @@
  */
 package de.featjar.model.mixins;
 
+import de.featjar.model.Attributes;
 import de.featjar.model.Constraint;
 import de.featjar.model.Feature;
 import de.featjar.model.FeatureModel;
 import de.featjar.model.util.Attributable;
 import de.featjar.model.util.Attribute;
-import de.featjar.model.Attributes;
-
 import java.util.Optional;
 
 /**
@@ -37,21 +36,21 @@ import java.util.Optional;
  * @author Elias Kuiter
  */
 public interface CommonAttributesMixin extends Attributable {
-	default String getName() {
-		return getAttributeValue(Attributes.NAME);
-	}
+    default String getName() {
+        return getAttributeValue(Attributes.NAME);
+    }
 
-	default Optional<String> getDescription() {
-		return getAttributeValue(Attributes.DESCRIPTION);
-	}
+    default Optional<String> getDescription() {
+        return getAttributeValue(Attributes.DESCRIPTION);
+    }
 
-	interface Mutator<T extends Attributable> extends Attributable.Mutator<T> {
-		default void setName(String name) {
-			setAttributeValue(Attributes.NAME, name);
-		}
+    interface Mutator<T extends Attributable> extends Attributable.Mutator<T> {
+        default void setName(String name) {
+            setAttributeValue(Attributes.NAME, name);
+        }
 
-		default void setDescription(String description) {
-			setAttributeValue(Attributes.DESCRIPTION, description);
-		}
-	}
+        default void setDescription(String description) {
+            setAttributeValue(Attributes.DESCRIPTION, description);
+        }
+    }
 }

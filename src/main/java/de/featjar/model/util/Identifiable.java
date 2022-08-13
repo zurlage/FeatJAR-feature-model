@@ -27,9 +27,9 @@ package de.featjar.model.util;
  * @author Elias Kuiter
  */
 public interface Identifiable {
-	Identifier getIdentifier();
+    Identifier getIdentifier();
 
-	default Identifier getNewIdentifier() {
-		return getIdentifier().getFactory().get();
-	}
+    default Identifier getNewIdentifier() {
+        return getIdentifier().getFactory().get();
+    }
 }
