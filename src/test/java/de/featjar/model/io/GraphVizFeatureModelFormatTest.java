@@ -16,7 +16,7 @@
  * You should have received a copy of the GNU Lesser General Public License
  * along with model. If not, see <https://www.gnu.org/licenses/>.
  *
- * See <https://github.com/FeatJAR/model> for further information.
+ * See <https://github.com/FeatureIDE/FeatJAR-model> for further information.
  */
 package de.featjar.model.io;
 

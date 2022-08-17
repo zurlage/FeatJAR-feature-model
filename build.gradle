@@ -9,6 +9,6 @@ dependencies {
 license {
     ext {
         author = 'Elias Kuiter'
-        url = 'https://github.com/FeatJAR/model'
+        url = 'https://github.com/FeatureIDE/FeatJAR-model'
     }
 }
