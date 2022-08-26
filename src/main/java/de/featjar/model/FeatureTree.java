@@ -22,7 +22,7 @@ package de.featjar.model;
 
 import de.featjar.model.util.Mutable;
 import de.featjar.util.tree.structure.RootedTree;
-import de.featjar.util.tree.structure.Tree;
+import de.featjar.util.tree.structure.Traversable;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -100,7 +100,12 @@ public class FeatureTree extends RootedTree<FeatureTree> implements Mutable<Feat
     }
 
     @Override
-    public Tree<FeatureTree> cloneNode() {
+    public Traversable<FeatureTree> cloneNode() {
+        throw new RuntimeException();
+    }
+
+    @Override
+    public boolean equalsNode(FeatureTree other) {
         throw new RuntimeException();
     }
 

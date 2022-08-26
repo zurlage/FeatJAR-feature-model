@@ -90,7 +90,7 @@ public interface FeatureModelFeatureTreeMixin {
             Objects.requireNonNull(newFeature);
             Objects.requireNonNull(parentFeature);
             addFeatureBelow(
-                    newFeature, parentFeature, parentFeature.getFeatureTree().getNumberOfChildren());
+                    newFeature, parentFeature, parentFeature.getFeatureTree().getChildrenCount());
         }
 
         default void addFeatureNextTo(Feature newFeature, Feature siblingFeature) {
@@ -132,7 +132,7 @@ public interface FeatureModelFeatureTreeMixin {
             final FeatureTree parentFeatureTree =
                     feature.getFeatureTree().getParent().get();
 
-            if (parentFeatureTree.getNumberOfChildren() == 1) {
+            if (parentFeatureTree.getChildrenCount() == 1) {
                 parentFeatureTree.mutate(mutator -> {
                     if (feature.getFeatureTree().isAnd()) {
                         mutator.setAnd();
@@ -149,7 +149,7 @@ public interface FeatureModelFeatureTreeMixin {
                 parentFeatureTree.addChild(
                         index,
                         feature.getFeatureTree()
-                                .removeChild(feature.getFeatureTree().getNumberOfChildren() - 1));
+                                .removeChild(feature.getFeatureTree().getChildrenCount() - 1));
             }
 
             parentFeatureTree.removeChild(feature.getFeatureTree());
