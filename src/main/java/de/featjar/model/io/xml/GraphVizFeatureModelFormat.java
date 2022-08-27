@@ -25,7 +25,7 @@ import de.featjar.model.FeatureModel;
 import de.featjar.model.FeatureTree;
 import de.featjar.util.io.IO;
 import de.featjar.util.io.format.Format;
-import de.featjar.util.tree.Trees;
+
 import java.awt.*;
 import java.io.IOException;
 import java.net.URI;
@@ -72,7 +72,7 @@ public class GraphVizFeatureModelFormat implements Format<FeatureModel> {
 
     @Override
     public String serialize(FeatureModel featureModel) {
-        List<Feature> features = Trees.getLevelOrderList(featureModel.getFeatureTree()).stream()
+        List<Feature> features = featureModel.getFeatureTree().getDescendantsAsLevelOrder().stream()
                 .map(FeatureTree::getFeature)
                 .collect(Collectors.toList());
         return String.format(
