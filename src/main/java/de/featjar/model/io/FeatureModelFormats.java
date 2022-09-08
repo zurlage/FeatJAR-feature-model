@@ -21,19 +21,26 @@
 package de.featjar.model.io;
 
 import de.featjar.model.FeatureModel;
-import de.featjar.util.io.format.FormatManager;
+import de.featjar.util.extension.ExtensionPoint;
+import de.featjar.util.io.format.Format;
+import de.featjar.util.io.format.Formats;
 
 /**
  * Manages all formats for {@link FeatureModel feature models}.
  *
  * @author Sebastian Krieter
  */
-public class FeatureModelFormatManager extends FormatManager<FeatureModel> {
-    private static FeatureModelFormatManager INSTANCE = new FeatureModelFormatManager();
+public class FeatureModelFormats extends Formats<FeatureModel> {
+    private static final FeatureModelFormats INSTANCE = new FeatureModelFormats();
 
-    public static FeatureModelFormatManager getInstance() {
+    public static FeatureModelFormats getInstance() {
         return INSTANCE;
     }
 
-    private FeatureModelFormatManager() {}
+    private FeatureModelFormats() {}
+
+    @Override
+    public ExtensionPoint<Format<FeatureModel>> getExtensionPointInstance() {
+        return INSTANCE;
+    }
 }

@@ -156,13 +156,38 @@ public interface FeatureModelFeatureTreeMixin {
         }
     }
 
+    /*
+     * FeatureModel fm = IO.load(path);
+     *
+     * the default analyzer chooses an arbitrary concrete analyzer
+     * sout(fm.analyze().isVoid());
+     *   sout(fm.analyze().count());
+     *   sout(fm.analyze().getCoreFeatures());
+     *   sout(fm.analyze().getCommonality(f));
+     *
+     * fm.analyze(Ext.D4, analyzer ->
+     *   sout(analyzer.isVoid());
+     *   sout(analyzer.count());
+     *   sout(analyzer.getCoreFeatures());
+     *   sout(analyzer.getCommonality(f));
+     * ;
+     */
+    // todo: make Analyzer an extension point
     interface Analyzer extends de.featjar.model.util.Analyzer<FeatureModel> {
+        default boolean isCoreFeature(Feature f) {
+            return false; // go through all registered extensions, if none succeeds, call getCoreFeatures()
+        }
+
         default Set<Feature> getCoreFeatures() {
             return Collections.emptySet();
         }
 
         default Set<Feature> getDeadFeatures() {
-            return Collections.emptySet(); // use extensions
+            return Collections.emptySet(); // use extensions: use an extension point for dead features
+        }
+
+        default int countValidConfigurations() {
+            return -1;
         }
 
         // ...

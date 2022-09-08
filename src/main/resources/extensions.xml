@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
 <extensions>
-    <point id="de.featjar.model.io.FeatureModelFormatManager">
+    <point id="de.featjar.model.io.FeatureModelFormats">
         <extension id="de.featjar.model.io.xml.XMLFeatureModelFormat" />
     </point>
 </extensions>
