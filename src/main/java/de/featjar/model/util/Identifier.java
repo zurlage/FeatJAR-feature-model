@@ -24,13 +24,11 @@ import java.util.Objects;
 
 /**
  * Uniquely identifies an {@link Identifiable} object. Several implementations
- * are available, implementors are responsible for guaranteeing uniqueness. Is
- * distinguished from {@link de.featjar.util.data.Identifier}, as it can also be
- * parsed from a {@link String}.
+ * are available, implementors are responsible for guaranteeing uniqueness.
  *
  * @author Elias Kuiter
  */
-public abstract class Identifier extends de.featjar.util.data.Identifier<Identifiable> {
+public abstract class Identifier {
     protected final Factory factory;
 
     private Identifier(Factory factory) {
