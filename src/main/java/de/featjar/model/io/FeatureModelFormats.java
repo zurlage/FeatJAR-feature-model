@@ -40,7 +40,7 @@ public class FeatureModelFormats extends Formats<FeatureModel> {
     private FeatureModelFormats() {}
 
     @Override
-    public ExtensionPoint<Format<FeatureModel>> getExtensionPointInstance() {
+    public ExtensionPoint<Format<FeatureModel>> getInstanceAsExtensionPoint() {
         return INSTANCE;
     }
 }
