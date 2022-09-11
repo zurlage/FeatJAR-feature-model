@@ -24,7 +24,7 @@ import de.featjar.formula.structure.Formula;
 import de.featjar.model.Constraint;
 import de.featjar.model.FeatureModel;
 import de.featjar.model.util.Identifier;
-import de.featjar.util.data.Result;
+import de.featjar.base.data.Result;
 import java.util.*;
 
 /**

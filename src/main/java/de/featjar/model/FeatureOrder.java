@@ -22,7 +22,7 @@ package de.featjar.model;
 
 import de.featjar.model.mixins.FeatureModelFeatureTreeMixin;
 import de.featjar.model.util.Mutable;
-import de.featjar.util.tree.Trees;
+import de.featjar.base.tree.Trees;
 import java.util.Comparator;
 import java.util.List;
 import java.util.function.Function;

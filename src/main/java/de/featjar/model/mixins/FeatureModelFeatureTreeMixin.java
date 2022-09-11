@@ -24,7 +24,7 @@ import de.featjar.model.Feature;
 import de.featjar.model.FeatureModel;
 import de.featjar.model.FeatureTree;
 import de.featjar.model.util.Identifier;
-import de.featjar.util.tree.Trees;
+import de.featjar.base.tree.Trees;
 import java.util.Collections;
 import java.util.Objects;
 import java.util.Optional;

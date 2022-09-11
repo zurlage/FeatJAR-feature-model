@@ -21,9 +21,9 @@
 package de.featjar.model.io;
 
 import de.featjar.model.FeatureModel;
-import de.featjar.util.extension.ExtensionPoint;
-import de.featjar.util.io.format.Format;
-import de.featjar.util.io.format.Formats;
+import de.featjar.base.extension.ExtensionPoint;
+import de.featjar.base.io.format.Format;
+import de.featjar.base.io.format.Formats;
 
 /**
  * Manages all formats for {@link FeatureModel feature models}.

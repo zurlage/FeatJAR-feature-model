@@ -22,7 +22,7 @@ package de.featjar.model.io;
 
 import de.featjar.model.util.Attributable;
 import de.featjar.model.util.Attribute;
-import de.featjar.util.data.Problem;
+import de.featjar.base.data.Problem;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;

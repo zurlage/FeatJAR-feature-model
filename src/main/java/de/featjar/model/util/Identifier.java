@@ -62,7 +62,7 @@ public abstract class Identifier {
         return Objects.hash(toString());
     }
 
-    public abstract static class Factory implements de.featjar.util.data.Factory<Identifier> {
+    public abstract static class Factory implements de.featjar.base.data.Factory<Identifier> {
         public abstract Identifier parse(String identifierString);
     }
 

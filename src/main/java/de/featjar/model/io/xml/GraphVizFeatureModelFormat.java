@@ -23,8 +23,8 @@ package de.featjar.model.io.xml;
 import de.featjar.model.Feature;
 import de.featjar.model.FeatureModel;
 import de.featjar.model.FeatureTree;
-import de.featjar.util.io.IO;
-import de.featjar.util.io.format.Format;
+import de.featjar.base.io.IO;
+import de.featjar.base.io.format.Format;
 
 import java.awt.*;
 import java.io.IOException;

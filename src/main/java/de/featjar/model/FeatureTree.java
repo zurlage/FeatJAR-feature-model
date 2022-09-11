@@ -21,8 +21,8 @@
 package de.featjar.model;
 
 import de.featjar.model.util.Mutable;
-import de.featjar.util.tree.structure.RootedTree;
-import de.featjar.util.tree.structure.Traversable;
+import de.featjar.base.tree.structure.RootedTree;
+import de.featjar.base.tree.structure.Traversable;
 import java.util.*;
 import java.util.stream.Collectors;
 
