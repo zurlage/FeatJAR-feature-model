@@ -22,7 +22,6 @@ package de.featjar.model;
 
 import de.featjar.formula.structure.Formula;
 import de.featjar.formula.structure.Formulas;
-import de.featjar.formula.structure.atomic.literal.Literal;
 import de.featjar.model.mixins.CommonAttributesMixin;
 import de.featjar.model.util.Analyzable;
 import de.featjar.model.util.Identifier;
@@ -57,7 +56,7 @@ public class Constraint extends Element
         super(featureModel.getNewIdentifier());
         Objects.requireNonNull(featureModel);
         this.featureModel = featureModel;
-        this.formula = Literal.True;
+        this.formula = Formula.TRUE;
     }
 
     public FeatureModel getFeatureModel() {

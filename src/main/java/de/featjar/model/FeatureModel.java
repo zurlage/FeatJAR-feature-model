@@ -20,7 +20,7 @@
  */
 package de.featjar.model;
 
-import de.featjar.formula.structure.atomic.literal.VariableMap;
+import de.featjar.formula.structure.VariableMap;
 import de.featjar.model.mixins.*;
 import de.featjar.model.util.Analyzable;
 import de.featjar.model.util.Identifier;

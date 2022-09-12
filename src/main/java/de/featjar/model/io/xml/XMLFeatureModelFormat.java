@@ -22,7 +22,7 @@ package de.featjar.model.io.xml;
 
 import de.featjar.formula.io.xml.AbstractXMLFeatureModelFormat;
 import de.featjar.formula.structure.Formula;
-import de.featjar.formula.structure.atomic.literal.VariableMap;
+import de.featjar.formula.structure.VariableMap;
 import de.featjar.model.Constraint;
 import de.featjar.model.Feature;
 import de.featjar.model.FeatureModel;
