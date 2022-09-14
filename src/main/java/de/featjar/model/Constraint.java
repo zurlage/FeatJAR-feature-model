@@ -20,7 +20,7 @@
  */
 package de.featjar.model;
 
-import de.featjar.formula.structure.Formula;
+import de.featjar.formula.structure.Expression;
 import de.featjar.formula.tmp.Formulas;
 import de.featjar.model.mixins.CommonAttributesMixin;
 import de.featjar.model.util.Analyzable;
@@ -32,7 +32,7 @@ import java.util.stream.Collectors;
 /**
  * A constraint describes some restriction of the valid configurations
  * represented by a {@link FeatureModel}. It is attached to some feature model
- * and represented as a {@link Formula} over {@link Feature features}. For safe
+ * and represented as a {@link Expression} over {@link Feature features}. For safe
  * mutation, rely only on the methods of {@link Mutable}.
  *
  * @author Elias Kuiter
@@ -40,31 +40,31 @@ import java.util.stream.Collectors;
 public class Constraint extends Element
         implements Mutable<Constraint, Constraint.Mutator>, Analyzable<Constraint, Constraint.Analyzer> {
     protected final FeatureModel featureModel;
-    protected Formula formula;
+    protected Expression expression;
     protected final Set<Feature> containedFeaturesCache = new HashSet<>();
     protected Mutator mutator;
     protected Analyzer analyzer;
 
-    public Constraint(FeatureModel featureModel, Formula formula) {
+    public Constraint(FeatureModel featureModel, Expression expression) {
         super(featureModel.getNewIdentifier());
         Objects.requireNonNull(featureModel);
         this.featureModel = featureModel;
-        getMutator().setFormula(formula); // todo efficient?
+        getMutator().setFormula(expression); // todo efficient?
     }
 
     public Constraint(FeatureModel featureModel) {
         super(featureModel.getNewIdentifier());
         Objects.requireNonNull(featureModel);
         this.featureModel = featureModel;
-        this.formula = Formula.TRUE;
+        this.expression = Expression.TRUE;
     }
 
     public FeatureModel getFeatureModel() {
         return featureModel;
     }
 
-    public Formula getFormula() {
-        return formula;
+    public Expression getFormula() {
+        return expression;
     }
 
     public Set<Feature> getContainedFeatures() {
@@ -87,7 +87,7 @@ public class Constraint extends Element
 
     @Override
     public String toString() {
-        return String.format("Constraint{formula=%s}", formula);
+        return String.format("Constraint{formula=%s}", expression);
     }
 
     @Override
@@ -107,9 +107,9 @@ public class Constraint extends Element
             return Constraint.this;
         }
 
-        public void setFormula(Formula formula) {
-            Objects.requireNonNull(formula);
-            Set<Identifier> identifiers = Formulas.getVariableNames(formula).stream()
+        public void setFormula(Expression expression) {
+            Objects.requireNonNull(expression);
+            Set<Identifier> identifiers = Formulas.getVariableNames(expression).stream()
                     .map(getIdentifier().getFactory()::parse)
                     .collect(Collectors.toSet());
             Optional<Identifier> unknownIdentifier = identifiers.stream()
@@ -123,7 +123,7 @@ public class Constraint extends Element
                     .map(featureModel::getFeature)
                     .map(Optional::get)
                     .collect(Collectors.toSet()));
-            Constraint.this.formula = formula;
+            Constraint.this.expression = expression;
         }
 
         public void setTags(Set<String> tags) {

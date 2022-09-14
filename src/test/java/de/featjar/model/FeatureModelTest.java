@@ -22,7 +22,7 @@ package de.featjar.model;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-import de.featjar.formula.structure.Formula;
+import de.featjar.formula.structure.Expression;
 import de.featjar.model.mixins.FeatureModelFeatureTreeMixin;
 import de.featjar.model.util.Identifier;
 import java.util.*;
@@ -81,9 +81,9 @@ public class FeatureModelTest {
     @Test
     public void featureModelConstraintMixin() {
         Assertions.assertEquals(0, featureModel.getNumberOfConstraints());
-        Constraint constraint1 = featureModel.mutate().createConstraint(Formula.TRUE);
-        Constraint constraint2 = featureModel.mutate().createConstraint(Formula.TRUE);
-        Constraint constraint3 = featureModel.mutate().createConstraint(Formula.FALSE);
+        Constraint constraint1 = featureModel.mutate().createConstraint(Expression.TRUE);
+        Constraint constraint2 = featureModel.mutate().createConstraint(Expression.TRUE);
+        Constraint constraint3 = featureModel.mutate().createConstraint(Expression.FALSE);
         Assertions.assertEquals(3, featureModel.getNumberOfConstraints());
         Assertions.assertEquals(Optional.of(constraint1), featureModel.getConstraint(constraint1.getIdentifier()));
         Assertions.assertTrue(featureModel.hasConstraint(constraint2.getIdentifier()));

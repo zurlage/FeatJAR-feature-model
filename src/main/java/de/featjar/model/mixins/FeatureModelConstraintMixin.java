@@ -20,7 +20,7 @@
  */
 package de.featjar.model.mixins;
 
-import de.featjar.formula.structure.Formula;
+import de.featjar.formula.structure.Expression;
 import de.featjar.model.Constraint;
 import de.featjar.model.FeatureModel;
 import de.featjar.model.util.Identifier;
@@ -87,14 +87,14 @@ public interface FeatureModelConstraintMixin {
             addConstraint(newConstraint, getMutable().getConstraints().size());
         }
 
-        default Constraint createConstraint(Formula formula) {
-            Constraint newConstraint = new Constraint(getMutable(), formula);
+        default Constraint createConstraint(Expression expression) {
+            Constraint newConstraint = new Constraint(getMutable(), expression);
             addConstraint(newConstraint);
             return newConstraint;
         }
 
-        default Constraint createConstraint(Formula formula, int index) {
-            Constraint newConstraint = new Constraint(getMutable(), formula);
+        default Constraint createConstraint(Expression expression, int index) {
+            Constraint newConstraint = new Constraint(getMutable(), expression);
             addConstraint(newConstraint, index);
             return newConstraint;
         }
