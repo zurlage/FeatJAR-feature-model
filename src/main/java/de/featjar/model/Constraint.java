@@ -21,7 +21,7 @@
 package de.featjar.model;
 
 import de.featjar.formula.structure.Formula;
-import de.featjar.formula.structure.Formulas;
+import de.featjar.formula.tmp.Formulas;
 import de.featjar.model.mixins.CommonAttributesMixin;
 import de.featjar.model.util.Analyzable;
 import de.featjar.model.util.Identifier;
