@@ -22,7 +22,7 @@ package de.featjar.model.io.xml;
 
 import de.featjar.formula.io.xml.AbstractXMLFeatureModelFormat;
 import de.featjar.formula.structure.Formula;
-import de.featjar.formula.structure.VariableMap;
+import de.featjar.formula.structure.TermMap;
 import de.featjar.model.Constraint;
 import de.featjar.model.Feature;
 import de.featjar.model.FeatureModel;
@@ -70,7 +70,7 @@ public class XMLFeatureModelFormat extends AbstractXMLFeatureModelFormat<Feature
     protected static final String CALCULATE_AUTO = "Auto";
     protected FeatureModel featureModel;
     protected Map<String, Identifier> nameToIdentifierMap;
-    private VariableMap variableMap; // todo remove in favor of FeatureModel.variableMap
+    private TermMap termMap; // todo remove in favor of FeatureModel.variableMap
 
     @Override
     public XMLFeatureModelFormat getInstance() {
@@ -101,12 +101,12 @@ public class XMLFeatureModelFormat extends AbstractXMLFeatureModelFormat<Feature
     @Override
     public FeatureModel parseDocument(Document document) throws ParseException {
         if (featureModel == null) featureModel = new FeatureModel(Identifier.newCounter());
-        variableMap = new VariableMap();
+        termMap = new TermMap();
         nameToIdentifierMap = new HashMap<>();
         final Element featureModelElement = getDocumentElement(document, FEATURE_MODEL);
         parseFeatureTree(getElement(featureModelElement, STRUCT));
         Optional<Element> element = getOptionalElement(featureModelElement, CONSTRAINTS);
-        if (element.isPresent()) parseConstraints(element.get(), variableMap);
+        if (element.isPresent()) parseConstraints(element.get(), termMap);
         element = getOptionalElement(featureModelElement, COMMENTS);
         if (element.isPresent()) parseComments(element.get());
         element = getOptionalElement(featureModelElement, FEATURE_ORDER);
@@ -122,8 +122,8 @@ public class XMLFeatureModelFormat extends AbstractXMLFeatureModelFormat<Feature
         return Optional.ofNullable(nameToIdentifierMap.get(name)).flatMap(featureModel::getFeature);
     }
 
-    protected Optional<VariableMap.Variable> getVariable(String name) {
-        return variableMap.getVariable(Optional.ofNullable(nameToIdentifierMap.get(name))
+    protected Optional<TermMap.Variable> getVariable(String name) {
+        return termMap.getVariable(Optional.ofNullable(nameToIdentifierMap.get(name))
                 .map(Identifier::toString)
                 .orElse(""));
     }
@@ -153,7 +153,7 @@ public class XMLFeatureModelFormat extends AbstractXMLFeatureModelFormat<Feature
             throw new ParseException("Duplicate feature name!");
         }
         nameToIdentifierMap.put(name, feature.getIdentifier());
-        variableMap.addBooleanVariable(feature.getIdentifier().toString());
+        termMap.addBooleanVariable(feature.getIdentifier().toString());
         return feature;
     }
 

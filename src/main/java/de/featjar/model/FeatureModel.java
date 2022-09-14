@@ -20,7 +20,7 @@
  */
 package de.featjar.model;
 
-import de.featjar.formula.structure.VariableMap;
+import de.featjar.formula.structure.TermMap;
 import de.featjar.model.mixins.*;
 import de.featjar.model.util.Analyzable;
 import de.featjar.model.util.Identifier;
@@ -48,7 +48,7 @@ public class FeatureModel extends Element
     protected final List<Constraint> constraints = Collections.synchronizedList(new ArrayList<>());
     protected FeatureOrder featureOrder = FeatureOrder.ofPreOrder();
 
-    protected final VariableMap variableMap = new VariableMap(); // todo: get, set, mutate correctly (checks), pass
+    protected final TermMap termMap = new TermMap(); // todo: get, set, mutate correctly (checks), pass
     // map to createConstraint as Function<...>
     protected final Map<Identifier, Element> elementCache = Collections.synchronizedMap(new LinkedHashMap<>());
     protected final Set<Feature> featureCache = Collections.synchronizedSet(new HashSet<>());
@@ -89,8 +89,8 @@ public class FeatureModel extends Element
     }
 
     // @Override //constraint mixin?
-    public VariableMap getVariableMap() {
-        return variableMap;
+    public TermMap getVariableMap() {
+        return termMap;
     }
 
     @Override
