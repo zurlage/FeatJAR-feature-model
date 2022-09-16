@@ -33,7 +33,7 @@ import java.util.Set;
 import java.util.stream.Collectors;
 import org.junit.jupiter.api.Test;
 
-public class XMLFeatureModelFormatTest {
+public class XMLFeatureModelFormulaFormatTest {
     @Test
     public void xmlFeatureModelFormat() {
         Result<FeatureModel> featureModelResult =
