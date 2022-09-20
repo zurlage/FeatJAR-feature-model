@@ -24,8 +24,10 @@ import static org.junit.jupiter.api.Assertions.*;
 
 import de.featjar.formula.structure.Expression;
 import de.featjar.feature.model.mixins.FeatureModelFeatureTreeMixin;
-import de.featjar.feature.model.util.Identifier;
+import de.featjar.base.data.Identifier;
 import java.util.*;
+
+import de.featjar.formula.structure.Expressions;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -81,9 +83,9 @@ public class FeatureModelTest {
     @Test
     public void featureModelConstraintMixin() {
         Assertions.assertEquals(0, featureModel.getNumberOfConstraints());
-        Constraint constraint1 = featureModel.mutate().createConstraint(Expression.TRUE);
-        Constraint constraint2 = featureModel.mutate().createConstraint(Expression.TRUE);
-        Constraint constraint3 = featureModel.mutate().createConstraint(Expression.FALSE);
+        Constraint constraint1 = featureModel.mutate().createConstraint(Expressions.True);
+        Constraint constraint2 = featureModel.mutate().createConstraint(Expressions.True);
+        Constraint constraint3 = featureModel.mutate().createConstraint(Expressions.False);
         Assertions.assertEquals(3, featureModel.getNumberOfConstraints());
         Assertions.assertEquals(Optional.of(constraint1), featureModel.getConstraint(constraint1.getIdentifier()));
         Assertions.assertTrue(featureModel.hasConstraint(constraint2.getIdentifier()));
@@ -142,9 +144,9 @@ public class FeatureModelTest {
         Assertions.assertEquals(2, featureModel.getNumberOfFeatures());
         Assertions.assertEquals(Optional.of(childFeature), featureModel.getFeature(childFeature.getIdentifier()));
         Assertions.assertTrue(featureModel.hasFeature(childFeature.getIdentifier()));
-        Assertions.assertTrue(featureModel.getFeaturesByName("root").isEmpty());
+        Assertions.assertTrue(featureModel.getFeature("root").isEmpty());
         rootFeature.mutate().setName("root");
-        Assertions.assertEquals(Set.of(rootFeature), featureModel.getFeaturesByName("root"));
+        Assertions.assertEquals(Set.of(rootFeature), featureModel.getFeature("root"));
         assertEquals(
                 List.of(childFeature.getFeatureTree()),
                 rootFeature.getFeatureTree().getChildren());

@@ -22,9 +22,9 @@ package de.featjar.feature.model;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-import de.featjar.feature.model.util.Attributable;
-import de.featjar.feature.model.util.Attribute;
-import de.featjar.feature.model.util.Identifier;
+import de.featjar.base.data.Attributable;
+import de.featjar.base.data.Attribute;
+import de.featjar.base.data.Identifier;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
@@ -39,7 +39,7 @@ import org.junit.jupiter.api.Test;
  */
 public class AttributeTest {
     FeatureModel featureModel;
-    Attribute<String> attribute = new Attribute<>("any", "test", String.class);
+    Attribute attribute = new Attribute("any", "test", String.class);
 
     @BeforeEach
     public void createFeatureModel() {
@@ -55,9 +55,9 @@ public class AttributeTest {
 
     @Test
     public void attributableGetSet() {
-        Map<Attribute<?>, Object> attributeToValueMap = new HashMap<>();
-        Attribute.WithDefaultValue<String> attributeWithDefaultValue =
-                new Attribute.WithDefaultValue<>(Attribute.DEFAULT_NAMESPACE, "test", String.class, "default");
+        Map<Attribute, Object> attributeToValueMap = new HashMap<>();
+        Attribute.WithDefaultValue attributeWithDefaultValue =
+                new Attribute.WithDefaultValue(Attribute.DEFAULT_NAMESPACE, "test", String.class, "default");
         Assertions.assertEquals(Optional.empty(), featureModel.getAttributeValue(attribute));
         Assertions.assertEquals("default", featureModel.getAttributeValue(attributeWithDefaultValue));
         assertEquals(attributeToValueMap, featureModel.getAttributeToValueMap());
@@ -74,8 +74,8 @@ public class AttributeTest {
 
     @Test
     public void attributableToggle() {
-        Attribute.WithDefaultValue<Boolean> booleanAttribute =
-                new Attribute.WithDefaultValue<>(Attribute.DEFAULT_NAMESPACE, "test", Boolean.class, false);
+        Attribute.WithDefaultValue booleanAttribute =
+                new Attribute.WithDefaultValue(Attribute.DEFAULT_NAMESPACE, "test", Boolean.class, false);
         Assertions.assertEquals(false, featureModel.getAttributeValue(booleanAttribute));
         featureModel.mutate().toggleAttributeValue(booleanAttribute);
         Assertions.assertEquals(true, featureModel.getAttributeValue(booleanAttribute));

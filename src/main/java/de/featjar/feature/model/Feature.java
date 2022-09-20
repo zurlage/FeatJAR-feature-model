@@ -21,16 +21,19 @@
 package de.featjar.feature.model;
 
 import de.featjar.feature.model.mixins.CommonAttributesMixin;
-import de.featjar.feature.model.util.Analyzable;
-import de.featjar.feature.model.util.Mutable;
+import de.featjar.base.data.Analyzable;
+import de.featjar.base.data.Mutable;
 
 import java.util.Objects;
 
 /**
- * A feature in a {@link FeatureModel} describes some functionality of a
- * software system. It is attached to some feature model and labels a
- * {@link FeatureTree}. For safe mutation, rely only on the methods of
- * {@link Mutable}.
+ * A feature in a {@link FeatureModel} describes some functionality of a software system.
+ * It is attached to a {@link FeatureModel} and labels a {@link FeatureTree}.
+ * For safe mutation, rely only on the methods of {@link Mutable}.
+ * A {@link Feature} is uniquely determined by its immutable {@link de.featjar.base.data.Identifier}
+ * or name (obtained with {@link #getName()}).
+ * In contrast to a feature's identifier, its name is mutable and should therefore be used sparsely
+ * to avoid cache invalidation and renaming issues.
  *
  * @author Elias Kuiter
  */
@@ -48,6 +51,7 @@ public class Feature extends Element
         featureTree = new FeatureTree(this);
     }
 
+    @Override
     public FeatureModel getFeatureModel() {
         return featureModel;
     }
@@ -57,7 +61,7 @@ public class Feature extends Element
     }
 
     public boolean isAbstract() {
-        return getAttributeValue(Attributes.ABSTRACT);
+        return (boolean) getAttributeValue(Attributes.ABSTRACT);
     }
 
     public boolean isConcrete() {
@@ -65,7 +69,7 @@ public class Feature extends Element
     }
 
     public boolean isHidden() {
-        return getAttributeValue(Attributes.HIDDEN);
+        return (boolean) getAttributeValue(Attributes.HIDDEN);
     }
 
     public boolean isVisible() {
@@ -97,7 +101,7 @@ public class Feature extends Element
         return String.format("Feature{name=%s}", getName());
     }
 
-    public class Mutator implements de.featjar.feature.model.util.Mutator<Feature>, CommonAttributesMixin.Mutator<Feature> {
+    public class Mutator implements de.featjar.base.data.Mutator<Feature>, CommonAttributesMixin.Mutator<Feature> {
         @Override
         public Feature getMutable() {
             return Feature.this;
@@ -148,7 +152,7 @@ public class Feature extends Element
         }
     }
 
-    public class Analyzer implements de.featjar.feature.model.util.Analyzer<Feature> {
+    public class Analyzer implements de.featjar.base.data.Analyzer<Feature> {
         @Override
         public Feature getAnalyzable() {
             return Feature.this;

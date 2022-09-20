@@ -22,9 +22,9 @@ package de.featjar.feature.model;
 
 import static org.junit.jupiter.api.Assertions.assertSame;
 
-import de.featjar.feature.model.util.Analyzable;
-import de.featjar.feature.model.util.Analyzer;
-import de.featjar.feature.model.util.Identifier;
+import de.featjar.base.data.Analyzable;
+import de.featjar.base.data.Analyzer;
+import de.featjar.base.data.Identifier;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 

@@ -23,8 +23,8 @@ package de.featjar.feature.model;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotEquals;
 
-import de.featjar.feature.model.util.Identifiable;
-import de.featjar.feature.model.util.Identifier;
+import de.featjar.base.data.Identifiable;
+import de.featjar.base.data.Identifier;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;

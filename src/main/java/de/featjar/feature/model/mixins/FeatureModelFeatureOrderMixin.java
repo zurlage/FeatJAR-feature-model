@@ -27,8 +27,7 @@ import de.featjar.feature.model.FeatureOrder;
 import java.util.List;
 
 /**
- * Implements a {@link FeatureModel} mixin for considering a
- * {@link FeatureOrder}.
+ * Implements a {@link FeatureModel} mixin for considering a {@link FeatureOrder}.
  *
  * @author Elias Kuiter
  */

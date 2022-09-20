@@ -24,24 +24,25 @@ import de.featjar.feature.model.Attributes;
 import de.featjar.feature.model.Constraint;
 import de.featjar.feature.model.Feature;
 import de.featjar.feature.model.FeatureModel;
-import de.featjar.feature.model.util.Attributable;
-import de.featjar.feature.model.util.Attribute;
+import de.featjar.base.data.Attributable;
+import de.featjar.base.data.Attribute;
 import java.util.Optional;
 
 /**
- * Implements accessors for commonly used {@link Attribute attributes}. For
- * example, all {@link FeatureModel feature models}, {@link Feature features},
+ * Implements accessors for commonly used {@link Attribute attributes}.
+ * For example, all {@link FeatureModel feature models}, {@link Feature features},
  * and {@link Constraint constraints} can have names and descriptions.
  *
  * @author Elias Kuiter
  */
 public interface CommonAttributesMixin extends Attributable {
     default String getName() {
-        return getAttributeValue(Attributes.NAME);
+        return (String) getAttributeValue(Attributes.NAME);
     }
 
+    @SuppressWarnings({"unchecked", "rawtypes"})
     default Optional<String> getDescription() {
-        return getAttributeValue(Attributes.DESCRIPTION);
+        return (Optional) getAttributeValue(Attributes.DESCRIPTION);
     }
 
     interface Mutator<T extends Attributable> extends Attributable.Mutator<T> {

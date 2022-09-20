@@ -20,17 +20,16 @@
  */
 package de.featjar.feature.model;
 
+import de.featjar.base.data.*;
 import de.featjar.feature.model.mixins.*;
-import de.featjar.feature.model.util.*;
 
 import java.util.*;
 
 /**
- * A feature model is a representation of the space of valid configurations for
- * a software system. Here, we implement feature diagrams (i.e., a
- * {@link FeatureTree} labeled with features and a list of {@link Constraint
- * constraints}). For safe mutation, rely only on the methods of
- * {@link Mutable}.
+ * A feature model represents the configuration space of a software system.
+ * We equate feature models with feature diagrams
+ * (i.e., a {@link FeatureTree} labeled with features and a list of {@link Constraint constraints}).
+ * For safe mutation, rely only on the methods of {@link Mutable}.
  *
  * @author Elias Kuiter
  */
@@ -41,25 +40,25 @@ public class FeatureModel extends Element
         CommonAttributesMixin,
         FeatureModelCacheMixin,
                 Mutable<FeatureModel, FeatureModel.Mutator>,
-                Analyzable<FeatureModel, FeatureModel.Analyzer> {
+        Analyzable<FeatureModel, FeatureModel.Analyzer> {
     protected final FeatureTree featureTree;
     protected final List<Constraint> constraints = Collections.synchronizedList(new ArrayList<>());
     protected FeatureOrder featureOrder = FeatureOrder.ofPreOrder();
     protected final Map<Identifier, Element> elementCache = Collections.synchronizedMap(new LinkedHashMap<>());
     protected final Set<Feature> featureCache = Collections.synchronizedSet(new HashSet<>());
-    protected final Set<FeatureModel> featureModelCache = Collections.synchronizedSet(new HashSet<>()); // todo
-    // calculate
-    // from tree
     protected Mutator mutator;
     protected Analyzer analyzer;
-    // todo inv: this featuretree (w/o submodels) has one variablemap. variablemap
-    // == features.
 
     public FeatureModel(Identifier identifier) {
         super(identifier);
         final Feature root = new Feature(this);
         featureTree = root.getFeatureTree();
         finishInternalMutation();
+    }
+
+    @Override
+    public FeatureModel getFeatureModel() {
+        return this;
     }
 
     @Override
@@ -129,7 +128,7 @@ public class FeatureModel extends Element
     }
 
     public class Mutator
-            implements de.featjar.feature.model.util.Mutator<FeatureModel>,
+            implements de.featjar.base.data.Mutator<FeatureModel>,
                     FeatureModelFeatureTreeMixin.Mutator,
                     FeatureModelConstraintMixin.Mutator,
                     FeatureModelFeatureOrderMixin.Mutator,
@@ -147,7 +146,7 @@ public class FeatureModel extends Element
     }
 
     public class Analyzer
-            implements de.featjar.feature.model.util.Analyzer<FeatureModel>,
+            implements de.featjar.base.data.Analyzer<FeatureModel>,
                     FeatureModelFeatureTreeMixin.Analyzer,
                     FeatureModelConstraintMixin.Analyzer {
         @Override

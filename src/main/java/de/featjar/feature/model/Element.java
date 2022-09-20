@@ -20,23 +20,23 @@
  */
 package de.featjar.feature.model;
 
-import de.featjar.feature.model.util.Attributable;
-import de.featjar.feature.model.util.Attribute;
-import de.featjar.feature.model.util.Identifiable;
-import de.featjar.feature.model.util.Identifier;
+import de.featjar.base.data.Attributable;
+import de.featjar.base.data.Attribute;
+import de.featjar.base.data.Identifiable;
+import de.featjar.base.data.Identifier;
 import java.util.*;
 
 /**
- * Implements identification and attribute valuation. Each {@link FeatureModel}
- * and all its {@link Feature features} and {@link Constraint constraints} are
- * uniquely identified by an {@link Identifier}. Also, each element can be
- * annotated with arbirtrary {@link Attribute attributes}.
+ * Implements identification and attribute valuation.
+ * Each {@link FeatureModel} and all its {@link Feature features} and {@link Constraint constraints} are
+ * uniquely identified by an {@link Identifier}.
+ * Also, each element can be annotated with arbitrary {@link Attribute attributes}.
  *
  * @author Elias Kuiter
  */
 public abstract class Element implements Identifiable, Attributable {
     protected final Identifier identifier;
-    protected final Map<Attribute<?>, Object> attributeToValueMap = new HashMap<>();
+    protected final Map<Attribute, Object> attributeToValueMap = new HashMap<>();
 
     public Element(Identifier identifier) {
         Objects.requireNonNull(identifier);
@@ -47,8 +47,10 @@ public abstract class Element implements Identifiable, Attributable {
         return identifier;
     }
 
+    public abstract FeatureModel getFeatureModel();
+
     @Override
-    public Map<Attribute<?>, Object> getAttributeToValueMap() {
+    public Map<Attribute, Object> getAttributeToValueMap() {
         return attributeToValueMap;
     }
 

@@ -32,6 +32,7 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 /**
@@ -56,8 +57,8 @@ public class GraphVizFeatureModelFormat implements Format<FeatureModel> {
     }
 
     @Override
-    public String getFileExtension() {
-        return "dot";
+    public Optional<String> getFileExtension() {
+        return Optional.of("dot");
     }
 
     @Override

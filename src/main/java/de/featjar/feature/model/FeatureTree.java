@@ -20,7 +20,8 @@
  */
 package de.featjar.feature.model;
 
-import de.featjar.feature.model.util.Mutable;
+import de.featjar.base.data.Mutable;
+import de.featjar.base.data.Range;
 import de.featjar.base.tree.structure.RootedTree;
 import de.featjar.base.tree.structure.Traversable;
 
@@ -29,8 +30,7 @@ import java.util.stream.Collectors;
 
 /**
  * An ordered {@link RootedTree} labeled with {@link Feature features}.
- * Implements elements of notation from feature-oriented domain analysis, such
- * as mandatory/optional features and groups.
+ * Implements some concepts from feature-oriented domain analysis, such as mandatory/optional features and groups.
  *
  * @author Elias Kuiter
  */
@@ -46,14 +46,9 @@ public class FeatureTree extends RootedTree<FeatureTree> implements Mutable<Feat
     protected boolean isMandatory = false;
 
     /**
-     * Minimum number of child features that may be selected.
+     * Range of how many child features may be selected.
      */
-    protected long groupMinimum = 0;
-
-    /**
-     * Maximum number of child features that may be selected.
-     */
-    protected long groupMaximum = Long.MAX_VALUE;
+    protected Range groupRange = Range.open();
 
     protected Mutator mutator;
 
@@ -70,24 +65,24 @@ public class FeatureTree extends RootedTree<FeatureTree> implements Mutable<Feat
         return isMandatory; // todo
     }
 
-    public long getGroupMinimum() {
-        return groupMinimum;
+    public Range getGroupRange() {
+        return groupRange;
     }
 
-    public long getGroupMaximum() {
-        return groupMaximum;
+    public boolean isGroupRange(Range other) {
+        return groupRange.equals(other);
     }
 
     public boolean isAnd() {
-        return groupMinimum == 0 && groupMaximum == Long.MAX_VALUE;
+        return isGroupRange(Range.open());
     }
 
     public boolean isAlternative() {
-        return groupMinimum == 1 && groupMaximum == 1;
+        return isGroupRange(Range.exactly(1));
     }
 
     public boolean isOr() {
-        return groupMinimum == 1 && groupMaximum == Long.MAX_VALUE;
+        return isGroupRange(Range.atLeast(1));
     }
 
     public boolean isGroup() {
@@ -122,7 +117,7 @@ public class FeatureTree extends RootedTree<FeatureTree> implements Mutable<Feat
 
     // todo hashcode, equals, tostring, clone
 
-    public class Mutator implements de.featjar.feature.model.util.Mutator<FeatureTree> {
+    public class Mutator implements de.featjar.base.data.Mutator<FeatureTree> {
         @Override
         public FeatureTree getMutable() {
             return FeatureTree.this;
@@ -132,27 +127,20 @@ public class FeatureTree extends RootedTree<FeatureTree> implements Mutable<Feat
             FeatureTree.this.isMandatory = mandatory;
         }
 
-        public void setGroupMinimum(long groupMinimum) {
-            FeatureTree.this.groupMinimum = groupMinimum;
-        }
-
-        public void setGroupMaximum(long groupMaximum) {
-            FeatureTree.this.groupMaximum = groupMaximum;
+        public void setGroupRange(Range groupRange) {
+            FeatureTree.this.groupRange = groupRange;
         }
 
         public void setAnd() {
-            groupMinimum = 0;
-            groupMaximum = Long.MAX_VALUE;
+            setGroupRange(Range.open());
         }
 
         public void setAlternative() {
-            groupMinimum = 1;
-            groupMaximum = 1;
+            setGroupRange(Range.exactly(1));
         }
 
         public void setOr() {
-            groupMinimum = 1;
-            groupMaximum = Long.MAX_VALUE;
+            setGroupRange(Range.atLeast(1));
         }
     }
 }

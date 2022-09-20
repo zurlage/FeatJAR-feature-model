@@ -20,8 +20,8 @@
  */
 package de.featjar.feature.model.io;
 
-import de.featjar.feature.model.util.Attributable;
-import de.featjar.feature.model.util.Attribute;
+import de.featjar.base.data.Attributable;
+import de.featjar.base.data.Attribute;
 import de.featjar.base.data.Problem;
 import java.util.ArrayList;
 import java.util.List;
@@ -70,8 +70,8 @@ public class AttributeIO {
         return Optional.empty();
     }
 
-    public static Optional<Attribute<?>> parseAttribute(String namespace, String name, String typeString) {
-        return getType(typeString).map(type -> new Attribute<>(namespace, name, type));
+    public static Optional<Attribute> parseAttribute(String namespace, String name, String typeString) {
+        return getType(typeString).map(type -> new Attribute(namespace, name, type));
     }
 
     public static Optional<Object> parseAttributeValue(Class<?> type, String valueString) {
@@ -98,7 +98,7 @@ public class AttributeIO {
     public static List<Problem> parseAndSetAttributeValue(
             Attributable attributable, String namespace, String name, String typeString, String valueString) {
         List<Problem> problems = new ArrayList<>();
-        Optional<Attribute<?>> attribute = AttributeIO.parseAttribute(namespace, name, typeString);
+        Optional<Attribute> attribute = AttributeIO.parseAttribute(namespace, name, typeString);
         Optional<?> value = parseAttributeValue(typeString, valueString);
         if (attribute.isEmpty()) {
             problems.add(new Problem("invalid type for attribute " + name, Problem.Severity.WARNING));
@@ -108,7 +108,7 @@ public class AttributeIO {
             problems.add(new Problem("already has value for attribute " + name, Problem.Severity.WARNING));
         } else {
             ((Attributable.Mutator<Attributable>) () -> attributable)
-                    .setArbitraryAttributeValue(attribute.get(), value.get());
+                    .setAttributeValue(attribute.get(), value.get());
         }
         return problems;
     }

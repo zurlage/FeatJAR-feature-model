@@ -20,7 +20,7 @@
  */
 package de.featjar.feature.model;
 
-import de.featjar.feature.model.util.*;
+import de.featjar.base.data.*;
 import de.featjar.formula.structure.Expression;
 import de.featjar.formula.structure.Expressions;
 import de.featjar.formula.structure.formula.Formula;
@@ -31,10 +31,9 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 /**
- * A constraint describes some restriction of the valid configurations
- * represented by a {@link FeatureModel}. It is attached to some feature model
- * and represented as a {@link Expression} over {@link Feature features}. For safe
- * mutation, rely only on the methods of {@link Mutable}.
+ * A constraint describes some restriction on the valid configurations represented by a {@link FeatureModel}.
+ * It is attached to a {@link FeatureModel} and represented as a {@link Formula} over {@link Feature} variables.
+ * For safe mutation, rely only on the methods of {@link Mutable}.
  *
  * @author Elias Kuiter
  */
@@ -50,7 +49,7 @@ public class Constraint extends Element
         super(featureModel.getNewIdentifier());
         Objects.requireNonNull(featureModel);
         this.featureModel = featureModel;
-        getMutator().setFormula(formula); // todo efficient?
+        getMutator().setFormula(formula);
     }
 
     public Constraint(FeatureModel featureModel) {
@@ -60,6 +59,7 @@ public class Constraint extends Element
         this.formula = Expressions.True;
     }
 
+    @Override
     public FeatureModel getFeatureModel() {
         return featureModel;
     }
@@ -72,8 +72,9 @@ public class Constraint extends Element
         return containedFeaturesCache;
     }
 
+    @SuppressWarnings({"unchecked", "rawtypes"})
     public Set<String> getTags() {
-        return getAttributeValue(Attributes.TAGS);
+        return (Set) getAttributeValue(Attributes.TAGS);
     }
 
     @Override
@@ -102,12 +103,13 @@ public class Constraint extends Element
     }
 
     public class Mutator
-            implements de.featjar.feature.model.util.Mutator<Constraint>, CommonAttributesMixin.Mutator<Constraint> {
+            implements de.featjar.base.data.Mutator<Constraint>, CommonAttributesMixin.Mutator<Constraint> {
         @Override
         public Constraint getMutable() {
             return Constraint.this;
         }
 
+        @SuppressWarnings("OptionalGetWithoutIsPresent")
         public void setFormula(Formula formula) {
             Objects.requireNonNull(formula);
             Set<Identifier> identifiers = formula.getVariableStream()
@@ -118,7 +120,7 @@ public class Constraint extends Element
                     .filter(identifier -> !featureModel.hasFeature(identifier))
                     .findAny();
             if (unknownIdentifier.isPresent()) {
-                throw new RuntimeException("encountered unknown identifier " + unknownIdentifier.get());
+                throw new RuntimeException("encountered unknown feature identifier " + unknownIdentifier.get());
             }
             containedFeaturesCache.clear();
             containedFeaturesCache.addAll(identifiers.stream()
@@ -137,7 +139,7 @@ public class Constraint extends Element
         }
     }
 
-    public class Analyzer implements de.featjar.feature.model.util.Analyzer<Constraint> {
+    public class Analyzer implements de.featjar.base.data.Analyzer<Constraint> {
         @Override
         public Constraint getAnalyzable() {
             return Constraint.this;

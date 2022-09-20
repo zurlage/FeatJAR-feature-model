@@ -24,8 +24,7 @@ import de.featjar.feature.model.Constraint;
 import de.featjar.feature.model.Element;
 import de.featjar.feature.model.Feature;
 import de.featjar.feature.model.FeatureModel;
-import de.featjar.feature.model.util.Identifier;
-import de.featjar.model.*;
+import de.featjar.base.data.Identifier;
 
 import java.util.*;
 import java.util.stream.Stream;
@@ -84,7 +83,7 @@ public interface FeatureModelCacheMixin extends FeatureModelFeatureTreeMixin, Fe
     }
 
     interface Mutator
-            extends de.featjar.feature.model.util.Mutator<FeatureModel>,
+            extends de.featjar.base.data.Mutator<FeatureModel>,
                     FeatureModelFeatureTreeMixin.Mutator,
                     FeatureModelConstraintMixin.Mutator {
         @Override

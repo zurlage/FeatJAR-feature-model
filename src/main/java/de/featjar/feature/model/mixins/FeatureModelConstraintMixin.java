@@ -22,16 +22,14 @@ package de.featjar.feature.model.mixins;
 
 import de.featjar.feature.model.Constraint;
 import de.featjar.feature.model.FeatureModel;
-import de.featjar.feature.model.util.Identifier;
-import de.featjar.formula.structure.Expression;
+import de.featjar.base.data.Identifier;
 import de.featjar.base.data.Result;
 import de.featjar.formula.structure.formula.Formula;
 
 import java.util.*;
 
 /**
- * Implements a {@link FeatureModel} mixin for common operations on
- * {@link Constraint constraints}.
+ * Implements a {@link FeatureModel} mixin for common operations on {@link Constraint constraints}.
  *
  * @author Elias Kuiter
  */
@@ -62,7 +60,7 @@ public interface FeatureModelConstraintMixin {
         return getConstraints().size();
     }
 
-    interface Mutator extends de.featjar.feature.model.util.Mutator<FeatureModel> {
+    interface Mutator extends de.featjar.base.data.Mutator<FeatureModel> {
         default void setConstraint(int index, Constraint constraint) {
             Objects.requireNonNull(constraint);
             if (getMutable().hasConstraint(constraint)) {
@@ -120,7 +118,7 @@ public interface FeatureModelConstraintMixin {
         }
     }
 
-    interface Analyzer extends de.featjar.feature.model.util.Analyzer<FeatureModel> {
+    interface Analyzer extends de.featjar.base.data.Analyzer<FeatureModel> {
         default Set<Constraint> getRedundantConstraints() {
             return Collections.emptySet();
         }

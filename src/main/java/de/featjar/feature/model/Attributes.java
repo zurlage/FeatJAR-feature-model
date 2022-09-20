@@ -20,27 +20,31 @@
  */
 package de.featjar.feature.model;
 
-import de.featjar.feature.model.util.Attribute;
-import de.featjar.feature.model.util.Identifiable;
+import de.featjar.base.data.Attribute;
+import de.featjar.base.data.Identifiable;
+
+import java.util.HashSet;
+import java.util.Set;
 
 /**
- * Defines some useful {@link Attribute attributes} for {@link FeatureModel
- * feature models}, {@link Feature features}, and {@link Constraint
- * constraints}.
+ * Defines some useful {@link Attribute attributes} for {@link FeatureModel feature models},
+ * {@link Feature features}, and {@link Constraint constraints}.
  *
  * @author Elias Kuiter
  */
 public class Attributes {
     public static final String NAMESPACE = Attributes.class.getCanonicalName();
-    public static final Attribute.WithDefaultValue<String> NAME = new Attribute.WithDefaultValue<String>(
+    public static final Attribute.WithDefaultValue NAME = new Attribute.WithDefaultValue(
             NAMESPACE,
             "name",
             String.class,
+            (element, name) -> ((Element) element).getFeatureModel().getFeature((String) name).isEmpty(),
             identifiable -> "@" + ((Identifiable) identifiable).getIdentifier().toString());
-    public static final Attribute<String> DESCRIPTION = new Attribute<>(NAMESPACE, "description", String.class);
-    public static final Attribute.Set<String> TAGS = new Attribute.Set<>(NAMESPACE, "tags");
-    public static final Attribute.WithDefaultValue<Boolean> HIDDEN =
-            new Attribute.WithDefaultValue<>(NAMESPACE, "hidden", Boolean.class, false);
-    public static final Attribute.WithDefaultValue<Boolean> ABSTRACT =
-            new Attribute.WithDefaultValue<>(NAMESPACE, "abstract", Boolean.class, false);
+    public static final Attribute DESCRIPTION = new Attribute(NAMESPACE, "description", String.class);
+    public static final Attribute.WithDefaultValue TAGS =
+            new Attribute.WithDefaultValue(NAMESPACE, "tags", Set.class, new HashSet<>());
+    public static final Attribute.WithDefaultValue HIDDEN =
+            new Attribute.WithDefaultValue(NAMESPACE, "hidden", Boolean.class, false);
+    public static final Attribute.WithDefaultValue ABSTRACT =
+            new Attribute.WithDefaultValue(NAMESPACE, "abstract", Boolean.class, false);
 }

@@ -21,7 +21,7 @@
 package de.featjar.feature.model;
 
 import de.featjar.feature.model.mixins.FeatureModelFeatureTreeMixin;
-import de.featjar.feature.model.util.Mutable;
+import de.featjar.base.data.Mutable;
 import de.featjar.base.tree.Trees;
 
 import java.util.Comparator;
@@ -31,8 +31,8 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 /**
- * Orders features in different ways. By default, the feature-tree preorder is
- * used.
+ * Orders features in different ways.
+ * By default, the feature-tree preorder is used.
  *
  * @author Elias Kuiter
  */
@@ -90,7 +90,7 @@ public abstract class FeatureOrder
         };
     }
 
-    public class Mutator implements de.featjar.feature.model.util.Mutator<FeatureOrder> {
+    public class Mutator implements de.featjar.base.data.Mutator<FeatureOrder> {
         @Override
         public FeatureOrder getMutable() {
             return FeatureOrder.this;
