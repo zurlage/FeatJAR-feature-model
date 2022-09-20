@@ -22,8 +22,6 @@ package de.featjar.feature.model;
 
 import de.featjar.feature.model.mixins.*;
 import de.featjar.feature.model.util.*;
-import de.featjar.formula.structure.map.TermMap;
-import de.featjar.model.mixins.*;
 
 import java.util.*;
 
@@ -47,9 +45,6 @@ public class FeatureModel extends Element
     protected final FeatureTree featureTree;
     protected final List<Constraint> constraints = Collections.synchronizedList(new ArrayList<>());
     protected FeatureOrder featureOrder = FeatureOrder.ofPreOrder();
-
-    protected final TermMap termMap = new TermMap(); // todo: get, set, mutate correctly (checks), pass
-    // map to createConstraint as Function<...>
     protected final Map<Identifier, Element> elementCache = Collections.synchronizedMap(new LinkedHashMap<>());
     protected final Set<Feature> featureCache = Collections.synchronizedSet(new HashSet<>());
     protected final Set<FeatureModel> featureModelCache = Collections.synchronizedSet(new HashSet<>()); // todo
@@ -86,11 +81,6 @@ public class FeatureModel extends Element
     @Override
     public FeatureOrder getFeatureOrder() {
         return featureOrder;
-    }
-
-    // @Override //constraint mixin?
-    public TermMap getVariableMap() {
-        return termMap;
     }
 
     @Override

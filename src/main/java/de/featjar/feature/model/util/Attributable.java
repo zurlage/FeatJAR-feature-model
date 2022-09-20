@@ -28,9 +28,7 @@ import java.util.Map;
 import java.util.Optional;
 
 /**
- * An object that can be annotated with {@link Attribute} values. For example,
- * attributes are used in {@link FeatureModel feature models}, {@link Feature
- * features}, and {@link Constraint constraints} to store additional metadata.
+ * An object that can be annotated with {@link Attribute} values to store additional metadata.
  *
  * @author Elias Kuiter
  */

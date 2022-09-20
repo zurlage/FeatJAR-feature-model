@@ -23,8 +23,8 @@ package de.featjar.feature.model.util;
 import java.util.Objects;
 
 /**
- * Uniquely identifies an {@link Identifiable} object. Several implementations
- * are available, implementors are responsible for guaranteeing uniqueness.
+ * Uniquely identifies an {@link Identifiable} object.
+ * Implementors are responsible for guaranteeing uniqueness within a self-chosen scope (e.g., during program execution).
  *
  * @author Elias Kuiter
  */
@@ -62,10 +62,16 @@ public abstract class Identifier {
         return Objects.hash(toString());
     }
 
+    /**
+     * Parses a string into an {@link Identifier}.
+     */
     public abstract static class Factory implements de.featjar.base.data.Factory<Identifier> {
         public abstract Identifier parse(String identifierString);
     }
 
+    /**
+     * Identifies an object with a given number.
+     */
     public static class Counter extends Identifier {
         protected final long counter;
 
@@ -83,6 +89,9 @@ public abstract class Identifier {
             return String.valueOf(counter);
         }
 
+        /**
+         * Creates counter identifiers by incrementing a number.
+         */
         public static class Factory extends Identifier.Factory {
             long counter = 0;
 
@@ -98,6 +107,9 @@ public abstract class Identifier {
         }
     }
 
+    /**
+     * Identifies an object with a given {@link UUID}.
+     */
     public static class UUID extends Identifier {
         protected final java.util.UUID uuid;
 
@@ -115,6 +127,9 @@ public abstract class Identifier {
             return uuid.toString();
         }
 
+        /**
+         * Creates random {@link UUID} identifiers.
+         */
         public static class Factory extends Identifier.Factory {
 
             @Override

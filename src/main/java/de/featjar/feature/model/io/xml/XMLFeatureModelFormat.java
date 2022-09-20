@@ -27,6 +27,7 @@ import de.featjar.feature.model.FeatureOrder;
 import de.featjar.feature.model.io.AttributeIO;
 import de.featjar.formula.io.xml.AbstractXMLFeatureModelFormat;
 import de.featjar.formula.structure.Expression;
+import de.featjar.formula.structure.formula.Formula;
 import de.featjar.formula.structure.map.TermMap;
 import de.featjar.feature.model.util.Identifier;
 import de.featjar.base.data.Problem;
@@ -193,8 +194,8 @@ public class XMLFeatureModelFormat extends AbstractXMLFeatureModelFormat<Feature
     }
 
     @Override
-    protected void addConstraint(Constraint constraintLabel, Expression expression) {
-        constraintLabel.mutate().setFormula(expression);
+    protected void addConstraint(Constraint constraintLabel, Formula formula) {
+        constraintLabel.mutate().setFormula(formula);
     }
 
     @Override

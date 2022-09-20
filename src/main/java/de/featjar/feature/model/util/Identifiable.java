@@ -21,14 +21,19 @@
 package de.featjar.feature.model.util;
 
 /**
- * An object that is uniquely identified by an {@link Identifier}. Can generate
- * new identifiers with the identifier's {@link Identifier.Factory}.
+ * An object that is uniquely identified by an {@link Identifier}.
  *
  * @author Elias Kuiter
  */
 public interface Identifiable {
+    /**
+     * {@return this identifiable's identifier
+     */
     Identifier getIdentifier();
 
+    /**
+     * {@return a new identifier generated with the {@link Identifier.Factory} of {@link #getIdentifier()}}
+     */
     default Identifier getNewIdentifier() {
         return getIdentifier().getFactory().get();
     }

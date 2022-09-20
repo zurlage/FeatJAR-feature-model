@@ -20,8 +20,6 @@
  */
 package de.featjar.feature.model.util;
 
-import de.featjar.feature.model.Feature;
-
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Objects;
@@ -29,10 +27,8 @@ import java.util.Optional;
 import java.util.function.Function;
 
 /**
- * An attribute describes what metadata can be attached to an object. For
- * example, {@link Feature features} can have names, be abstract, or be hidden;
- * all of these are attributes. This class does not store any attribute values,
- * but merely acts as a key or descriptor.
+ * An attribute describes metadata that can be attached to an object.
+ * This class does not store any attribute values, it acts as a key or descriptor.
  *
  * @param <T> the type of values that are valid for this attribute (usually
  *            String, Boolean, or Integer)

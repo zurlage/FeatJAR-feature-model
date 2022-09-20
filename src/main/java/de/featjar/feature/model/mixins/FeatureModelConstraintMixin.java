@@ -25,6 +25,8 @@ import de.featjar.feature.model.FeatureModel;
 import de.featjar.feature.model.util.Identifier;
 import de.featjar.formula.structure.Expression;
 import de.featjar.base.data.Result;
+import de.featjar.formula.structure.formula.Formula;
+
 import java.util.*;
 
 /**
@@ -87,14 +89,14 @@ public interface FeatureModelConstraintMixin {
             addConstraint(newConstraint, getMutable().getConstraints().size());
         }
 
-        default Constraint createConstraint(Expression expression) {
-            Constraint newConstraint = new Constraint(getMutable(), expression);
+        default Constraint createConstraint(Formula formula) {
+            Constraint newConstraint = new Constraint(getMutable(), formula);
             addConstraint(newConstraint);
             return newConstraint;
         }
 
-        default Constraint createConstraint(Expression expression, int index) {
-            Constraint newConstraint = new Constraint(getMutable(), expression);
+        default Constraint createConstraint(Formula formula, int index) {
+            Constraint newConstraint = new Constraint(getMutable(), formula);
             addConstraint(newConstraint, index);
             return newConstraint;
         }

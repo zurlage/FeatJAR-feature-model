@@ -23,9 +23,9 @@ package de.featjar.feature.model.util;
 import java.util.function.Consumer;
 
 /**
- * An object that can be analyzed with an {@link Analyzer}. todo Analysis
- * results are cached when o.analyze() is used. Mutation may invalidate analysis
- * results.
+ * An object that can be analyzed with an {@link Analyzer}.
+ * Analysis results are cached when o.analyze() is used.
+ * Mutation may invalidate analysis results.
  *
  * @param <T> the type of the analyzable object
  * @param <U> the type of the analyzer object

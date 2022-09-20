@@ -23,11 +23,11 @@ package de.featjar.feature.model.util;
 import java.util.function.Consumer;
 
 /**
- * An object that can be mutated (i.e., changed) with a {@link Mutator}. While
- * not strictly necessary, this helps to distinguish safe mutation (via a
- * mutator) from potentially unsafe mutation (via immediate API members). To
- * mutate an object o, call o.mutate(). To mutate a copy of o, call
- * o.clone().mutate().
+ * An object that can be mutated (i.e., changed) with a {@link Mutator}.
+ * While not strictly necessary, this helps to distinguish safe mutation (via a {@link Mutator})
+ * from potentially unsafe mutation (via immediate API members).
+ * To mutate an object o, call o.mutate().
+ * To mutate a copy of o, call o.clone().mutate().
  *
  * @param <T> the type of the mutable object
  * @param <U> the type of the mutator object
