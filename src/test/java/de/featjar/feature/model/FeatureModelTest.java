@@ -146,7 +146,7 @@ public class FeatureModelTest {
         Assertions.assertTrue(featureModel.hasFeature(childFeature.getIdentifier()));
         Assertions.assertTrue(featureModel.getFeature("root").isEmpty());
         rootFeature.mutate().setName("root");
-        Assertions.assertEquals(Set.of(rootFeature), featureModel.getFeature("root"));
+        Assertions.assertEquals(Optional.of(rootFeature), featureModel.getFeature("root"));
         assertEquals(
                 List.of(childFeature.getFeatureTree()),
                 rootFeature.getFeatureTree().getChildren());
