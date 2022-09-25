@@ -35,17 +35,10 @@ import java.util.stream.Stream;
  *
  * @author Elias Kuiter
  */
-public interface FeatureModelCacheMixin extends FeatureModelFeatureTreeMixin, FeatureModelConstraintMixin { // todo
-    // caches
-    // only own
-    // elements
-    // or also
-    // those of
-    // submodels?
+public interface FeatureModelCacheMixin extends FeatureModelFeatureTreeMixin, FeatureModelConstraintMixin {
     Map<Identifier, Element> getElementCache();
 
     Set<Feature> getFeatureCache();
-    // Set<FeatureModel> getFeatureModelCache(); todo
 
     default void finishInternalMutation() {
         Set<Feature> features = FeatureModelFeatureTreeMixin.super.getFeatures();

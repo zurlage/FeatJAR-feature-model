@@ -41,16 +41,33 @@ public class FeatureModel extends Element
         FeatureModelCacheMixin,
                 Mutable<FeatureModel, FeatureModel.Mutator>,
         Analyzable<FeatureModel, FeatureModel.Analyzer> {
+    //protected final Store store;
+
+    //todo put flattened fm into store (maybe dispatch mutators of flattened model to original models)
+    //todo store<...>, formulacomputation, decision propagation...?
+    //todo store in analyzer, apply(input,monitor,store) zum default machen(?)
+
+    //todo: we allow all kinds of modeling constructs, but not all analyses/computations support all constructs.
+    //e.g., multiplicities are difficult to map to SAT. somehow, this should be checked.
+    // maybe store required/incompatible capabilities for computations? eg., incompatible with Plaisted-Greenbaum/multiplicities/...?
+    //and then implement different alternative algorithms with different capabilities.
+    //maybe this could be encoded first-class as a feature model.
+    //this could even be used to generate query plans (e.g., find some configuration that counts my formula).
+    //every plugin defines a feature model (uvl) that restricts what its extensions can and cannot do (replacing extensions.xml)
+
+    protected final FeatureModelTree featureModelTree;
     protected final FeatureTree featureTree;
     protected final List<Constraint> constraints = Collections.synchronizedList(new ArrayList<>());
     protected FeatureOrder featureOrder = FeatureOrder.ofPreOrder();
     protected final Map<Identifier, Element> elementCache = Collections.synchronizedMap(new LinkedHashMap<>());
+    //todo elementcache -> store? computation?
     protected final Set<Feature> featureCache = Collections.synchronizedSet(new HashSet<>());
     protected Mutator mutator;
     protected Analyzer analyzer;
 
     public FeatureModel(Identifier identifier) {
         super(identifier);
+        featureModelTree = new FeatureModelTree(this);
         final Feature root = new Feature(this);
         featureTree = root.getFeatureTree();
         finishInternalMutation();
@@ -61,19 +78,17 @@ public class FeatureModel extends Element
         return this;
     }
 
+    public FeatureModelTree getFeatureModelTree() {
+        return featureModelTree;
+    }
+
     @Override
     public FeatureTree getFeatureTree() {
         return featureTree;
     }
 
-    // every model returns only its own constraints/features
     @Override
     public List<Constraint> getConstraints() {
-        return constraints;
-    }
-
-    // TODO? returns constraints of all submodels
-    public List<Constraint> getALLConstraints() {
         return constraints;
     }
 

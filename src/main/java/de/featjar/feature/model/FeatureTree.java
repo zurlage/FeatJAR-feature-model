@@ -43,11 +43,12 @@ public class FeatureTree extends RootedTree<FeatureTree> implements Mutable<Feat
     /**
      * Whether this tree's feature is mandatory or optional.
      */
-    protected boolean isMandatory = false;
+    protected boolean isMandatory;
 
     /**
      * Range of how many child features may be selected.
      */
+    // todo: use attribute (and move to Feature class, or merge Feature+FeatureTree)? add dynamic attributes "isSelected/automatic"?
     protected Range groupRange = Range.open();
 
     protected Mutator mutator;
@@ -62,7 +63,11 @@ public class FeatureTree extends RootedTree<FeatureTree> implements Mutable<Feat
     }
 
     public boolean isMandatory() {
-        return isMandatory; // todo
+        return isMandatory;
+    }
+
+    public boolean isOptional() {
+        return !isMandatory;
     }
 
     public Range getGroupRange() {
@@ -123,9 +128,17 @@ public class FeatureTree extends RootedTree<FeatureTree> implements Mutable<Feat
             return FeatureTree.this;
         }
 
-        public void setMandatory(boolean mandatory) {
-            FeatureTree.this.isMandatory = mandatory;
+        public void setOptional() {
+            isMandatory = false;
         }
+
+        public void setMandatory() {
+            isMandatory = true;
+        }
+
+        //public boolean toggleMandatory() { todo
+            //return toggleAttributeValue(Attributes....);;
+        //}
 
         public void setGroupRange(Range groupRange) {
             FeatureTree.this.groupRange = groupRange;
