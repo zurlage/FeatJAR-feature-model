@@ -33,7 +33,7 @@ import java.util.*;
  *
  * @author Elias Kuiter
  */
-public class FeatureModel extends Element
+public class FeatureModel extends Element // todo : IFeatureModel, IFeature
         implements FeatureModelFeatureTreeMixin,
         FeatureModelConstraintMixin,
         FeatureModelFeatureOrderMixin,
