@@ -32,10 +32,12 @@ import de.featjar.base.data.Problem;
 import de.featjar.base.data.Result;
 import de.featjar.base.io.InputMapper;
 import de.featjar.base.io.format.ParseException;
+
 import java.util.*;
 import java.util.function.Supplier;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
+
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.NamedNodeMap;
@@ -145,7 +147,10 @@ public class XMLFeatureModelFormat extends AbstractXMLFeatureModelFormat<Feature
             mutator.setAbstract(_abstract);
             mutator.setHidden(hidden);
         });
-        feature.getFeatureTree().mutate().setMandatory(mandatory);
+        feature.getFeatureTree().mutate(m -> {
+            if (mandatory) m.setMandatory();
+            else m.setOptional();
+        });
         if (nameToIdentifierMap.get(name) != null) {
             throw new ParseException("Duplicate feature name!");
         }
