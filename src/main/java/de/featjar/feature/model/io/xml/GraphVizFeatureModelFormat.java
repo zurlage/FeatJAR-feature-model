@@ -57,8 +57,8 @@ public class GraphVizFeatureModelFormat implements Format<FeatureModel> {
     }
 
     @Override
-    public Optional<String> getFileExtension() {
-        return Optional.of("dot");
+    public String getFileExtension() {
+        return "dot";
     }
 
     @Override
