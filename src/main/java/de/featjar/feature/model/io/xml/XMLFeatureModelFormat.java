@@ -133,7 +133,7 @@ public class XMLFeatureModelFormat extends AbstractXMLFeatureModelFormat<Feature
     }
 
     @Override
-    protected Feature createFeatureLabel(
+    protected Feature newFeatureLabel(
             String name, Feature parentFeatureLabel, boolean mandatory, boolean _abstract, boolean hidden)
             throws ParseException {
         Feature feature;
@@ -189,7 +189,7 @@ public class XMLFeatureModelFormat extends AbstractXMLFeatureModelFormat<Feature
     }
 
     @Override
-    protected Constraint createConstraintLabel() {
+    protected Constraint newConstraintLabel() {
         return featureModel.mutate().createConstraint();
     }
 
