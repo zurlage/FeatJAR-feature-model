@@ -31,16 +31,4 @@ import de.featjar.base.io.format.Formats;
  * @author Sebastian Krieter
  */
 public class FeatureModelFormats extends Formats<FeatureModel> {
-    private static final FeatureModelFormats INSTANCE = new FeatureModelFormats();
-
-    public static FeatureModelFormats getInstance() {
-        return INSTANCE;
-    }
-
-    private FeatureModelFormats() {}
-
-    @Override
-    public ExtensionPoint<Format<FeatureModel>> getInstanceAsExtensionPoint() {
-        return INSTANCE;
-    }
 }
