@@ -61,5 +61,5 @@ public class FeatureModelTree extends Tree<FeatureModelTree> {
         throw new RuntimeException();
     }
 
-    // todo hashcode, equals, tostring, clone
+    // TODO hashcode, equals, tostring, clone
 }

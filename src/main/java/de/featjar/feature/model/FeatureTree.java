@@ -48,7 +48,7 @@ public class FeatureTree extends RootedTree<FeatureTree> implements Mutable<Feat
     /**
      * Range of how many child features may be selected.
      */
-    // todo: use attribute (and move to Feature class, or merge Feature+FeatureTree)? add dynamic attributes "isSelected/automatic"?
+    // TODO: use attribute (and move to Feature class, or merge Feature+FeatureTree)? add dynamic attributes "isSelected/automatic"?
     protected Range groupRange = Range.open();
 
     protected Mutator mutator;
@@ -120,7 +120,7 @@ public class FeatureTree extends RootedTree<FeatureTree> implements Mutable<Feat
         this.mutator = mutator;
     }
 
-    // todo hashcode, equals, tostring, clone
+    // TODO hashcode, equals, tostring, clone
 
     public class Mutator implements de.featjar.base.data.Mutator<FeatureTree> {
         @Override
@@ -136,7 +136,7 @@ public class FeatureTree extends RootedTree<FeatureTree> implements Mutable<Feat
             isMandatory = true;
         }
 
-        //public boolean toggleMandatory() { todo
+        //public boolean toggleMandatory() { TODO
             //return toggleAttributeValue(Attributes....);;
         //}
 

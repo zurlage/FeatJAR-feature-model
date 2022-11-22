@@ -51,8 +51,8 @@ import org.w3c.dom.Node;
  */
 public class XMLFeatureModelFormat extends AbstractXMLFeatureModelFormat<FeatureModel, Feature, Constraint> {
     public static final String NAMESPACE = XMLFeatureModelFormat.class.getCanonicalName();
-    public static final String GRAPHICS_NAMESPACE = "<graphics>"; // todo
-    public static final String CALCULATIONS_NAMESPACE = "<calculations>"; // todo
+    public static final String GRAPHICS_NAMESPACE = "<graphics>"; // TODO
+    public static final String CALCULATIONS_NAMESPACE = "<calculations>"; // TODO
     protected static final String COMMENTS = "comments";
     protected static final String C = "c";
     protected static final String FEATURE_ORDER = "featureOrder";
@@ -69,7 +69,7 @@ public class XMLFeatureModelFormat extends AbstractXMLFeatureModelFormat<Feature
     protected static final String CALCULATE_TAUTOLOGY = "Tautology";
     protected static final String CALCULATE_CONSTRAINTS = "Constraints";
     protected static final String CALCULATE_AUTO = "Auto";
-    // todo:
+    // TODO:
     // EXTENDED_FEATURE_MODEL, STRUCT, FEATURE_ORDER, CONSTRAINTS, CONSTRAINT, COLLAPSED, FEATURES,
     // CHOSEN_LAYOUT_ALGORITHM, NAME, FALSE, SHOW_COLLAPSED_CONSTRAINTS, LEGEND, LEGEND_AUTO_LAYOUT,
     // LEGEND_HIDDEN, SHOW_SHORT_NAMES, HORIZONTAL_LAYOUT, RULE, UNKNOWN, ATMOST1, ATTRIBUTE,
@@ -522,10 +522,10 @@ public class XMLFeatureModelFormat extends AbstractXMLFeatureModelFormat<Feature
     //				propNode = doc.createElement(PROPERTY);
     //				propNode.setAttribute(NAMESPACE_TAG, property.getKey().getNamespace());
     //				propNode.setAttribute(DATA_TYPE,
-    // AttributeIO.getTypeString(property.getKey().getType()).orElseThrow(IllegalArgumentException::new)); // todo
+    // AttributeIO.getTypeString(property.getKey().getType()).orElseThrow(IllegalArgumentException::new)); // TODO
     //			}
     //			propNode.setAttribute(KEY, property.getKey().getName());
-    //			propNode.setAttribute(VALUE, property.getValue().toString()); // todo
+    //			propNode.setAttribute(VALUE, property.getValue().toString()); // TODO
     //			fnod.appendChild(propNode);
     //		}
     //	}

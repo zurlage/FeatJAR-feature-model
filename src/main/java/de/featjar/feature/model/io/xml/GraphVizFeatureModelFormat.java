@@ -20,6 +20,7 @@
  */
 package de.featjar.feature.model.io.xml;
 
+import de.featjar.base.data.Result;
 import de.featjar.feature.model.Feature;
 import de.featjar.feature.model.FeatureModel;
 import de.featjar.feature.model.FeatureTree;
@@ -32,7 +33,6 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.Arrays;
 import java.util.List;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 /**
@@ -72,7 +72,7 @@ public class GraphVizFeatureModelFormat implements Format<FeatureModel> {
     }
 
     @Override
-    public String serialize(FeatureModel featureModel) {
+    public Result<String> serialize(FeatureModel featureModel) {
         List<Feature> features = featureModel.getFeatureTree().getDescendantsAsLevelOrder().stream()
                 .map(FeatureTree::getFeature)
                 .collect(Collectors.toList());

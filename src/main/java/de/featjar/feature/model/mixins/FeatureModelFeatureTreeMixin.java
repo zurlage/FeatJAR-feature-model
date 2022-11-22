@@ -122,7 +122,7 @@ public interface FeatureModelFeatureTreeMixin {
             return newFeature;
         }
 
-        default void removeFeature(Feature feature) { // todo what about the containing constraints?
+        default void removeFeature(Feature feature) { // TODO what about the containing constraints?
             Objects.requireNonNull(feature);
             if (feature.equals(getMutable().getRootFeature()) || !getMutable().hasFeature(feature)) {
                 throw new IllegalArgumentException();
@@ -171,7 +171,7 @@ public interface FeatureModelFeatureTreeMixin {
      *   sout(analyzer.getCommonality(f));
      * ;
      */
-    // todo: make Analyzer an extension point
+    // TODO: make Analyzer an extension point
     interface Analyzer extends de.featjar.base.data.Analyzer<FeatureModel> {
         default boolean isCoreFeature(Feature f) {
             return false; // go through all registered extensions, if none succeeds, call getCoreFeatures()

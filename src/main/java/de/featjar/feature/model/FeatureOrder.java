@@ -77,7 +77,7 @@ public abstract class FeatureOrder
         };
     }
 
-    public static FeatureOrder ofList(List<Feature> featureList) { // todo: maybe make this list mutable for easier
+    public static FeatureOrder ofList(List<Feature> featureList) { // TODO: maybe make this list mutable for easier
         // editing?
         return new FeatureOrder() {
             @Override

@@ -33,7 +33,7 @@ import java.util.*;
  *
  * @author Elias Kuiter
  */
-public class FeatureModel extends Element // todo : IFeatureModel, IFeature
+public class FeatureModel extends Element // TODO : IFeatureModel, IFeature
         implements FeatureModelFeatureTreeMixin,
         FeatureModelConstraintMixin,
         FeatureModelFeatureOrderMixin,
@@ -43,11 +43,11 @@ public class FeatureModel extends Element // todo : IFeatureModel, IFeature
         Analyzable<FeatureModel, FeatureModel.Analyzer> {
     //protected final Store store;
 
-    //todo put flattened fm into store (maybe dispatch mutators of flattened model to original models)
-    //todo store<...>, formulacomputation, decision propagation...?
-    //todo store in analyzer, apply(input,monitor,store) zum default machen(?)
+    //TODO put flattened fm into store (maybe dispatch mutators of flattened model to original models)
+    //TODO store<...>, formulacomputation, decision propagation...?
+    //TODO store in analyzer, apply(input,monitor,store) zum default machen(?)
 
-    //todo: we allow all kinds of modeling constructs, but not all analyses/computations support all constructs.
+    //TODO: we allow all kinds of modeling constructs, but not all analyses/computations support all constructs.
     //e.g., multiplicities are difficult to map to SAT. somehow, this should be checked.
     // maybe store required/incompatible capabilities for computations? eg., incompatible with Plaisted-Greenbaum/multiplicities/...?
     //and then implement different alternative algorithms with different capabilities.
@@ -60,7 +60,7 @@ public class FeatureModel extends Element // todo : IFeatureModel, IFeature
     protected final List<Constraint> constraints = Collections.synchronizedList(new ArrayList<>());
     protected FeatureOrder featureOrder = FeatureOrder.ofPreOrder();
     protected final Map<Identifier, Element> elementCache = Collections.synchronizedMap(new LinkedHashMap<>());
-    //todo elementcache -> store? computation?
+    //TODO elementcache -> store? computation?
     protected final Set<Feature> featureCache = Collections.synchronizedSet(new HashSet<>());
     protected Mutator mutator;
     protected Analyzer analyzer;
@@ -139,7 +139,7 @@ public class FeatureModel extends Element // todo : IFeatureModel, IFeature
 
     @Override
     protected Object clone() throws CloneNotSupportedException {
-        throw new CloneNotSupportedException(); // todo
+        throw new CloneNotSupportedException(); // TODO
     }
 
     public class Mutator
