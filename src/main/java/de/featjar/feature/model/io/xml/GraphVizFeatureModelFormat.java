@@ -41,11 +41,6 @@ import java.util.stream.Collectors;
  * @author Elias Kuiter
  */
 public class GraphVizFeatureModelFormat implements Format<FeatureModel> {
-    @Override
-    public GraphVizFeatureModelFormat getInstance() {
-        return new GraphVizFeatureModelFormat();
-    }
-
     public static void openInBrowser(FeatureModel featureModel) {
         try {
             String dot = IO.print(featureModel, new GraphVizFeatureModelFormat());
