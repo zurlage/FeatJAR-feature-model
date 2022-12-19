@@ -22,6 +22,7 @@ package de.featjar.feature.model;
 
 import de.featjar.base.data.Mutable;
 import de.featjar.base.data.Range;
+import de.featjar.base.data.Sets;
 import de.featjar.base.tree.structure.RootedTree;
 import de.featjar.base.tree.structure.Traversable;
 
@@ -94,10 +95,10 @@ public class FeatureTree extends RootedTree<FeatureTree> implements Mutable<Feat
         return !isAnd();
     }
 
-    public Set<Constraint> getContainingConstraints() {
+    public LinkedHashSet<Constraint> getContainingConstraints() {
         return feature.getFeatureModel().getConstraints().stream()
                 .filter(constraint -> constraint.getContainedFeatures().stream().anyMatch(feature::equals))
-                .collect(Collectors.toSet());
+                .collect(Sets.toSet());
     }
 
     @Override

@@ -36,7 +36,7 @@ import java.util.*;
  */
 public abstract class Element implements Identifiable, Attributable {
     protected final Identifier identifier;
-    protected final Map<Attribute, Object> attributeToValueMap = new HashMap<>();
+    protected final LinkedHashMap<Attribute, Object> attributeToValueMap = new LinkedHashMap<>();
 
     public Element(Identifier identifier) {
         Objects.requireNonNull(identifier);
@@ -50,7 +50,7 @@ public abstract class Element implements Identifiable, Attributable {
     public abstract FeatureModel getFeatureModel();
 
     @Override
-    public Map<Attribute, Object> getAttributeToValueMap() {
+    public LinkedHashMap<Attribute, Object> getAttributeToValueMap() {
         return attributeToValueMap;
     }
 

@@ -25,8 +25,7 @@ import static org.junit.jupiter.api.Assertions.*;
 import de.featjar.base.data.Attributable;
 import de.featjar.base.data.Attribute;
 import de.featjar.base.data.Identifier;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.LinkedHashMap;
 import java.util.Optional;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
@@ -55,7 +54,7 @@ public class AttributeTest {
 
     @Test
     public void attributableGetSet() {
-        Map<Attribute, Object> attributeToValueMap = new HashMap<>();
+        LinkedHashMap<Attribute, Object> attributeToValueMap = new LinkedHashMap<>();
         Attribute.WithDefaultValue attributeWithDefaultValue =
                 new Attribute.WithDefaultValue(Attribute.DEFAULT_NAMESPACE, "test", String.class, "default");
         Assertions.assertEquals(Optional.empty(), featureModel.getAttributeValue(attribute));

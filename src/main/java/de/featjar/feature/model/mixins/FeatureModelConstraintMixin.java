@@ -20,6 +20,7 @@
  */
 package de.featjar.feature.model.mixins;
 
+import de.featjar.base.data.Sets;
 import de.featjar.feature.model.Constraint;
 import de.featjar.feature.model.FeatureModel;
 import de.featjar.base.data.Identifier;
@@ -119,8 +120,8 @@ public interface FeatureModelConstraintMixin {
     }
 
     interface Analyzer extends de.featjar.base.data.Analyzer<FeatureModel> {
-        default Set<Constraint> getRedundantConstraints() {
-            return Collections.emptySet();
+        default LinkedHashSet<Constraint> getRedundantConstraints() {
+            return Sets.empty();
         }
 
         // ...

@@ -20,16 +20,16 @@
  */
 package de.featjar.feature.model.mixins;
 
+import de.featjar.base.data.Sets;
 import de.featjar.feature.model.Feature;
 import de.featjar.feature.model.FeatureModel;
 import de.featjar.feature.model.FeatureTree;
 import de.featjar.base.data.Identifier;
 import de.featjar.base.tree.Trees;
 import java.util.Collections;
+import java.util.LinkedHashSet;
 import java.util.Objects;
 import java.util.Optional;
-import java.util.Set;
-import java.util.stream.Collectors;
 
 /**
  * Implements a {@link FeatureModel} mixin for common operations on the {@link FeatureTree}.
@@ -39,10 +39,10 @@ import java.util.stream.Collectors;
 public interface FeatureModelFeatureTreeMixin {
     FeatureTree getFeatureTree();
 
-    default Set<Feature> getFeatures() {
+    default LinkedHashSet<Feature> getFeatures() {
         return Trees.preOrderStream(getFeatureTree())
                 .map(FeatureTree::getFeature)
-                .collect(Collectors.toSet());
+                .collect(Sets.toSet());
     }
 
     default int getNumberOfFeatures() {
@@ -177,12 +177,12 @@ public interface FeatureModelFeatureTreeMixin {
             return false; // go through all registered extensions, if none succeeds, call getCoreFeatures()
         }
 
-        default Set<Feature> getCoreFeatures() {
-            return Collections.emptySet();
+        default LinkedHashSet<Feature> getCoreFeatures() {
+            return Sets.empty();
         }
 
-        default Set<Feature> getDeadFeatures() {
-            return Collections.emptySet(); // use extensions: use an extension point for dead features
+        default LinkedHashSet<Feature> getDeadFeatures() {
+            return Sets.empty(); // use extensions: use an extension point for dead features
         }
 
         default int countValidConfigurations() {

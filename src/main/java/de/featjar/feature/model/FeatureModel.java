@@ -61,7 +61,7 @@ public class FeatureModel extends Element // TODO : IFeatureModel, IFeature
     protected FeatureOrder featureOrder = FeatureOrder.ofPreOrder();
     protected final Map<Identifier, Element> elementCache = Collections.synchronizedMap(new LinkedHashMap<>());
     //TODO elementcache -> store? computation?
-    protected final Set<Feature> featureCache = Collections.synchronizedSet(new HashSet<>());
+    protected final LinkedHashSet<Feature> featureCache = Collections.synchronizedSet(new LinkedHashSet<>());
     protected Mutator mutator;
     protected Analyzer analyzer;
 
@@ -103,7 +103,7 @@ public class FeatureModel extends Element // TODO : IFeatureModel, IFeature
     }
 
     @Override
-    public Set<Feature> getFeatureCache() {
+    public LinkedHashSet<Feature> getFeatureCache() {
         return featureCache;
     }
 

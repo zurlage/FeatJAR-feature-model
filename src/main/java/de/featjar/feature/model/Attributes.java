@@ -23,8 +23,7 @@ package de.featjar.feature.model;
 import de.featjar.base.data.Attribute;
 import de.featjar.base.data.Identifiable;
 
-import java.util.HashSet;
-import java.util.Set;
+import java.util.LinkedHashSet;
 
 /**
  * Defines some useful {@link Attribute attributes} for {@link FeatureModel feature models},
@@ -42,7 +41,7 @@ public class Attributes {
             identifiable -> "@" + ((Identifiable) identifiable).getIdentifier().toString());
     public static final Attribute DESCRIPTION = new Attribute(NAMESPACE, "description", String.class);
     public static final Attribute.WithDefaultValue TAGS =
-            new Attribute.WithDefaultValue(NAMESPACE, "tags", Set.class, new HashSet<>());
+            new Attribute.WithDefaultValue(NAMESPACE, "tags", LinkedHashSet.class, new LinkedHashSet<>());
     public static final Attribute.WithDefaultValue HIDDEN =
             new Attribute.WithDefaultValue(NAMESPACE, "hidden", Boolean.class, false);
     public static final Attribute.WithDefaultValue ABSTRACT =

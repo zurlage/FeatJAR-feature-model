@@ -76,7 +76,7 @@ public class XMLFeatureModelFormat extends AbstractXMLFeatureModelFormat<Feature
     // ATTRIBUTE_UNIT, ATTRIBUTE_TYPE, ATTRIBUTE_VALUE, ATTRIBUTE_RECURSIVE, ATTRIBUTE_CONFIGURABLE,
 
     protected FeatureModel featureModel;
-    protected Map<String, Identifier> nameToIdentifierMap;
+    protected LinkedHashMap<String, Identifier> nameToIdentifierMap;
 
     @Override
     public XMLFeatureModelFormat getInstance() {
@@ -107,7 +107,7 @@ public class XMLFeatureModelFormat extends AbstractXMLFeatureModelFormat<Feature
     @Override
     public FeatureModel parseDocument(Document document) throws ParseException {
         if (featureModel == null) featureModel = new FeatureModel(Identifier.newCounter());
-        nameToIdentifierMap = new HashMap<>();
+        nameToIdentifierMap = new LinkedHashMap<>();
         final Element featureModelElement = getDocumentElement(document, FEATURE_MODEL);
         parseFeatureTree(getElement(featureModelElement, STRUCT));
         Optional<Element> element = getOptionalElement(featureModelElement, CONSTRAINTS);
@@ -277,9 +277,9 @@ public class XMLFeatureModelFormat extends AbstractXMLFeatureModelFormat<Feature
         return description;
     }
 
-    protected Set<String> getTags(final Node e) {
+    protected LinkedHashSet<String> getTags(final Node e) {
         final String[] tagArray = e.getTextContent().split(",");
-        return new HashSet<>(Arrays.asList(tagArray));
+        return new LinkedHashSet<>(Arrays.asList(tagArray));
     }
 
     protected void parseProperty(de.featjar.feature.model.Element element, Element e, String fallbackNamespace)
@@ -337,7 +337,7 @@ public class XMLFeatureModelFormat extends AbstractXMLFeatureModelFormat<Feature
     //	@Override
     //	public void writeDocument(FeatureModel featureModel, Document doc) {
     //		this.featureModel = featureModel;
-    //		nameToIdentifierMap = new HashMap<>();
+    //		nameToIdentifierMap = new LinkedHashMap<>();
     //		final Element root = doc.createElement(FEATURE_MODEL);
     //		doc.appendChild(root);
     //

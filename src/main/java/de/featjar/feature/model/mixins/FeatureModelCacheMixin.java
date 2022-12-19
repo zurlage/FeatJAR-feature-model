@@ -38,10 +38,10 @@ import java.util.stream.Stream;
 public interface FeatureModelCacheMixin extends FeatureModelFeatureTreeMixin, FeatureModelConstraintMixin {
     Map<Identifier, Element> getElementCache();
 
-    Set<Feature> getFeatureCache();
+    LinkedHashSet<Feature> getFeatureCache();
 
     default void finishInternalMutation() {
-        Set<Feature> features = FeatureModelFeatureTreeMixin.super.getFeatures();
+        LinkedHashSet<Feature> features = FeatureModelFeatureTreeMixin.super.getFeatures();
 
         getElementCache().clear();
         Stream.concat(features.stream(), getConstraints().stream()).forEach(element -> {
@@ -55,7 +55,7 @@ public interface FeatureModelCacheMixin extends FeatureModelFeatureTreeMixin, Fe
     }
 
     @Override
-    default Set<Feature> getFeatures() {
+    default LinkedHashSet<Feature> getFeatures() {
         return getFeatureCache();
     }
 

@@ -23,15 +23,17 @@ package de.featjar.feature.model.io;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
+import de.featjar.base.data.Sets;
 import de.featjar.feature.model.Feature;
 import de.featjar.feature.model.FeatureModel;
 import de.featjar.feature.model.io.xml.XMLFeatureModelFormat;
 import de.featjar.base.data.Result;
 import de.featjar.base.io.IO;
 import java.nio.file.Paths;
-import java.util.Set;
 import java.util.stream.Collectors;
 import org.junit.jupiter.api.Test;
+
+import javax.print.attribute.SetOfIntegerSyntax;
 
 public class XMLFeatureModelFormulaFormatTest {
     @Test
@@ -59,7 +61,7 @@ public class XMLFeatureModelFormulaFormatTest {
             "GearboxTest"
         };
         assertEquals(
-                Set.of(featureNames),
-                featureModel.getFeatures().stream().map(Feature::getName).collect(Collectors.toSet()));
+                Sets.of(featureNames),
+                featureModel.getFeatures().stream().map(Feature::getName).collect(Sets.toSet()));
     }
 }

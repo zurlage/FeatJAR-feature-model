@@ -41,7 +41,7 @@ public class Constraint extends Element
         implements Mutable<Constraint, Constraint.Mutator>, Analyzable<Constraint, Constraint.Analyzer> {
     protected final FeatureModel featureModel;
     protected Formula formula;
-    protected final Set<Feature> containedFeaturesCache = new HashSet<>();
+    protected final LinkedHashSet<Feature> containedFeaturesCache = new LinkedHashSet<>();
     protected Mutator mutator;
     protected Analyzer analyzer;
 
@@ -68,13 +68,13 @@ public class Constraint extends Element
         return formula;
     }
 
-    public Set<Feature> getContainedFeatures() {
+    public LinkedHashSet<Feature> getContainedFeatures() {
         return containedFeaturesCache;
     }
 
-    @SuppressWarnings({"unchecked", "rawtypes"})
-    public Set<String> getTags() {
-        return (Set) getAttributeValue(Attributes.TAGS);
+    @SuppressWarnings({"unchecked"})
+    public LinkedHashSet<String> getTags() {
+        return (LinkedHashSet<String>) getAttributeValue(Attributes.TAGS);
     }
 
     @Override
@@ -112,10 +112,10 @@ public class Constraint extends Element
         @SuppressWarnings("OptionalGetWithoutIsPresent")
         public void setFormula(Formula formula) {
             Objects.requireNonNull(formula);
-            Set<Identifier> identifiers = formula.getVariableStream()
+            LinkedHashSet<Identifier> identifiers = formula.getVariableStream()
                     .map(Variable::getName)
                     .map(getIdentifier().getFactory()::parse)
-                    .collect(Collectors.toSet());
+                    .collect(Sets.toSet());
             Optional<Identifier> unknownIdentifier = identifiers.stream()
                     .filter(identifier -> !featureModel.hasFeature(identifier))
                     .findAny();
@@ -126,11 +126,11 @@ public class Constraint extends Element
             containedFeaturesCache.addAll(identifiers.stream()
                     .map(featureModel::getFeature)
                     .map(Optional::get)
-                    .collect(Collectors.toSet()));
+                    .collect(Sets.toSet()));
             Constraint.this.formula = formula;
         }
 
-        public void setTags(Set<String> tags) {
+        public void setTags(LinkedHashSet<String> tags) {
             setAttributeValue(Attributes.TAGS, tags);
         }
 
