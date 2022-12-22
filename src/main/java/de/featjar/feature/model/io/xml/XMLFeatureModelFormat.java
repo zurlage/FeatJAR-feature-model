@@ -30,7 +30,7 @@ import de.featjar.formula.structure.formula.IFormula;
 import de.featjar.base.data.AIdentifier;
 import de.featjar.base.data.Problem;
 import de.featjar.base.data.Result;
-import de.featjar.base.io.AInputMapper;
+import de.featjar.base.io.input.AInputMapper;
 import de.featjar.base.io.format.ParseException;
 
 import java.util.*;
