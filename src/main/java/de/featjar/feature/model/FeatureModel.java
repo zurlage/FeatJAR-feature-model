@@ -29,7 +29,7 @@ import java.util.*;
  * A feature model represents the configuration space of a software system.
  * We equate feature models with feature diagrams
  * (i.e., a {@link FeatureTree} labeled with features and a list of {@link Constraint constraints}).
- * For safe mutation, rely only on the methods of {@link Mutable}.
+ * For safe mutation, rely only on the methods of {@link IMutable}.
  *
  * @author Elias Kuiter
  */
@@ -39,8 +39,8 @@ public class FeatureModel extends Element // TODO : IFeatureModel, IFeature
         FeatureModelFeatureOrderMixin,
         CommonAttributesMixin,
         FeatureModelCacheMixin,
-                Mutable<FeatureModel, FeatureModel.Mutator>,
-        Analyzable<FeatureModel, FeatureModel.Analyzer> {
+        IMutable<FeatureModel, FeatureModel.Mutator>,
+        IAnalyzable<FeatureModel, FeatureModel.Analyzer> {
     //protected final Store store;
 
     //TODO put flattened fm into store (maybe dispatch mutators of flattened model to original models)
@@ -59,13 +59,13 @@ public class FeatureModel extends Element // TODO : IFeatureModel, IFeature
     protected final FeatureTree featureTree;
     protected final List<Constraint> constraints = Collections.synchronizedList(new ArrayList<>());
     protected FeatureOrder featureOrder = FeatureOrder.ofPreOrder();
-    protected final Map<Identifier, Element> elementCache = Collections.synchronizedMap(new LinkedHashMap<>());
+    protected final Map<AIdentifier, Element> elementCache = Collections.synchronizedMap(new LinkedHashMap<>());
     //TODO elementcache -> store? computation?
     protected final LinkedHashSet<Feature> featureCache = Collections.synchronizedSet(new LinkedHashSet<>());
     protected Mutator mutator;
     protected Analyzer analyzer;
 
-    public FeatureModel(Identifier identifier) {
+    public FeatureModel(AIdentifier identifier) {
         super(identifier);
         featureModelTree = new FeatureModelTree(this);
         final Feature root = new Feature(this);
@@ -98,7 +98,7 @@ public class FeatureModel extends Element // TODO : IFeatureModel, IFeature
     }
 
     @Override
-    public Map<Identifier, Element> getElementCache() {
+    public Map<AIdentifier, Element> getElementCache() {
         return elementCache;
     }
 
@@ -143,7 +143,7 @@ public class FeatureModel extends Element // TODO : IFeatureModel, IFeature
     }
 
     public class Mutator
-            implements de.featjar.base.data.Mutator<FeatureModel>,
+            implements IMutator<FeatureModel>,
                     FeatureModelFeatureTreeMixin.Mutator,
                     FeatureModelConstraintMixin.Mutator,
                     FeatureModelFeatureOrderMixin.Mutator,
@@ -161,7 +161,7 @@ public class FeatureModel extends Element // TODO : IFeatureModel, IFeature
     }
 
     public class Analyzer
-            implements de.featjar.base.data.Analyzer<FeatureModel>,
+            implements IAnalyzer<FeatureModel>,
                     FeatureModelFeatureTreeMixin.Analyzer,
                     FeatureModelConstraintMixin.Analyzer {
         @Override

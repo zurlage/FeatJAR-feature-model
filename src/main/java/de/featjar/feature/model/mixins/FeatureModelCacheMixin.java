@@ -20,11 +20,12 @@
  */
 package de.featjar.feature.model.mixins;
 
+import de.featjar.base.data.IMutator;
 import de.featjar.feature.model.Constraint;
 import de.featjar.feature.model.Element;
 import de.featjar.feature.model.Feature;
 import de.featjar.feature.model.FeatureModel;
-import de.featjar.base.data.Identifier;
+import de.featjar.base.data.AIdentifier;
 
 import java.util.*;
 import java.util.stream.Stream;
@@ -36,7 +37,7 @@ import java.util.stream.Stream;
  * @author Elias Kuiter
  */
 public interface FeatureModelCacheMixin extends FeatureModelFeatureTreeMixin, FeatureModelConstraintMixin {
-    Map<Identifier, Element> getElementCache();
+    Map<AIdentifier, Element> getElementCache();
 
     LinkedHashSet<Feature> getFeatureCache();
 
@@ -60,7 +61,7 @@ public interface FeatureModelCacheMixin extends FeatureModelFeatureTreeMixin, Fe
     }
 
     @Override
-    default Optional<Feature> getFeature(Identifier identifier) {
+    default Optional<Feature> getFeature(AIdentifier identifier) {
         Objects.requireNonNull(identifier);
         Element element = getElementCache().get(identifier);
         if (!(element instanceof Feature)) return Optional.empty();
@@ -68,7 +69,7 @@ public interface FeatureModelCacheMixin extends FeatureModelFeatureTreeMixin, Fe
     }
 
     @Override
-    default Optional<Constraint> getConstraint(Identifier identifier) {
+    default Optional<Constraint> getConstraint(AIdentifier identifier) {
         Objects.requireNonNull(identifier);
         Element element = getElementCache().get(identifier);
         if (!(element instanceof Constraint)) return Optional.empty();
@@ -76,7 +77,7 @@ public interface FeatureModelCacheMixin extends FeatureModelFeatureTreeMixin, Fe
     }
 
     interface Mutator
-            extends de.featjar.base.data.Mutator<FeatureModel>,
+            extends IMutator<FeatureModel>,
                     FeatureModelFeatureTreeMixin.Mutator,
                     FeatureModelConstraintMixin.Mutator {
         @Override

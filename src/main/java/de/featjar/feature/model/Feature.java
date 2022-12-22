@@ -20,17 +20,16 @@
  */
 package de.featjar.feature.model;
 
+import de.featjar.base.data.*;
 import de.featjar.feature.model.mixins.CommonAttributesMixin;
-import de.featjar.base.data.Analyzable;
-import de.featjar.base.data.Mutable;
 
 import java.util.Objects;
 
 /**
  * A feature in a {@link FeatureModel} describes some functionality of a software system.
  * It is attached to a {@link FeatureModel} and labels a {@link FeatureTree}.
- * For safe mutation, rely only on the methods of {@link Mutable}.
- * A {@link Feature} is uniquely determined by its immutable {@link de.featjar.base.data.Identifier}
+ * For safe mutation, rely only on the methods of {@link IMutable}.
+ * A {@link Feature} is uniquely determined by its immutable {@link AIdentifier}
  * or name (obtained with {@link #getName()}).
  * In contrast to a feature's identifier, its name is mutable and should therefore be used sparsely
  * to avoid cache invalidation and renaming issues.
@@ -38,7 +37,7 @@ import java.util.Objects;
  * @author Elias Kuiter
  */
 public class Feature extends Element
-        implements CommonAttributesMixin, Mutable<Feature, Feature.Mutator>, Analyzable<Feature, Feature.Analyzer> {
+        implements CommonAttributesMixin, IMutable<Feature, Feature.Mutator>, IAnalyzable<Feature, Feature.Analyzer> {
     protected final FeatureModel featureModel;
     protected final FeatureTree featureTree;
     protected Mutator mutator;
@@ -101,7 +100,7 @@ public class Feature extends Element
         return String.format("Feature{name=%s}", getName());
     }
 
-    public class Mutator implements de.featjar.base.data.Mutator<Feature>, CommonAttributesMixin.Mutator<Feature> {
+    public class Mutator implements IMutator<Feature>, CommonAttributesMixin.Mutator<Feature> {
         @Override
         public Feature getMutable() {
             return Feature.this;
@@ -152,7 +151,7 @@ public class Feature extends Element
         }
     }
 
-    public class Analyzer implements de.featjar.base.data.Analyzer<Feature> {
+    public class Analyzer implements IAnalyzer<Feature> {
         @Override
         public Feature getAnalyzable() {
             return Feature.this;

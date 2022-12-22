@@ -21,7 +21,7 @@
 package de.featjar.feature.model;
 
 import de.featjar.base.data.Attribute;
-import de.featjar.base.data.Identifiable;
+import de.featjar.base.data.IIdentifiable;
 
 import java.util.LinkedHashSet;
 
@@ -38,7 +38,7 @@ public class Attributes {
             "name",
             String.class,
             (element, name) -> ((Element) element).getFeatureModel().getFeature((String) name).isEmpty(),
-            identifiable -> "@" + ((Identifiable) identifiable).getIdentifier().toString());
+            identifiable -> "@" + ((IIdentifiable) identifiable).getIdentifier().toString());
     public static final Attribute DESCRIPTION = new Attribute(NAMESPACE, "description", String.class);
     public static final Attribute.WithDefaultValue TAGS =
             new Attribute.WithDefaultValue(NAMESPACE, "tags", LinkedHashSet.class, new LinkedHashSet<>());

@@ -22,9 +22,9 @@ package de.featjar.feature.model;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-import de.featjar.base.data.Attributable;
+import de.featjar.base.data.IAttributable;
 import de.featjar.base.data.Attribute;
-import de.featjar.base.data.Identifier;
+import de.featjar.base.data.AIdentifier;
 import java.util.LinkedHashMap;
 import java.util.Optional;
 import org.junit.jupiter.api.Assertions;
@@ -32,7 +32,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 /**
- * Tests for {@link Attribute}, {@link Attributes}, and {@link Attributable}.
+ * Tests for {@link Attribute}, {@link Attributes}, and {@link IAttributable}.
  *
  * @author Elias Kuiter
  */
@@ -42,7 +42,7 @@ public class AttributeTest {
 
     @BeforeEach
     public void createFeatureModel() {
-        featureModel = new FeatureModel(Identifier.newCounter());
+        featureModel = new FeatureModel(AIdentifier.newCounter());
     }
 
     @Test

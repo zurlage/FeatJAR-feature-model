@@ -25,7 +25,7 @@ import de.featjar.feature.model.Feature;
 import de.featjar.feature.model.FeatureModel;
 import de.featjar.feature.model.FeatureTree;
 import de.featjar.base.io.IO;
-import de.featjar.base.io.format.Format;
+import de.featjar.base.io.format.IFormat;
 
 import java.awt.*;
 import java.io.IOException;
@@ -40,7 +40,7 @@ import java.util.stream.Collectors;
  *
  * @author Elias Kuiter
  */
-public class GraphVizFeatureModelFormat implements Format<FeatureModel> {
+public class GraphVizFeatureModelFormat implements IFormat<FeatureModel> {
     public static void openInBrowser(FeatureModel featureModel) {
         try {
             String dot = IO.print(featureModel, new GraphVizFeatureModelFormat());

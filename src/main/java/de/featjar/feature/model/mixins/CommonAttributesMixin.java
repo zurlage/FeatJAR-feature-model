@@ -24,7 +24,7 @@ import de.featjar.feature.model.Attributes;
 import de.featjar.feature.model.Constraint;
 import de.featjar.feature.model.Feature;
 import de.featjar.feature.model.FeatureModel;
-import de.featjar.base.data.Attributable;
+import de.featjar.base.data.IAttributable;
 import de.featjar.base.data.Attribute;
 import java.util.Optional;
 
@@ -35,7 +35,7 @@ import java.util.Optional;
  *
  * @author Elias Kuiter
  */
-public interface CommonAttributesMixin extends Attributable {
+public interface CommonAttributesMixin extends IAttributable {
     default String getName() {
         return (String) getAttributeValue(Attributes.NAME);
     }
@@ -45,7 +45,7 @@ public interface CommonAttributesMixin extends Attributable {
         return (Optional) getAttributeValue(Attributes.DESCRIPTION);
     }
 
-    interface Mutator<T extends Attributable> extends Attributable.Mutator<T> {
+    interface Mutator<T extends IAttributable> extends IAttributable.Mutator<T> {
         default void setName(String name) {
             setAttributeValue(Attributes.NAME, name);
         }

@@ -22,14 +22,14 @@ package de.featjar.feature.model;
 
 import static org.junit.jupiter.api.Assertions.assertSame;
 
-import de.featjar.base.data.Identifier;
-import de.featjar.base.data.Mutable;
-import de.featjar.base.data.Mutator;
+import de.featjar.base.data.AIdentifier;
+import de.featjar.base.data.IMutable;
+import de.featjar.base.data.IMutator;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 /**
- * Tests for {@link Mutator} and {@link Mutable}.
+ * Tests for {@link IMutator} and {@link IMutable}.
  *
  * @author Elias Kuiter
  */
@@ -38,7 +38,7 @@ public class MutatorTest {
 
     @BeforeEach
     public void createFeatureModel() {
-        featureModel = new FeatureModel(Identifier.newCounter());
+        featureModel = new FeatureModel(AIdentifier.newCounter());
     }
 
     @Test

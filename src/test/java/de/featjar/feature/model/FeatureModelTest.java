@@ -22,9 +22,8 @@ package de.featjar.feature.model;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-import de.featjar.formula.structure.Expression;
 import de.featjar.feature.model.mixins.FeatureModelFeatureTreeMixin;
-import de.featjar.base.data.Identifier;
+import de.featjar.base.data.AIdentifier;
 import java.util.*;
 
 import de.featjar.formula.structure.Expressions;
@@ -42,7 +41,7 @@ public class FeatureModelTest {
 
     @BeforeEach
     public void createFeatureModel() {
-        featureModel = new FeatureModel(Identifier.newCounter());
+        featureModel = new FeatureModel(AIdentifier.newCounter());
     }
 
     @Test
@@ -119,7 +118,7 @@ public class FeatureModelTest {
         featureModel.mutate().setFeatureOrder(FeatureOrder.ofList(Collections.singletonList(rootFeature)));
         Assertions.assertEquals(Arrays.asList(rootFeature, childFeature), featureModel.getOrderedFeatures());
         Comparator<Feature> comparator =
-                Comparator.comparingLong(f -> ((Identifier.Counter) f.getIdentifier()).getCounter());
+                Comparator.comparingLong(f -> ((AIdentifier.Counter) f.getIdentifier()).getCounter());
         featureModel.mutate().setFeatureOrder(FeatureOrder.ofComparator(comparator));
         Assertions.assertEquals(Arrays.asList(rootFeature, childFeature), featureModel.getOrderedFeatures());
         featureModel.mutate().setFeatureOrder(FeatureOrder.ofComparator(comparator.reversed()));

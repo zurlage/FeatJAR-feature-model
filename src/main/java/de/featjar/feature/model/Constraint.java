@@ -21,24 +21,22 @@
 package de.featjar.feature.model;
 
 import de.featjar.base.data.*;
-import de.featjar.formula.structure.Expression;
 import de.featjar.formula.structure.Expressions;
 import de.featjar.formula.structure.formula.Formula;
 import de.featjar.formula.structure.term.value.Variable;
 import de.featjar.feature.model.mixins.CommonAttributesMixin;
 
 import java.util.*;
-import java.util.stream.Collectors;
 
 /**
  * A constraint describes some restriction on the valid configurations represented by a {@link FeatureModel}.
  * It is attached to a {@link FeatureModel} and represented as a {@link Formula} over {@link Feature} variables.
- * For safe mutation, rely only on the methods of {@link Mutable}.
+ * For safe mutation, rely only on the methods of {@link IMutable}.
  *
  * @author Elias Kuiter
  */
 public class Constraint extends Element
-        implements Mutable<Constraint, Constraint.Mutator>, Analyzable<Constraint, Constraint.Analyzer> {
+        implements IMutable<Constraint, Constraint.Mutator>, IAnalyzable<Constraint, Constraint.Analyzer> {
     protected final FeatureModel featureModel;
     protected Formula formula;
     protected final LinkedHashSet<Feature> containedFeaturesCache = new LinkedHashSet<>();
@@ -103,7 +101,7 @@ public class Constraint extends Element
     }
 
     public class Mutator
-            implements de.featjar.base.data.Mutator<Constraint>, CommonAttributesMixin.Mutator<Constraint> {
+            implements IMutator<Constraint>, CommonAttributesMixin.Mutator<Constraint> {
         @Override
         public Constraint getMutable() {
             return Constraint.this;
@@ -112,11 +110,11 @@ public class Constraint extends Element
         @SuppressWarnings("OptionalGetWithoutIsPresent")
         public void setFormula(Formula formula) {
             Objects.requireNonNull(formula);
-            LinkedHashSet<Identifier> identifiers = formula.getVariableStream()
+            LinkedHashSet<AIdentifier> identifiers = formula.getVariableStream()
                     .map(Variable::getName)
                     .map(getIdentifier().getFactory()::parse)
                     .collect(Sets.toSet());
-            Optional<Identifier> unknownIdentifier = identifiers.stream()
+            Optional<AIdentifier> unknownIdentifier = identifiers.stream()
                     .filter(identifier -> !featureModel.hasFeature(identifier))
                     .findAny();
             if (unknownIdentifier.isPresent()) {
@@ -139,7 +137,7 @@ public class Constraint extends Element
         }
     }
 
-    public class Analyzer implements de.featjar.base.data.Analyzer<Constraint> {
+    public class Analyzer implements IAnalyzer<Constraint> {
         @Override
         public Constraint getAnalyzable() {
             return Constraint.this;

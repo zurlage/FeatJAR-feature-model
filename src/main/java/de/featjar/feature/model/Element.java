@@ -20,30 +20,30 @@
  */
 package de.featjar.feature.model;
 
-import de.featjar.base.data.Attributable;
+import de.featjar.base.data.IAttributable;
 import de.featjar.base.data.Attribute;
-import de.featjar.base.data.Identifiable;
-import de.featjar.base.data.Identifier;
+import de.featjar.base.data.IIdentifiable;
+import de.featjar.base.data.AIdentifier;
 import java.util.*;
 
 /**
  * Implements identification and attribute valuation.
  * Each {@link FeatureModel} and all its {@link Feature features} and {@link Constraint constraints} are
- * uniquely identified by an {@link Identifier}.
+ * uniquely identified by an {@link AIdentifier}.
  * Also, each element can be annotated with arbitrary {@link Attribute attributes}.
  *
  * @author Elias Kuiter
  */
-public abstract class Element implements Identifiable, Attributable {
-    protected final Identifier identifier;
+public abstract class Element implements IIdentifiable, IAttributable {
+    protected final AIdentifier identifier;
     protected final LinkedHashMap<Attribute, Object> attributeToValueMap = new LinkedHashMap<>();
 
-    public Element(Identifier identifier) {
+    public Element(AIdentifier identifier) {
         Objects.requireNonNull(identifier);
         this.identifier = identifier;
     }
 
-    public Identifier getIdentifier() {
+    public AIdentifier getIdentifier() {
         return identifier;
     }
 

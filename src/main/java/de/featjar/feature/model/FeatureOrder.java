@@ -20,8 +20,9 @@
  */
 package de.featjar.feature.model;
 
+import de.featjar.base.data.IMutator;
 import de.featjar.feature.model.mixins.FeatureModelFeatureTreeMixin;
-import de.featjar.base.data.Mutable;
+import de.featjar.base.data.IMutable;
 import de.featjar.base.tree.Trees;
 
 import java.util.Comparator;
@@ -37,7 +38,7 @@ import java.util.stream.Stream;
  * @author Elias Kuiter
  */
 public abstract class FeatureOrder
-        implements Function<FeatureModelFeatureTreeMixin, List<Feature>>, Mutable<FeatureOrder, FeatureOrder.Mutator> {
+        implements Function<FeatureModelFeatureTreeMixin, List<Feature>>, IMutable<FeatureOrder, FeatureOrder.Mutator> {
     protected boolean isUserDefined;
     protected Mutator mutator;
 
@@ -90,7 +91,7 @@ public abstract class FeatureOrder
         };
     }
 
-    public class Mutator implements de.featjar.base.data.Mutator<FeatureOrder> {
+    public class Mutator implements IMutator<FeatureOrder> {
         @Override
         public FeatureOrder getMutable() {
             return FeatureOrder.this;

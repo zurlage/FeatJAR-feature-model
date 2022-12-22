@@ -22,14 +22,14 @@ package de.featjar.feature.model;
 
 import static org.junit.jupiter.api.Assertions.assertSame;
 
-import de.featjar.base.data.Analyzable;
-import de.featjar.base.data.Analyzer;
-import de.featjar.base.data.Identifier;
+import de.featjar.base.data.IAnalyzable;
+import de.featjar.base.data.IAnalyzer;
+import de.featjar.base.data.AIdentifier;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 /**
- * Tests for {@link Analyzer} and {@link Analyzable}.
+ * Tests for {@link IAnalyzer} and {@link IAnalyzable}.
  *
  * @author Elias Kuiter
  */
@@ -38,7 +38,7 @@ public class AnalyzerTest {
 
     @BeforeEach
     public void createFeatureModel() {
-        featureModel = new FeatureModel(Identifier.newCounter());
+        featureModel = new FeatureModel(AIdentifier.newCounter());
     }
 
     @Test

@@ -20,22 +20,22 @@
  */
 package de.featjar.feature.model;
 
-import de.featjar.base.data.Mutable;
+import de.featjar.base.data.IMutable;
+import de.featjar.base.data.IMutator;
 import de.featjar.base.data.Range;
 import de.featjar.base.data.Sets;
-import de.featjar.base.tree.structure.RootedTree;
-import de.featjar.base.tree.structure.Traversable;
+import de.featjar.base.tree.structure.ARootedTree;
+import de.featjar.base.tree.structure.ITree;
 
 import java.util.*;
-import java.util.stream.Collectors;
 
 /**
- * An ordered {@link RootedTree} labeled with {@link Feature features}.
+ * An ordered {@link ARootedTree} labeled with {@link Feature features}.
  * Implements some concepts from feature-oriented domain analysis, such as mandatory/optional features and groups.
  *
  * @author Elias Kuiter
  */
-public class FeatureTree extends RootedTree<FeatureTree> implements Mutable<FeatureTree, FeatureTree.Mutator> {
+public class FeatureTree extends ARootedTree<FeatureTree> implements IMutable<FeatureTree, FeatureTree.Mutator> {
     /**
      * Feature at the root of this feature tree.
      */
@@ -102,7 +102,7 @@ public class FeatureTree extends RootedTree<FeatureTree> implements Mutable<Feat
     }
 
     @Override
-    public Traversable<FeatureTree> cloneNode() {
+    public ITree<FeatureTree> cloneNode() {
         throw new RuntimeException();
     }
 
@@ -123,7 +123,7 @@ public class FeatureTree extends RootedTree<FeatureTree> implements Mutable<Feat
 
     // TODO hashcode, equals, tostring, clone
 
-    public class Mutator implements de.featjar.base.data.Mutator<FeatureTree> {
+    public class Mutator implements IMutator<FeatureTree> {
         @Override
         public FeatureTree getMutable() {
             return FeatureTree.this;

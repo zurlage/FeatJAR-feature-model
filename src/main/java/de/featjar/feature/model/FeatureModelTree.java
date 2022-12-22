@@ -20,14 +20,14 @@
  */
 package de.featjar.feature.model;
 
-import de.featjar.base.tree.structure.Traversable;
-import de.featjar.base.tree.structure.Tree;
+import de.featjar.base.tree.structure.ITree;
+import de.featjar.base.tree.structure.ATree;
 
 import java.util.Objects;
 import java.util.Optional;
 import java.util.function.Predicate;
 
-public class FeatureModelTree extends Tree<FeatureModelTree> {
+public class FeatureModelTree extends ATree<FeatureModelTree> {
     protected final FeatureModel featureModel;
 
     public FeatureModelTree(FeatureModel featureModel) {
@@ -52,7 +52,7 @@ public class FeatureModelTree extends Tree<FeatureModelTree> {
     }
 
     @Override
-    public Traversable<FeatureModelTree> cloneNode() {
+    public ITree<FeatureModelTree> cloneNode() {
         throw new RuntimeException();
     }
 

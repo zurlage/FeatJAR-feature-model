@@ -20,11 +20,9 @@
  */
 package de.featjar.feature.model.mixins;
 
-import de.featjar.base.data.Sets;
+import de.featjar.base.data.*;
 import de.featjar.feature.model.Constraint;
 import de.featjar.feature.model.FeatureModel;
-import de.featjar.base.data.Identifier;
-import de.featjar.base.data.Result;
 import de.featjar.formula.structure.formula.Formula;
 
 import java.util.*;
@@ -37,14 +35,14 @@ import java.util.*;
 public interface FeatureModelConstraintMixin {
     List<Constraint> getConstraints();
 
-    default Optional<Constraint> getConstraint(Identifier identifier) {
+    default Optional<Constraint> getConstraint(AIdentifier identifier) {
         Objects.requireNonNull(identifier);
         return getConstraints().stream()
                 .filter(constraint -> constraint.getIdentifier().equals(identifier))
                 .findFirst();
     }
 
-    default boolean hasConstraint(Identifier identifier) {
+    default boolean hasConstraint(AIdentifier identifier) {
         return getConstraint(identifier).isPresent();
     }
 
@@ -61,7 +59,7 @@ public interface FeatureModelConstraintMixin {
         return getConstraints().size();
     }
 
-    interface Mutator extends de.featjar.base.data.Mutator<FeatureModel> {
+    interface Mutator extends IMutator<FeatureModel> {
         default void setConstraint(int index, Constraint constraint) {
             Objects.requireNonNull(constraint);
             if (getMutable().hasConstraint(constraint)) {
@@ -119,7 +117,7 @@ public interface FeatureModelConstraintMixin {
         }
     }
 
-    interface Analyzer extends de.featjar.base.data.Analyzer<FeatureModel> {
+    interface Analyzer extends IAnalyzer<FeatureModel> {
         default LinkedHashSet<Constraint> getRedundantConstraints() {
             return Sets.empty();
         }

@@ -25,12 +25,12 @@ import de.featjar.feature.model.Feature;
 import de.featjar.feature.model.FeatureModel;
 import de.featjar.feature.model.FeatureOrder;
 import de.featjar.feature.model.io.AttributeIO;
-import de.featjar.formula.io.xml.AbstractXMLFeatureModelFormat;
+import de.featjar.formula.io.xml.AXMLFeatureModelFormat;
 import de.featjar.formula.structure.formula.Formula;
-import de.featjar.base.data.Identifier;
+import de.featjar.base.data.AIdentifier;
 import de.featjar.base.data.Problem;
 import de.featjar.base.data.Result;
-import de.featjar.base.io.InputMapper;
+import de.featjar.base.io.AInputMapper;
 import de.featjar.base.io.format.ParseException;
 
 import java.util.*;
@@ -49,7 +49,7 @@ import org.w3c.dom.Node;
  * @author Sebastian Krieter
  * @author Elias Kuiter
  */
-public class XMLFeatureModelFormat extends AbstractXMLFeatureModelFormat<FeatureModel, Feature, Constraint> {
+public class XMLFeatureModelFormat extends AXMLFeatureModelFormat<FeatureModel, Feature, Constraint> {
     public static final String NAMESPACE = XMLFeatureModelFormat.class.getCanonicalName();
     public static final String GRAPHICS_NAMESPACE = "<graphics>"; // TODO
     public static final String CALCULATIONS_NAMESPACE = "<calculations>"; // TODO
@@ -76,7 +76,7 @@ public class XMLFeatureModelFormat extends AbstractXMLFeatureModelFormat<Feature
     // ATTRIBUTE_UNIT, ATTRIBUTE_TYPE, ATTRIBUTE_VALUE, ATTRIBUTE_RECURSIVE, ATTRIBUTE_CONFIGURABLE,
 
     protected FeatureModel featureModel;
-    protected LinkedHashMap<String, Identifier> nameToIdentifierMap;
+    protected LinkedHashMap<String, AIdentifier> nameToIdentifierMap;
 
     @Override
     public XMLFeatureModelFormat getInstance() {
@@ -99,14 +99,14 @@ public class XMLFeatureModelFormat extends AbstractXMLFeatureModelFormat<Feature
     }
 
     @Override
-    public Result<FeatureModel> parse(InputMapper inputMapper, Supplier<FeatureModel> supplier) {
+    public Result<FeatureModel> parse(AInputMapper inputMapper, Supplier<FeatureModel> supplier) {
         featureModel = supplier.get();
         return parse(inputMapper);
     }
 
     @Override
     public FeatureModel parseDocument(Document document) throws ParseException {
-        if (featureModel == null) featureModel = new FeatureModel(Identifier.newCounter());
+        if (featureModel == null) featureModel = new FeatureModel(AIdentifier.newCounter());
         nameToIdentifierMap = new LinkedHashMap<>();
         final Element featureModelElement = getDocumentElement(document, FEATURE_MODEL);
         parseFeatureTree(getElement(featureModelElement, STRUCT));

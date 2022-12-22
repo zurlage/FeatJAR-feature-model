@@ -20,7 +20,7 @@
  */
 package de.featjar.feature.model.io;
 
-import de.featjar.base.data.Attributable;
+import de.featjar.base.data.IAttributable;
 import de.featjar.base.data.Attribute;
 import de.featjar.base.data.Problem;
 import java.util.ArrayList;
@@ -96,7 +96,7 @@ public class AttributeIO {
     }
 
     public static List<Problem> parseAndSetAttributeValue(
-            Attributable attributable, String namespace, String name, String typeString, String valueString) {
+            IAttributable attributable, String namespace, String name, String typeString, String valueString) {
         List<Problem> problems = new ArrayList<>();
         Optional<Attribute> attribute = AttributeIO.parseAttribute(namespace, name, typeString);
         Optional<?> value = parseAttributeValue(typeString, valueString);
@@ -107,7 +107,7 @@ public class AttributeIO {
         } else if (attributable.hasAttributeValue(attribute.get())) {
             problems.add(new Problem("already has value for attribute " + name, Problem.Severity.WARNING));
         } else {
-            ((Attributable.Mutator<Attributable>) () -> attributable)
+            ((IAttributable.Mutator<IAttributable>) () -> attributable)
                     .setAttributeValue(attribute.get(), value.get());
         }
         return problems;

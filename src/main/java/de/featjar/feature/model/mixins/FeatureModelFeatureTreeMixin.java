@@ -20,13 +20,15 @@
  */
 package de.featjar.feature.model.mixins;
 
+import de.featjar.base.data.IAnalyzer;
+import de.featjar.base.data.IMutator;
 import de.featjar.base.data.Sets;
 import de.featjar.feature.model.Feature;
 import de.featjar.feature.model.FeatureModel;
 import de.featjar.feature.model.FeatureTree;
-import de.featjar.base.data.Identifier;
+import de.featjar.base.data.AIdentifier;
 import de.featjar.base.tree.Trees;
-import java.util.Collections;
+
 import java.util.LinkedHashSet;
 import java.util.Objects;
 import java.util.Optional;
@@ -53,7 +55,7 @@ public interface FeatureModelFeatureTreeMixin {
         return getFeatureTree().getRoot().getFeature();
     }
 
-    default Optional<Feature> getFeature(Identifier identifier) {
+    default Optional<Feature> getFeature(AIdentifier identifier) {
         Objects.requireNonNull(identifier);
         return getFeatures().stream()
                 .filter(feature -> feature.getIdentifier().equals(identifier))
@@ -67,7 +69,7 @@ public interface FeatureModelFeatureTreeMixin {
                 .findFirst();
     }
 
-    default boolean hasFeature(Identifier identifier) {
+    default boolean hasFeature(AIdentifier identifier) {
         return getFeature(identifier).isPresent();
     }
 
@@ -75,7 +77,7 @@ public interface FeatureModelFeatureTreeMixin {
         return hasFeature(feature.getIdentifier());
     }
 
-    interface Mutator extends de.featjar.base.data.Mutator<FeatureModel> {
+    interface Mutator extends IMutator<FeatureModel> {
         default void addFeatureBelow(Feature newFeature, Feature parentFeature, int index) {
             Objects.requireNonNull(newFeature);
             Objects.requireNonNull(parentFeature);
@@ -172,7 +174,7 @@ public interface FeatureModelFeatureTreeMixin {
      * ;
      */
     // TODO: make Analyzer an extension point
-    interface Analyzer extends de.featjar.base.data.Analyzer<FeatureModel> {
+    interface Analyzer extends IAnalyzer<FeatureModel> {
         default boolean isCoreFeature(Feature f) {
             return false; // go through all registered extensions, if none succeeds, call getCoreFeatures()
         }
