@@ -22,7 +22,7 @@ package de.featjar.feature.model;
 
 import de.featjar.base.data.*;
 import de.featjar.formula.structure.Expressions;
-import de.featjar.formula.structure.formula.Formula;
+import de.featjar.formula.structure.formula.IFormula;
 import de.featjar.formula.structure.term.value.Variable;
 import de.featjar.feature.model.mixins.CommonAttributesMixin;
 
@@ -30,7 +30,7 @@ import java.util.*;
 
 /**
  * A constraint describes some restriction on the valid configurations represented by a {@link FeatureModel}.
- * It is attached to a {@link FeatureModel} and represented as a {@link Formula} over {@link Feature} variables.
+ * It is attached to a {@link FeatureModel} and represented as a {@link IFormula} over {@link Feature} variables.
  * For safe mutation, rely only on the methods of {@link IMutable}.
  *
  * @author Elias Kuiter
@@ -38,12 +38,12 @@ import java.util.*;
 public class Constraint extends Element
         implements IMutable<Constraint, Constraint.Mutator>, IAnalyzable<Constraint, Constraint.Analyzer> {
     protected final FeatureModel featureModel;
-    protected Formula formula;
+    protected IFormula formula;
     protected final LinkedHashSet<Feature> containedFeaturesCache = new LinkedHashSet<>();
     protected Mutator mutator;
     protected Analyzer analyzer;
 
-    public Constraint(FeatureModel featureModel, Formula formula) {
+    public Constraint(FeatureModel featureModel, IFormula formula) {
         super(featureModel.getNewIdentifier());
         Objects.requireNonNull(featureModel);
         this.featureModel = featureModel;
@@ -62,7 +62,7 @@ public class Constraint extends Element
         return featureModel;
     }
 
-    public Formula getFormula() {
+    public IFormula getFormula() {
         return formula;
     }
 
@@ -108,7 +108,7 @@ public class Constraint extends Element
         }
 
         @SuppressWarnings("OptionalGetWithoutIsPresent")
-        public void setFormula(Formula formula) {
+        public void setFormula(IFormula formula) {
             Objects.requireNonNull(formula);
             LinkedHashSet<AIdentifier> identifiers = formula.getVariableStream()
                     .map(Variable::getName)
