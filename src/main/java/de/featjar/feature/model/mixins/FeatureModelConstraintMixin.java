@@ -35,11 +35,12 @@ import java.util.*;
 public interface FeatureModelConstraintMixin {
     List<Constraint> getConstraints();
 
-    default Optional<Constraint> getConstraint(AIdentifier identifier) {
+    default Result<Constraint> getConstraint(AIdentifier identifier) {
         Objects.requireNonNull(identifier);
-        return getConstraints().stream()
-                .filter(constraint -> constraint.getIdentifier().equals(identifier))
-                .findFirst();
+        return Result.ofOptional(
+                getConstraints().stream()
+                        .filter(constraint -> constraint.getIdentifier().equals(identifier))
+                        .findFirst());
     }
 
     default boolean hasConstraint(AIdentifier identifier) {
@@ -50,9 +51,9 @@ public interface FeatureModelConstraintMixin {
         return hasConstraint(constraint.getIdentifier());
     }
 
-    default Optional<Integer> getConstraintIndex(Constraint constraint) {
+    default Result<Integer> getConstraintIndex(Constraint constraint) {
         Objects.requireNonNull(constraint);
-        return Result.indexToOptional(getConstraints().indexOf(constraint));
+        return Result.ofIndex(getConstraints().indexOf(constraint));
     }
 
     default int getNumberOfConstraints() {

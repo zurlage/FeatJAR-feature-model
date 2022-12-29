@@ -20,11 +20,11 @@
  */
 package de.featjar.feature.model;
 
+import de.featjar.base.data.Result;
 import de.featjar.base.tree.structure.ITree;
 import de.featjar.base.tree.structure.ATree;
 
 import java.util.Objects;
-import java.util.Optional;
 import java.util.function.Predicate;
 
 public class FeatureModelTree extends ATree<FeatureModelTree> {
@@ -45,7 +45,7 @@ public class FeatureModelTree extends ATree<FeatureModelTree> {
     @Override
     public Predicate<FeatureModelTree> getChildrenValidator() {
         return featureModelTree -> {
-            Optional<Feature> featureInParent =
+            Result<Feature> featureInParent =
                     getFeatureModel().getFeature(featureModelTree.getFeatureModel().getRootFeature().getIdentifier());
             return featureInParent.isPresent() && !featureInParent.get().getFeatureTree().hasChildren();
         };

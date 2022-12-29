@@ -20,18 +20,14 @@
  */
 package de.featjar.feature.model.mixins;
 
-import de.featjar.base.data.IAnalyzer;
-import de.featjar.base.data.IMutator;
-import de.featjar.base.data.Sets;
+import de.featjar.base.data.*;
 import de.featjar.feature.model.Feature;
 import de.featjar.feature.model.FeatureModel;
 import de.featjar.feature.model.FeatureTree;
-import de.featjar.base.data.AIdentifier;
 import de.featjar.base.tree.Trees;
 
 import java.util.LinkedHashSet;
 import java.util.Objects;
-import java.util.Optional;
 
 /**
  * Implements a {@link FeatureModel} mixin for common operations on the {@link FeatureTree}.
@@ -55,18 +51,20 @@ public interface FeatureModelFeatureTreeMixin {
         return getFeatureTree().getRoot().getFeature();
     }
 
-    default Optional<Feature> getFeature(AIdentifier identifier) {
+    default Result<Feature> getFeature(AIdentifier identifier) {
         Objects.requireNonNull(identifier);
-        return getFeatures().stream()
-                .filter(feature -> feature.getIdentifier().equals(identifier))
-                .findFirst();
+        return Result.ofOptional(
+                getFeatures().stream()
+                        .filter(feature -> feature.getIdentifier().equals(identifier))
+                        .findFirst());
     }
 
-    default Optional<Feature> getFeature(String name) {
+    default Result<Feature> getFeature(String name) {
         Objects.requireNonNull(name);
-        return getFeatures().stream()
-                .filter(feature -> feature.getName().equals(name))
-                .findFirst();
+        return Result.ofOptional(
+                getFeatures().stream()
+                        .filter(feature -> feature.getName().equals(name))
+                        .findFirst());
     }
 
     default boolean hasFeature(AIdentifier identifier) {

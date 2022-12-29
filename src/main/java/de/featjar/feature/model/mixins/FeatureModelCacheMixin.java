@@ -21,6 +21,7 @@
 package de.featjar.feature.model.mixins;
 
 import de.featjar.base.data.IMutator;
+import de.featjar.base.data.Result;
 import de.featjar.feature.model.Constraint;
 import de.featjar.feature.model.Element;
 import de.featjar.feature.model.Feature;
@@ -61,19 +62,19 @@ public interface FeatureModelCacheMixin extends FeatureModelFeatureTreeMixin, Fe
     }
 
     @Override
-    default Optional<Feature> getFeature(AIdentifier identifier) {
+    default Result<Feature> getFeature(AIdentifier identifier) {
         Objects.requireNonNull(identifier);
         Element element = getElementCache().get(identifier);
-        if (!(element instanceof Feature)) return Optional.empty();
-        return Optional.of((Feature) element);
+        if (!(element instanceof Feature)) return Result.empty();
+        return Result.of((Feature) element);
     }
 
     @Override
-    default Optional<Constraint> getConstraint(AIdentifier identifier) {
+    default Result<Constraint> getConstraint(AIdentifier identifier) {
         Objects.requireNonNull(identifier);
         Element element = getElementCache().get(identifier);
-        if (!(element instanceof Constraint)) return Optional.empty();
-        return Optional.of((Constraint) element);
+        if (!(element instanceof Constraint)) return Result.empty();
+        return Result.of((Constraint) element);
     }
 
     interface Mutator

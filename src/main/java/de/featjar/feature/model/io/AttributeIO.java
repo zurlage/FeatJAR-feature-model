@@ -23,9 +23,10 @@ package de.featjar.feature.model.io;
 import de.featjar.base.data.IAttributable;
 import de.featjar.base.data.Attribute;
 import de.featjar.base.data.Problem;
+import de.featjar.base.data.Result;
+
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 
 /**
  * Helpers for parsing and writing attributes and attribute values.
@@ -33,73 +34,73 @@ import java.util.Optional;
  * @author Elias Kuiter
  */
 public class AttributeIO {
-    public static Optional<Class<?>> getType(String typeString) {
+    public static Result<Class<?>> getType(String typeString) {
         switch (typeString.toLowerCase()) {
             case "string":
-                return Optional.of(String.class);
+                return Result.of(String.class);
             case "bool":
             case "boolean":
-                return Optional.of(Boolean.class);
+                return Result.of(Boolean.class);
             case "int":
             case "integer":
-                return Optional.of(Integer.class);
+                return Result.of(Integer.class);
             case "long":
-                return Optional.of(Long.class);
+                return Result.of(Long.class);
             case "float":
-                return Optional.of(Float.class);
+                return Result.of(Float.class);
             case "double":
-                return Optional.of(Double.class);
+                return Result.of(Double.class);
         }
-        return Optional.empty();
+        return Result.empty();
     }
 
-    public static Optional<String> getTypeString(Class<?> type) {
+    public static Result<String> getTypeString(Class<?> type) {
         if (String.class.equals(type)) {
-            return Optional.of("string");
+            return Result.of("string");
         } else if (Boolean.class.equals(type)) {
-            return Optional.of("boolean");
+            return Result.of("boolean");
         } else if (Integer.class.equals(type)) {
-            return Optional.of("integer");
+            return Result.of("integer");
         } else if (Long.class.equals(type)) {
-            return Optional.of("long");
+            return Result.of("long");
         } else if (Float.class.equals(type)) {
-            return Optional.of("float");
+            return Result.of("float");
         } else if (Double.class.equals(type)) {
-            return Optional.of("double");
+            return Result.of("double");
         }
-        return Optional.empty();
+        return Result.empty();
     }
 
-    public static Optional<Attribute> parseAttribute(String namespace, String name, String typeString) {
+    public static Result<Attribute> parseAttribute(String namespace, String name, String typeString) {
         return getType(typeString).map(type -> new Attribute(namespace, name, type));
     }
 
-    public static Optional<Object> parseAttributeValue(Class<?> type, String valueString) {
+    public static Result<Object> parseAttributeValue(Class<?> type, String valueString) {
         if (String.class.equals(type)) {
-            return Optional.of(valueString);
+            return Result.of(valueString);
         } else if (Boolean.class.equals(type)) {
-            return Optional.of(Boolean.valueOf(valueString));
+            return Result.of(Boolean.valueOf(valueString));
         } else if (Integer.class.equals(type)) {
-            return Optional.of(Integer.valueOf(valueString));
+            return Result.of(Integer.valueOf(valueString));
         } else if (Long.class.equals(type)) {
-            return Optional.of(Long.valueOf(valueString));
+            return Result.of(Long.valueOf(valueString));
         } else if (Float.class.equals(type)) {
-            return Optional.of(Float.valueOf(valueString));
+            return Result.of(Float.valueOf(valueString));
         } else if (Double.class.equals(type)) {
-            return Optional.of(Double.valueOf(valueString));
+            return Result.of(Double.valueOf(valueString));
         }
-        return Optional.empty();
+        return Result.empty();
     }
 
-    public static Optional<Object> parseAttributeValue(String typeString, String valueString) {
+    public static Result<Object> parseAttributeValue(String typeString, String valueString) {
         return getType(typeString).flatMap(type -> parseAttributeValue(type, valueString));
     }
 
     public static List<Problem> parseAndSetAttributeValue(
             IAttributable attributable, String namespace, String name, String typeString, String valueString) {
         List<Problem> problems = new ArrayList<>();
-        Optional<Attribute> attribute = AttributeIO.parseAttribute(namespace, name, typeString);
-        Optional<?> value = parseAttributeValue(typeString, valueString);
+        Result<Attribute> attribute = AttributeIO.parseAttribute(namespace, name, typeString);
+        Result<?> value = parseAttributeValue(typeString, valueString);
         if (attribute.isEmpty()) {
             problems.add(new Problem("invalid type for attribute " + name, Problem.Severity.WARNING));
         } else if (value.isEmpty()) {

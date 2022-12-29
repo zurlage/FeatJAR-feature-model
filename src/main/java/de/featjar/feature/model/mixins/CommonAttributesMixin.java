@@ -20,13 +20,13 @@
  */
 package de.featjar.feature.model.mixins;
 
+import de.featjar.base.data.Result;
 import de.featjar.feature.model.Attributes;
 import de.featjar.feature.model.Constraint;
 import de.featjar.feature.model.Feature;
 import de.featjar.feature.model.FeatureModel;
 import de.featjar.base.data.IAttributable;
 import de.featjar.base.data.Attribute;
-import java.util.Optional;
 
 /**
  * Implements accessors for commonly used {@link Attribute attributes}.
@@ -41,8 +41,8 @@ public interface CommonAttributesMixin extends IAttributable {
     }
 
     @SuppressWarnings({"unchecked", "rawtypes"})
-    default Optional<String> getDescription() {
-        return (Optional) getAttributeValue(Attributes.DESCRIPTION);
+    default Result<String> getDescription() {
+        return (Result) getAttributeValue(Attributes.DESCRIPTION);
     }
 
     interface Mutator<T extends IAttributable> extends IAttributable.Mutator<T> {

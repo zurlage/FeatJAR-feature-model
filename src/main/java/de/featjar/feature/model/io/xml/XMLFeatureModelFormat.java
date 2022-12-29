@@ -110,21 +110,21 @@ public class XMLFeatureModelFormat extends AXMLFeatureModelFormat<FeatureModel, 
         nameToIdentifierMap = new LinkedHashMap<>();
         final Element featureModelElement = getDocumentElement(document, FEATURE_MODEL);
         parseFeatureTree(getElement(featureModelElement, STRUCT));
-        Optional<Element> element = getOptionalElement(featureModelElement, CONSTRAINTS);
+        Result<Element> element = getElementResult(featureModelElement, CONSTRAINTS);
         if (element.isPresent()) parseConstraints(element.get());
-        element = getOptionalElement(featureModelElement, COMMENTS);
+        element = getElementResult(featureModelElement, COMMENTS);
         if (element.isPresent()) parseComments(element.get());
-        element = getOptionalElement(featureModelElement, FEATURE_ORDER);
+        element = getElementResult(featureModelElement, FEATURE_ORDER);
         if (element.isPresent()) parseFeatureOrder(List.of(element.get()));
-        element = getOptionalElement(featureModelElement, PROPERTIES);
+        element = getElementResult(featureModelElement, PROPERTIES);
         if (element.isPresent()) parseFeatureModelProperties(element.get());
-        element = getOptionalElement(featureModelElement, CALCULATIONS);
+        element = getElementResult(featureModelElement, CALCULATIONS);
         element.ifPresent(this::parseCalculations);
         return featureModel;
     }
 
-    protected Optional<Feature> getFeature(String name) {
-        return Optional.ofNullable(nameToIdentifierMap.get(name)).flatMap(featureModel::getFeature);
+    protected Result<Feature> getFeature(String name) {
+        return Result.ofNullable(nameToIdentifierMap.get(name)).flatMap(featureModel::getFeature);
     }
 
     @Override
@@ -259,7 +259,7 @@ public class XMLFeatureModelFormat extends AXMLFeatureModelFormat<FeatureModel, 
             List<Feature> featureList = order.stream()
                     .map(nameToIdentifierMap::get)
                     .map(featureModel::getFeature)
-                    .map(Optional::orElseThrow)
+                    .map(Result::orElseThrow)
                     .collect(Collectors.toList());
             featureModel.mutate().setFeatureOrder(FeatureOrder.ofList(featureList));
         }

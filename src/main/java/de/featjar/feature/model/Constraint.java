@@ -107,23 +107,23 @@ public class Constraint extends Element
             return Constraint.this;
         }
 
-        @SuppressWarnings("OptionalGetWithoutIsPresent")
         public void setFormula(IFormula formula) {
             Objects.requireNonNull(formula);
             LinkedHashSet<AIdentifier> identifiers = formula.getVariableStream()
                     .map(Variable::getName)
                     .map(getIdentifier().getFactory()::parse)
                     .collect(Sets.toSet());
-            Optional<AIdentifier> unknownIdentifier = identifiers.stream()
+            Result<AIdentifier> unknownIdentifier = Result.ofOptional(
+                    identifiers.stream()
                     .filter(identifier -> !featureModel.hasFeature(identifier))
-                    .findAny();
+                    .findAny());
             if (unknownIdentifier.isPresent()) {
                 throw new RuntimeException("encountered unknown feature identifier " + unknownIdentifier.get());
             }
             containedFeaturesCache.clear();
             containedFeaturesCache.addAll(identifiers.stream()
                     .map(featureModel::getFeature)
-                    .map(Optional::get)
+                    .map(Result::get)
                     .collect(Sets.toSet()));
             Constraint.this.formula = formula;
         }
