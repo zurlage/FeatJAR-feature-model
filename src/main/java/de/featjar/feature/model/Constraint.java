@@ -123,6 +123,7 @@ public class Constraint extends Element
             containedFeaturesCache.clear();
             containedFeaturesCache.addAll(identifiers.stream()
                     .map(featureModel::getFeature)
+                    .filter(Result::isPresent)
                     .map(Result::get)
                     .collect(Sets.toSet()));
             Constraint.this.formula = formula;
