@@ -20,25 +20,27 @@
  */
 package de.featjar.feature.model.mixins;
 
-import de.featjar.feature.model.Feature;
-import de.featjar.feature.model.FeatureModel;
-import de.featjar.feature.model.FeatureOrder;
+import de.featjar.base.data.IAttribute;
+import de.featjar.base.data.identifier.IIdentifier;
+import de.featjar.feature.model.*;
+import de.featjar.feature.model.order.IFeatureOrder;
 
+import java.util.LinkedHashMap;
 import java.util.List;
 
 /**
- * Implements a {@link FeatureModel} mixin for considering a {@link FeatureOrder}.
+ * Implements a {@link IFeatureModel} mixin for considering a {@link IFeatureOrder}.
  *
  * @author Elias Kuiter
  */
-public interface FeatureModelFeatureOrderMixin extends FeatureModelFeatureTreeMixin {
-    FeatureOrder getFeatureOrder();
+public interface IHasFeatureOrder extends IHasFeatureTree {
+    IFeatureOrder getFeatureOrder();
 
-    default List<Feature> getOrderedFeatures() {
+    default List<IFeature> getOrderedFeatures() {
         return getFeatureOrder().apply(this);
     }
 
     interface Mutator {
-        void setFeatureOrder(FeatureOrder featureOrder);
+        void setFeatureOrder(IFeatureOrder featureOrder);
     }
 }

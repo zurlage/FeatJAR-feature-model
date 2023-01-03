@@ -27,7 +27,7 @@ import de.featjar.base.tree.structure.ATree;
 import java.util.Objects;
 import java.util.function.Predicate;
 
-public class FeatureModelTree extends ATree<FeatureModelTree> {
+public class FeatureModelTree extends ATree<IFeatureModelTree> implements IFeatureModelTree {
     protected final FeatureModel featureModel;
 
     public FeatureModelTree(FeatureModel featureModel) {
@@ -35,29 +35,23 @@ public class FeatureModelTree extends ATree<FeatureModelTree> {
         this.featureModel = featureModel;
     }
 
+    @Override
     public FeatureModel getFeatureModel() {
         return featureModel;
     }
 
-    /**
-     * {@return a validator that guarantees that the root of a child is a leaf in its parent}
-     */
     @Override
-    public Predicate<FeatureModelTree> getChildrenValidator() {
-        return featureModelTree -> {
-            Result<Feature> featureInParent =
-                    getFeatureModel().getFeature(featureModelTree.getFeatureModel().getRootFeature().getIdentifier());
-            return featureInParent.isPresent() && !featureInParent.get().getFeatureTree().hasChildren();
-        };
-    }
-
-    @Override
-    public ITree<FeatureModelTree> cloneNode() {
+    public ITree<IFeatureModelTree> cloneNode() {
         throw new RuntimeException();
     }
 
     @Override
-    public boolean equalsNode(FeatureModelTree other) {
+    public boolean equalsNode(IFeatureModelTree other) {
+        throw new RuntimeException();
+    }
+
+    @Override
+    public int hashCodeNode() {
         throw new RuntimeException();
     }
 

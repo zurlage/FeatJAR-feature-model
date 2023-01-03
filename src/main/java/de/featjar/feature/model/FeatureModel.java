@@ -21,51 +21,26 @@
 package de.featjar.feature.model;
 
 import de.featjar.base.data.*;
+import de.featjar.base.data.identifier.AIdentifier;
+import de.featjar.base.data.identifier.IIdentifier;
 import de.featjar.feature.model.mixins.*;
+import de.featjar.feature.model.order.AFeatureOrder;
+import de.featjar.feature.model.order.IFeatureOrder;
+import de.featjar.feature.model.order.PreOrderFeatureOrder;
 
 import java.util.*;
+import java.util.stream.Stream;
 
-/**
- * A feature model represents the configuration space of a software system.
- * We equate feature models with feature diagrams
- * (i.e., a {@link FeatureTree} labeled with features and a list of {@link Constraint constraints}).
- * For safe mutation, rely only on the methods of {@link IMutable}.
- *
- * @author Elias Kuiter
- */
-public class FeatureModel extends Element // TODO : IFeatureModel, IFeature
-        implements FeatureModelFeatureTreeMixin,
-        FeatureModelConstraintMixin,
-        FeatureModelFeatureOrderMixin,
-        CommonAttributesMixin,
-        FeatureModelCacheMixin,
-        IMutable<FeatureModel, FeatureModel.Mutator>,
-        IAnalyzable<FeatureModel, FeatureModel.Analyzer> {
-    //protected final Store store;
+public class FeatureModel extends AFeatureModelElement implements IFeatureModel {
+    protected final IFeatureModelTree featureModelTree;
+    protected final IFeatureTree featureTree;
+    protected final List<IConstraint> constraints = Collections.synchronizedList(new ArrayList<>());
+    protected IFeatureOrder featureOrder = new PreOrderFeatureOrder();
+    protected final LinkedHashMap<IIdentifier, IFeatureModelElement> elementCache = Maps.empty();
+    protected final LinkedHashSet<IFeature> featureCache = Sets.empty();
+    protected IFeatureModel.Mutator mutator;
 
-    //TODO put flattened fm into store (maybe dispatch mutators of flattened model to original models)
-    //TODO store<...>, formulacomputation, decision propagation...?
-    //TODO store in analyzer, apply(input,monitor,store) zum default machen(?)
-
-    //TODO: we allow all kinds of modeling constructs, but not all analyses/computations support all constructs.
-    //e.g., multiplicities are difficult to map to SAT. somehow, this should be checked.
-    // maybe store required/incompatible capabilities for computations? eg., incompatible with Plaisted-Greenbaum/multiplicities/...?
-    //and then implement different alternative algorithms with different capabilities.
-    //maybe this could be encoded first-class as a feature model.
-    //this could even be used to generate query plans (e.g., find some configuration that counts my formula).
-    //every plugin defines a feature model (uvl) that restricts what its extensions can and cannot do (replacing extensions.xml)
-
-    protected final FeatureModelTree featureModelTree;
-    protected final FeatureTree featureTree;
-    protected final List<Constraint> constraints = Collections.synchronizedList(new ArrayList<>());
-    protected FeatureOrder featureOrder = FeatureOrder.ofPreOrder();
-    protected final Map<AIdentifier, Element> elementCache = Collections.synchronizedMap(new LinkedHashMap<>());
-    //TODO elementcache -> store? computation?
-    protected final LinkedHashSet<Feature> featureCache = Collections.synchronizedSet(new LinkedHashSet<>());
-    protected Mutator mutator;
-    protected Analyzer analyzer;
-
-    public FeatureModel(AIdentifier identifier) {
+    public FeatureModel(IIdentifier identifier) {
         super(identifier);
         featureModelTree = new FeatureModelTree(this);
         final Feature root = new Feature(this);
@@ -73,63 +48,76 @@ public class FeatureModel extends Element // TODO : IFeatureModel, IFeature
         finishInternalMutation();
     }
 
+    public FeatureModelTree getFeatureModelTree() {
+        return null;
+    }
+
     @Override
     public FeatureModel getFeatureModel() {
         return this;
     }
 
-    public FeatureModelTree getFeatureModelTree() {
-        return featureModelTree;
-    }
-
     @Override
-    public FeatureTree getFeatureTree() {
+    public IFeatureTree getFeatureTree() {
         return featureTree;
     }
 
     @Override
-    public List<Constraint> getConstraints() {
-        return constraints;
-    }
-
-    @Override
-    public FeatureOrder getFeatureOrder() {
+    public IFeatureOrder getFeatureOrder() {
         return featureOrder;
     }
 
     @Override
-    public Map<AIdentifier, Element> getElementCache() {
-        return elementCache;
+    public void finishInternalMutation() {
+        LinkedHashSet<IFeature> features = IFeatureModel.super.getFeatures();
+
+        elementCache.clear();
+        Stream.concat(features.stream(), getConstraints().stream()).forEach(element -> {
+            if (elementCache.get(element.getIdentifier()) != null)
+                throw new RuntimeException("duplicate identifier " + element.getIdentifier());
+            elementCache.put(element.getIdentifier(), element);
+        });
+
+        featureCache.clear();
+        featureCache.addAll(features);
     }
 
     @Override
-    public LinkedHashSet<Feature> getFeatureCache() {
+    public LinkedHashSet<IFeature> getFeatures() {
         return featureCache;
     }
 
     @Override
-    public Mutator getMutator() {
+    public Result<IFeature> getFeature(IIdentifier identifier) {
+        Objects.requireNonNull(identifier);
+        IFeatureModelElement featureModelElement = elementCache.get(identifier);
+        if (!(featureModelElement instanceof Feature))
+            return Result.empty();
+        return Result.of((IFeature) featureModelElement);
+    }
+
+    @Override
+    public List<IConstraint> getConstraints() {
+        return constraints;
+    }
+
+    @Override
+    public Result<IConstraint> getConstraint(IIdentifier identifier) {
+        Objects.requireNonNull(identifier);
+        IFeatureModelElement featureModelElement = elementCache.get(identifier);
+        if (!(featureModelElement instanceof Constraint))
+            return Result.empty();
+        return Result.of((IConstraint) featureModelElement);
+    }
+
+    @Override
+    public IFeatureModel.Mutator getMutator() {
         return mutator == null ? (mutator = new Mutator()) : mutator;
     }
 
     @Override
-    public void setMutator(Mutator mutator) {
+    public void setMutator(IFeatureModel.Mutator mutator) {
         this.mutator = mutator;
-    }
-
-    @Override
-    public Analyzer getAnalyzer() {
-        return analyzer == null ? (analyzer = new Analyzer()) : analyzer;
-    }
-
-    @Override
-    public void setAnalyzer(Analyzer analyzer) {
-        this.analyzer = analyzer;
-    }
-
-    @Override
-    public void finishInternalMutation() {
-        FeatureModelCacheMixin.super.finishInternalMutation();
     }
 
     @Override
@@ -142,31 +130,66 @@ public class FeatureModel extends Element // TODO : IFeatureModel, IFeature
         throw new CloneNotSupportedException(); // TODO
     }
 
-    public class Mutator
-            implements IMutator<FeatureModel>,
-                    FeatureModelFeatureTreeMixin.Mutator,
-                    FeatureModelConstraintMixin.Mutator,
-                    FeatureModelFeatureOrderMixin.Mutator,
-                    CommonAttributesMixin.Mutator<FeatureModel>,
-                    FeatureModelCacheMixin.Mutator {
+    public class Mutator implements IFeatureModel.Mutator {
         @Override
         public FeatureModel getMutable() {
             return FeatureModel.this;
         }
 
         @Override
-        public void setFeatureOrder(FeatureOrder featureOrder) {
+        public void setFeatureOrder(IFeatureOrder featureOrder) {
             FeatureModel.this.featureOrder = featureOrder;
         }
-    }
 
-    public class Analyzer
-            implements IAnalyzer<FeatureModel>,
-                    FeatureModelFeatureTreeMixin.Analyzer,
-                    FeatureModelConstraintMixin.Analyzer {
         @Override
-        public FeatureModel getAnalyzable() {
-            return FeatureModel.this;
+        public IFeature newFeature() {
+            return new Feature(getMutable());
+        }
+
+        @Override
+        public IConstraint newConstraint() {
+            return new Constraint(getMutable());
+        }
+
+        @Override
+        public void addFeatureBelow(IFeature newFeature, IFeature parentFeature, int index) {
+            IFeatureModel.Mutator.super.addFeatureBelow(newFeature, parentFeature, index);
+            getMutable().featureCache.add(newFeature);
+            getMutable().elementCache.put(newFeature.getIdentifier(), newFeature);
+        }
+
+        @Override
+        public void removeFeature(IFeature feature) {
+            IFeatureModel.Mutator.super.removeFeature(feature);
+            getMutable().featureCache.remove(feature);
+            getMutable().elementCache.remove(feature.getIdentifier());
+        }
+
+        @Override
+        public void setConstraint(int index, IConstraint constraint) {
+            IConstraint oldConstraint = getMutable().getConstraints().get(index);
+            IFeatureModel.Mutator.super.setConstraint(index, constraint);
+            getMutable().elementCache.remove(oldConstraint.getIdentifier());
+            getMutable().elementCache.put(constraint.getIdentifier(), constraint);
+        }
+
+        @Override
+        public void addConstraint(IConstraint newConstraint, int index) {
+            IFeatureModel.Mutator.super.addConstraint(newConstraint, index);
+            getMutable().elementCache.put(newConstraint.getIdentifier(), newConstraint);
+        }
+
+        @Override
+        public void removeConstraint(IConstraint constraint) {
+            IFeatureModel.Mutator.super.removeConstraint(constraint);
+            getMutable().elementCache.remove(constraint.getIdentifier());
+        }
+
+        @Override
+        public IConstraint removeConstraint(int index) {
+            IConstraint constraint = IFeatureModel.Mutator.super.removeConstraint(index);
+            getMutable().elementCache.remove(constraint.getIdentifier());
+            return constraint;
         }
     }
 }

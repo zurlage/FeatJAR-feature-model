@@ -20,10 +20,7 @@
  */
 package de.featjar.feature.model.io;
 
-import de.featjar.base.data.IAttributable;
-import de.featjar.base.data.Attribute;
-import de.featjar.base.data.Problem;
-import de.featjar.base.data.Result;
+import de.featjar.base.data.*;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -108,8 +105,7 @@ public class AttributeIO {
         } else if (attributable.hasAttributeValue(attribute.get())) {
             problems.add(new Problem("already has value for attribute " + name, Problem.Severity.WARNING));
         } else {
-            ((IAttributable.Mutator<IAttributable>) () -> attributable)
-                    .setAttributeValue(attribute.get(), value.get());
+            IAttributable.createMutator(attributable).setAttributeValue(attribute.get(), value.get());
         }
         return problems;
     }

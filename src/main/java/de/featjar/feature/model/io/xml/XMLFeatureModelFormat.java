@@ -20,14 +20,16 @@
  */
 package de.featjar.feature.model.io.xml;
 
-import de.featjar.feature.model.Constraint;
-import de.featjar.feature.model.Feature;
-import de.featjar.feature.model.FeatureModel;
-import de.featjar.feature.model.FeatureOrder;
+import de.featjar.base.data.Maps;
+import de.featjar.base.data.identifier.IIdentifier;
+import de.featjar.base.data.identifier.Identifiers;
+import de.featjar.feature.model.*;
 import de.featjar.feature.model.io.AttributeIO;
+import de.featjar.feature.model.order.AFeatureOrder;
+import de.featjar.feature.model.order.ListFeatureOrder;
 import de.featjar.formula.io.xml.AXMLFeatureModelFormat;
 import de.featjar.formula.structure.formula.IFormula;
-import de.featjar.base.data.AIdentifier;
+import de.featjar.base.data.identifier.AIdentifier;
 import de.featjar.base.data.Problem;
 import de.featjar.base.data.Result;
 import de.featjar.base.io.input.AInputMapper;
@@ -49,7 +51,7 @@ import org.w3c.dom.Node;
  * @author Sebastian Krieter
  * @author Elias Kuiter
  */
-public class XMLFeatureModelFormat extends AXMLFeatureModelFormat<FeatureModel, Feature, Constraint> {
+public class XMLFeatureModelFormat extends AXMLFeatureModelFormat<IFeatureModel, IFeature, IConstraint> {
     public static final String NAMESPACE = XMLFeatureModelFormat.class.getCanonicalName();
     public static final String GRAPHICS_NAMESPACE = "<graphics>"; // TODO
     public static final String CALCULATIONS_NAMESPACE = "<calculations>"; // TODO
@@ -75,8 +77,8 @@ public class XMLFeatureModelFormat extends AXMLFeatureModelFormat<FeatureModel, 
     // LEGEND_HIDDEN, SHOW_SHORT_NAMES, HORIZONTAL_LAYOUT, RULE, UNKNOWN, ATMOST1, ATTRIBUTE,
     // ATTRIBUTE_UNIT, ATTRIBUTE_TYPE, ATTRIBUTE_VALUE, ATTRIBUTE_RECURSIVE, ATTRIBUTE_CONFIGURABLE,
 
-    protected FeatureModel featureModel;
-    protected LinkedHashMap<String, AIdentifier> nameToIdentifierMap;
+    protected IFeatureModel featureModel;
+    protected LinkedHashMap<String, IIdentifier> nameToIdentifierMap;
 
     @Override
     public XMLFeatureModelFormat getInstance() {
@@ -95,19 +97,19 @@ public class XMLFeatureModelFormat extends AXMLFeatureModelFormat<FeatureModel, 
 
     @Override
     public boolean supportsSerialize() {
-        return true;
+        return false;
     }
 
     @Override
-    public Result<FeatureModel> parse(AInputMapper inputMapper, Supplier<FeatureModel> supplier) {
+    public Result<IFeatureModel> parse(AInputMapper inputMapper, Supplier<IFeatureModel> supplier) {
         featureModel = supplier.get();
         return parse(inputMapper);
     }
 
     @Override
-    public FeatureModel parseDocument(Document document) throws ParseException {
-        if (featureModel == null) featureModel = new FeatureModel(AIdentifier.newCounter());
-        nameToIdentifierMap = new LinkedHashMap<>();
+    public IFeatureModel parseDocument(Document document) throws ParseException {
+        if (featureModel == null) featureModel = new FeatureModel(Identifiers.newCounterIdentifier());
+        nameToIdentifierMap = Maps.empty();
         final Element featureModelElement = getDocumentElement(document, FEATURE_MODEL);
         parseFeatureTree(getElement(featureModelElement, STRUCT));
         Result<Element> element = getElementResult(featureModelElement, CONSTRAINTS);
@@ -123,7 +125,7 @@ public class XMLFeatureModelFormat extends AXMLFeatureModelFormat<FeatureModel, 
         return featureModel;
     }
 
-    protected Result<Feature> getFeature(String name) {
+    protected Result<IFeature> getFeature(String name) {
         return Result.ofNullable(nameToIdentifierMap.get(name)).flatMap(featureModel::getFeature);
     }
 
@@ -133,10 +135,10 @@ public class XMLFeatureModelFormat extends AXMLFeatureModelFormat<FeatureModel, 
     }
 
     @Override
-    protected Feature newFeatureLabel(
-            String name, Feature parentFeatureLabel, boolean mandatory, boolean _abstract, boolean hidden)
+    protected IFeature newFeatureLabel(
+            String name, IFeature parentFeatureLabel, boolean mandatory, boolean _abstract, boolean hidden)
             throws ParseException {
-        Feature feature;
+        IFeature feature;
         if (parentFeatureLabel == null) {
             feature = featureModel.getRootFeature();
         } else {
@@ -159,22 +161,22 @@ public class XMLFeatureModelFormat extends AXMLFeatureModelFormat<FeatureModel, 
     }
 
     @Override
-    protected void addAndGroup(Feature featureLabel, List<Feature> childFeatureLabels) {
+    protected void addAndGroup(IFeature featureLabel, List<IFeature> childFeatureLabels) {
         featureLabel.getFeatureTree().mutate().setAnd();
     }
 
     @Override
-    protected void addOrGroup(Feature featureLabel, List<Feature> childFeatureLabels) {
+    protected void addOrGroup(IFeature featureLabel, List<IFeature> childFeatureLabels) {
         featureLabel.getFeatureTree().mutate().setOr();
     }
 
     @Override
-    protected void addAlternativeGroup(Feature featureLabel, List<Feature> childFeatureLabels) {
+    protected void addAlternativeGroup(IFeature featureLabel, List<IFeature> childFeatureLabels) {
         featureLabel.getFeatureTree().mutate().setAlternative();
     }
 
     @Override
-    protected void addFeatureMetadata(Feature featureLabel, Element e) throws ParseException {
+    protected void addFeatureMetadata(IFeature featureLabel, Element e) throws ParseException {
         switch (e.getNodeName()) {
             case DESCRIPTION:
                 featureLabel.mutate().setDescription(getDescription(e));
@@ -189,17 +191,17 @@ public class XMLFeatureModelFormat extends AXMLFeatureModelFormat<FeatureModel, 
     }
 
     @Override
-    protected Constraint newConstraintLabel() {
+    protected IConstraint newConstraintLabel() {
         return featureModel.mutate().createConstraint();
     }
 
     @Override
-    protected void addConstraint(Constraint constraintLabel, IFormula formula) {
+    protected void addConstraint(IConstraint constraintLabel, IFormula formula) {
         constraintLabel.mutate().setFormula(formula);
     }
 
     @Override
-    protected void addConstraintMetadata(Constraint constraintLabel, Element e) throws ParseException {
+    protected void addConstraintMetadata(IConstraint constraintLabel, Element e) throws ParseException {
         switch (e.getNodeName()) {
             case DESCRIPTION:
                 constraintLabel.mutate().setDescription(getDescription(e));
@@ -256,12 +258,12 @@ public class XMLFeatureModelFormat extends AXMLFeatureModelFormat<FeatureModel, 
             }
         }
         if (!order.isEmpty()) {
-            List<Feature> featureList = order.stream()
+            List<IFeature> featureList = order.stream()
                     .map(nameToIdentifierMap::get)
                     .map(featureModel::getFeature)
                     .map(Result::orElseThrow)
                     .collect(Collectors.toList());
-            featureModel.mutate().setFeatureOrder(FeatureOrder.ofList(featureList));
+            featureModel.mutate().setFeatureOrder(new ListFeatureOrder(featureList));
         }
         featureModel.getFeatureOrder().mutate().setUserDefined(userDefined);
     }
@@ -282,7 +284,7 @@ public class XMLFeatureModelFormat extends AXMLFeatureModelFormat<FeatureModel, 
         return new LinkedHashSet<>(Arrays.asList(tagArray));
     }
 
-    protected void parseProperty(de.featjar.feature.model.Element element, Element e, String fallbackNamespace)
+    protected void parseProperty(IFeatureModelElement featureModelElement, Element e, String fallbackNamespace)
             throws ParseException {
         if (!e.hasAttribute(KEY) || !e.hasAttribute(VALUE)) {
             addParseProblem(
@@ -293,7 +295,7 @@ public class XMLFeatureModelFormat extends AXMLFeatureModelFormat<FeatureModel, 
             final String name = e.getAttribute(KEY);
             final String valueString = e.getAttribute(VALUE);
             parseProblems.addAll(
-                    AttributeIO.parseAndSetAttributeValue(element, namespace, name, typeString, valueString));
+                    AttributeIO.parseAndSetAttributeValue(featureModelElement, namespace, name, typeString, valueString));
         }
     }
 
@@ -330,7 +332,7 @@ public class XMLFeatureModelFormat extends AXMLFeatureModelFormat<FeatureModel, 
     }
 
     @Override
-    public void writeDocument(FeatureModel featureModel, Document doc) {
+    public void writeDocument(IFeatureModel featureModel, Document doc) {
         throw new UnsupportedOperationException();
     }
 

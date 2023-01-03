@@ -20,26 +20,17 @@
  */
 package de.featjar.feature.model;
 
-import de.featjar.base.data.IMutable;
-import de.featjar.base.data.IMutator;
 import de.featjar.base.data.Range;
-import de.featjar.base.data.Sets;
 import de.featjar.base.tree.structure.ARootedTree;
 import de.featjar.base.tree.structure.ITree;
 
-import java.util.*;
+import java.util.Objects;
 
-/**
- * An ordered {@link ARootedTree} labeled with {@link Feature features}.
- * Implements some concepts from feature-oriented domain analysis, such as mandatory/optional features and groups.
- *
- * @author Elias Kuiter
- */
-public class FeatureTree extends ARootedTree<FeatureTree> implements IMutable<FeatureTree, FeatureTree.Mutator> {
+public class FeatureTree extends ARootedTree<IFeatureTree> implements IFeatureTree {
     /**
      * Feature at the root of this feature tree.
      */
-    protected final Feature feature;
+    protected final IFeature feature;
 
     /**
      * Whether this tree's feature is mandatory or optional.
@@ -52,109 +43,67 @@ public class FeatureTree extends ARootedTree<FeatureTree> implements IMutable<Fe
     // TODO: use attribute (and move to Feature class, or merge Feature+FeatureTree)? add dynamic attributes "isSelected/automatic"?
     protected Range groupRange = Range.open();
 
-    protected Mutator mutator;
+    protected IFeatureTree.Mutator mutator;
 
-    public FeatureTree(Feature feature) {
+    public FeatureTree(IFeature feature) {
         Objects.requireNonNull(feature);
         this.feature = feature;
     }
 
-    public Feature getFeature() {
+    @Override
+    public IFeature getFeature() {
         return feature;
     }
 
+    @Override
     public boolean isMandatory() {
         return isMandatory;
     }
 
-    public boolean isOptional() {
-        return !isMandatory;
-    }
-
+    @Override
     public Range getGroupRange() {
         return groupRange;
     }
 
-    public boolean isGroupRange(Range other) {
-        return groupRange.equals(other);
-    }
-
-    public boolean isAnd() {
-        return isGroupRange(Range.open());
-    }
-
-    public boolean isAlternative() {
-        return isGroupRange(Range.exactly(1));
-    }
-
-    public boolean isOr() {
-        return isGroupRange(Range.atLeast(1));
-    }
-
-    public boolean isGroup() {
-        return !isAnd();
-    }
-
-    public LinkedHashSet<Constraint> getContainingConstraints() {
-        return feature.getFeatureModel().getConstraints().stream()
-                .filter(constraint -> constraint.getContainedFeatures().stream().anyMatch(feature::equals))
-                .collect(Sets.toSet());
-    }
-
     @Override
-    public ITree<FeatureTree> cloneNode() {
+    public ITree<IFeatureTree> cloneNode() {
         throw new RuntimeException();
     }
 
     @Override
-    public boolean equalsNode(FeatureTree other) {
-        throw new RuntimeException();
+    public boolean equalsNode(IFeatureTree other) {
+        return false; // todo
     }
 
     @Override
-    public Mutator getMutator() {
+    public int hashCodeNode() {
+        return 0; //todo
+    }
+
+    @Override
+    public IFeatureTree.Mutator getMutator() {
         return mutator == null ? (mutator = new Mutator()) : mutator;
     }
 
     @Override
-    public void setMutator(Mutator mutator) {
+    public void setMutator(IFeatureTree.Mutator mutator) {
         this.mutator = mutator;
     }
 
     // TODO hashcode, equals, tostring, clone
 
-    public class Mutator implements IMutator<FeatureTree> {
+    public class Mutator implements IFeatureTree.Mutator {
         @Override
         public FeatureTree getMutable() {
             return FeatureTree.this;
         }
 
-        public void setOptional() {
-            isMandatory = false;
+        public void setMandatory(boolean isMandatory) {
+            FeatureTree.this.isMandatory = isMandatory;
         }
-
-        public void setMandatory() {
-            isMandatory = true;
-        }
-
-        //public boolean toggleMandatory() { TODO
-            //return toggleAttributeValue(Attributes....);;
-        //}
 
         public void setGroupRange(Range groupRange) {
             FeatureTree.this.groupRange = groupRange;
-        }
-
-        public void setAnd() {
-            setGroupRange(Range.open());
-        }
-
-        public void setAlternative() {
-            setGroupRange(Range.exactly(1));
-        }
-
-        public void setOr() {
-            setGroupRange(Range.atLeast(1));
         }
     }
 }

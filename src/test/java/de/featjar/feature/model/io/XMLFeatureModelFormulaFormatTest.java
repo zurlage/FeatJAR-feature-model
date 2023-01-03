@@ -26,6 +26,8 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import de.featjar.base.data.Sets;
 import de.featjar.feature.model.Feature;
 import de.featjar.feature.model.FeatureModel;
+import de.featjar.feature.model.IFeature;
+import de.featjar.feature.model.IFeatureModel;
 import de.featjar.feature.model.io.xml.XMLFeatureModelFormat;
 import de.featjar.base.data.Result;
 import de.featjar.base.io.IO;
@@ -38,10 +40,10 @@ import javax.print.attribute.SetOfIntegerSyntax;
 public class XMLFeatureModelFormulaFormatTest {
     @Test
     public void xmlFeatureModelFormat() {
-        Result<FeatureModel> featureModelResult =
+        Result<IFeatureModel> featureModelResult =
                 IO.load(Paths.get("src/test/resources/testFeatureModels/car.xml"), new XMLFeatureModelFormat());
         assertTrue(featureModelResult.isPresent());
-        FeatureModel featureModel = featureModelResult.get();
+        IFeatureModel featureModel = featureModelResult.get();
         String[] featureNames = new String[] {
             "Car",
             "Carbody",
@@ -62,6 +64,6 @@ public class XMLFeatureModelFormulaFormatTest {
         };
         assertEquals(
                 Sets.of(featureNames),
-                featureModel.getFeatures().stream().map(Feature::getName).collect(Sets.toSet()));
+                featureModel.getFeatures().stream().map(IFeature::getName).collect(Sets.toSet()));
     }
 }

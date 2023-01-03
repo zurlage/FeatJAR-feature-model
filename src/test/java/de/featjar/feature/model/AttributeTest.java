@@ -24,9 +24,13 @@ import static org.junit.jupiter.api.Assertions.*;
 
 import de.featjar.base.data.IAttributable;
 import de.featjar.base.data.Attribute;
-import de.featjar.base.data.AIdentifier;
+
 import java.util.LinkedHashMap;
 import java.util.Optional;
+
+import de.featjar.base.data.IAttribute;
+import de.featjar.base.data.Result;
+import de.featjar.base.data.identifier.Identifiers;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -42,7 +46,7 @@ public class AttributeTest {
 
     @BeforeEach
     public void createFeatureModel() {
-        featureModel = new FeatureModel(AIdentifier.newCounter());
+        featureModel = new FeatureModel(Identifiers.newCounterIdentifier());
     }
 
     @Test
@@ -54,45 +58,45 @@ public class AttributeTest {
 
     @Test
     public void attributableGetSet() {
-        LinkedHashMap<Attribute, Object> attributeToValueMap = new LinkedHashMap<>();
-        Attribute.WithDefaultValue attributeWithDefaultValue =
-                new Attribute.WithDefaultValue(Attribute.DEFAULT_NAMESPACE, "test", String.class, "default");
-        Assertions.assertEquals(Optional.empty(), featureModel.getAttributeValue(attribute));
-        Assertions.assertEquals("default", featureModel.getAttributeValue(attributeWithDefaultValue));
-        assertEquals(attributeToValueMap, featureModel.getAttributeToValueMap());
+        LinkedHashMap<IAttribute, Object> attributeToValueMap = new LinkedHashMap<>();
+        Attribute attributeWithDefaultValue =
+                new Attribute(Attribute.DEFAULT_NAMESPACE, "test", String.class).setDefaultValue("default");
+        Assertions.assertEquals(Result.empty(), featureModel.getAttributeValue(attribute));
+        Assertions.assertEquals(Result.of("default"), featureModel.getAttributeValue(attributeWithDefaultValue));
+        assertEquals(attributeToValueMap, featureModel.getAttributeValues());
         featureModel.mutate().setAttributeValue(attribute, "value");
         attributeToValueMap.put(attribute, "value");
-        Assertions.assertEquals(Optional.of("value"), featureModel.getAttributeValue(attribute));
-        assertEquals(Optional.of("value"), attribute.apply(attributeToValueMap));
-        assertEquals(attributeToValueMap, featureModel.getAttributeToValueMap());
+        Assertions.assertEquals(Result.of("value"), featureModel.getAttributeValue(attribute));
+        assertEquals(Result.of("value"), attribute.apply(null, attributeToValueMap));
+        assertEquals(attributeToValueMap, featureModel.getAttributeValues());
         featureModel.mutate().removeAttributeValue(attribute);
         attributeToValueMap.clear();
-        Assertions.assertEquals(Optional.empty(), featureModel.getAttributeValue(attribute));
-        assertEquals(attributeToValueMap, featureModel.getAttributeToValueMap());
+        Assertions.assertEquals(Result.empty(), featureModel.getAttributeValue(attribute));
+        assertEquals(attributeToValueMap, featureModel.getAttributeValues());
     }
 
     @Test
     public void attributableToggle() {
-        Attribute.WithDefaultValue booleanAttribute =
-                new Attribute.WithDefaultValue(Attribute.DEFAULT_NAMESPACE, "test", Boolean.class, false);
-        Assertions.assertEquals(false, featureModel.getAttributeValue(booleanAttribute));
+        Attribute booleanAttribute =
+                new Attribute(Attribute.DEFAULT_NAMESPACE, "test", Boolean.class).setDefaultValue(false);
+        Assertions.assertEquals(Result.of(false), featureModel.getAttributeValue(booleanAttribute));
         featureModel.mutate().toggleAttributeValue(booleanAttribute);
-        Assertions.assertEquals(true, featureModel.getAttributeValue(booleanAttribute));
+        Assertions.assertEquals(Result.of(true), featureModel.getAttributeValue(booleanAttribute));
     }
 
     @Test
     public void attributesName() {
-        Assertions.assertEquals(featureModel.getName(), featureModel.getAttributeValue(Attributes.NAME));
+        Assertions.assertEquals(Result.of(featureModel.getName()), featureModel.getAttributeValue(Attributes.NAME));
         Assertions.assertEquals("@" + featureModel.getIdentifier(), featureModel.getName());
-        Assertions.assertEquals(Optional.empty(), featureModel.getDescription());
+        Assertions.assertEquals(Result.empty(), featureModel.getDescription());
     }
 
     @Test
     public void attributesDescription() {
         featureModel.mutate().setDescription("desc");
-        Assertions.assertEquals(Optional.of("desc"), featureModel.getDescription());
+        Assertions.assertEquals(Result.of("desc"), featureModel.getDescription());
         featureModel.mutate().setDescription(null);
-        Assertions.assertEquals(Optional.empty(), featureModel.getDescription());
+        Assertions.assertEquals(Result.empty(), featureModel.getDescription());
     }
 
     @Test

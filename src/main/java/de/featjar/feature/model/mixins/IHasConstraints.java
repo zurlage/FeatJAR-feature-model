@@ -21,21 +21,25 @@
 package de.featjar.feature.model.mixins;
 
 import de.featjar.base.data.*;
+import de.featjar.base.data.identifier.AIdentifier;
+import de.featjar.base.data.identifier.IIdentifier;
 import de.featjar.feature.model.Constraint;
 import de.featjar.feature.model.FeatureModel;
+import de.featjar.feature.model.IConstraint;
+import de.featjar.feature.model.IFeatureModel;
 import de.featjar.formula.structure.formula.IFormula;
 
 import java.util.*;
 
 /**
- * Implements a {@link FeatureModel} mixin for common operations on {@link Constraint constraints}.
+ * Implements a {@link IFeatureModel} mixin for common operations on {@link IConstraint constraints}.
  *
  * @author Elias Kuiter
  */
-public interface FeatureModelConstraintMixin {
-    List<Constraint> getConstraints();
+public interface IHasConstraints {
+    List<IConstraint> getConstraints();
 
-    default Result<Constraint> getConstraint(AIdentifier identifier) {
+    default Result<IConstraint> getConstraint(IIdentifier identifier) {
         Objects.requireNonNull(identifier);
         return Result.ofOptional(
                 getConstraints().stream()
@@ -43,15 +47,15 @@ public interface FeatureModelConstraintMixin {
                         .findFirst());
     }
 
-    default boolean hasConstraint(AIdentifier identifier) {
+    default boolean hasConstraint(IIdentifier identifier) {
         return getConstraint(identifier).isPresent();
     }
 
-    default boolean hasConstraint(Constraint constraint) {
+    default boolean hasConstraint(IConstraint constraint) {
         return hasConstraint(constraint.getIdentifier());
     }
 
-    default Result<Integer> getConstraintIndex(Constraint constraint) {
+    default Result<Integer> getConstraintIndex(IConstraint constraint) {
         Objects.requireNonNull(constraint);
         return Result.ofIndex(getConstraints().indexOf(constraint));
     }
@@ -60,8 +64,10 @@ public interface FeatureModelConstraintMixin {
         return getConstraints().size();
     }
 
-    interface Mutator extends IMutator<FeatureModel> {
-        default void setConstraint(int index, Constraint constraint) {
+    interface Mutator extends IMutator<IFeatureModel> {
+        IConstraint newConstraint(); // todo: maybe mark methods like this that are internal APIs? (with _?)
+
+        default void setConstraint(int index, IConstraint constraint) {
             Objects.requireNonNull(constraint);
             if (getMutable().hasConstraint(constraint)) {
                 throw new IllegalArgumentException();
@@ -69,13 +75,13 @@ public interface FeatureModelConstraintMixin {
             getMutable().getConstraints().set(index, constraint);
         }
 
-        default void setConstraints(Iterable<Constraint> constraints) {
+        default void setConstraints(Iterable<IConstraint> constraints) {
             Objects.requireNonNull(constraints);
             getMutable().getConstraints().clear();
             constraints.forEach(this::addConstraint);
         }
 
-        default void addConstraint(Constraint newConstraint, int index) {
+        default void addConstraint(IConstraint newConstraint, int index) {
             Objects.requireNonNull(newConstraint);
             if (getMutable().hasConstraint(newConstraint)) {
                 throw new IllegalArgumentException();
@@ -83,29 +89,31 @@ public interface FeatureModelConstraintMixin {
             getMutable().getConstraints().add(index, newConstraint);
         }
 
-        default void addConstraint(Constraint newConstraint) {
+        default void addConstraint(IConstraint newConstraint) {
             addConstraint(newConstraint, getMutable().getConstraints().size());
         }
 
-        default Constraint createConstraint(IFormula formula) {
-            Constraint newConstraint = new Constraint(getMutable(), formula);
+        default IConstraint createConstraint(IFormula formula) {
+            IConstraint newConstraint = newConstraint();
+            newConstraint.mutate().setFormula(formula);
             addConstraint(newConstraint);
             return newConstraint;
         }
 
-        default Constraint createConstraint(IFormula formula, int index) {
-            Constraint newConstraint = new Constraint(getMutable(), formula);
+        default IConstraint createConstraint(IFormula formula, int index) {
+            IConstraint newConstraint = newConstraint();
+            newConstraint.mutate().setFormula(formula);
             addConstraint(newConstraint, index);
             return newConstraint;
         }
 
-        default Constraint createConstraint() {
-            Constraint newConstraint = new Constraint(getMutable());
+        default IConstraint createConstraint() {
+            IConstraint newConstraint = newConstraint();
             addConstraint(newConstraint);
             return newConstraint;
         }
 
-        default void removeConstraint(Constraint constraint) {
+        default void removeConstraint(IConstraint constraint) {
             Objects.requireNonNull(constraint);
             if (!getMutable().hasConstraint(constraint)) {
                 throw new IllegalArgumentException();
@@ -113,16 +121,8 @@ public interface FeatureModelConstraintMixin {
             getMutable().getConstraints().remove(constraint);
         }
 
-        default Constraint removeConstraint(int index) {
+        default IConstraint removeConstraint(int index) {
             return getMutable().getConstraints().remove(index);
         }
-    }
-
-    interface Analyzer extends IAnalyzer<FeatureModel> {
-        default LinkedHashSet<Constraint> getRedundantConstraints() {
-            return Sets.empty();
-        }
-
-        // ...
     }
 }

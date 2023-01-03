@@ -18,51 +18,35 @@
  *
  * See <https://github.com/FeatureIDE/FeatJAR-model> for further information.
  */
-package de.featjar.feature.model;
+package de.featjar.feature.model.order;
 
-import java.util.Objects;
+public abstract class AFeatureOrder implements IFeatureOrder {
+    protected boolean isUserDefined;
+    protected IFeatureOrder.Mutator mutator;
 
-public class Feature extends AFeatureModelElement implements IFeature {
-    protected final IFeatureModel featureModel;
-    protected final IFeatureTree featureTree;
-    protected IFeature.Mutator mutator;
-
-    public Feature(IFeatureModel featureModel) {
-        super(featureModel.getNewIdentifier());
-        Objects.requireNonNull(featureModel);
-        this.featureModel = featureModel;
-        featureTree = new FeatureTree(this);
+    @Override
+    public boolean isUserDefined() {
+        return isUserDefined;
     }
 
     @Override
-    public IFeatureModel getFeatureModel() {
-        return featureModel;
-    }
-
-    @Override
-    public IFeatureTree getFeatureTree() {
-        return featureTree;
-    }
-
-    @Override
-    public IFeature.Mutator getMutator() {
+    public IFeatureOrder.Mutator getMutator() {
         return mutator == null ? (mutator = new Mutator()) : mutator;
     }
 
     @Override
-    public void setMutator(IFeature.Mutator mutator) {
+    public void setMutator(IFeatureOrder.Mutator mutator) {
         this.mutator = mutator;
     }
 
-    @Override
-    public String toString() {
-        return String.format("Feature{name=%s}", getName());
-    }
-
-    public class Mutator implements IFeature.Mutator {
+    public class Mutator implements IFeatureOrder.Mutator {
         @Override
-        public Feature getMutable() {
-            return Feature.this;
+        public IFeatureOrder getMutable() {
+            return AFeatureOrder.this;
+        }
+
+        public void setUserDefined(boolean userDefined) {
+            AFeatureOrder.this.isUserDefined = userDefined;
         }
     }
 }

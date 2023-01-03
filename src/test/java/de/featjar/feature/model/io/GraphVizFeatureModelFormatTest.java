@@ -23,6 +23,7 @@ package de.featjar.feature.model.io;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import de.featjar.feature.model.FeatureModel;
+import de.featjar.feature.model.IFeatureModel;
 import de.featjar.feature.model.io.xml.GraphVizFeatureModelFormat;
 import de.featjar.feature.model.io.xml.XMLFeatureModelFormat;
 import de.featjar.base.data.Result;
@@ -34,10 +35,9 @@ import org.junit.jupiter.api.Test;
 public class GraphVizFeatureModelFormatTest {
     @Test
     public void graphVizFeatureModelFormat() throws IOException {
-        Result<FeatureModel> featureModel =
+        Result<IFeatureModel> featureModel =
                 IO.load(Paths.get("src/test/resources/testFeatureModels/car.xml"), new XMLFeatureModelFormat());
         assertTrue(featureModel.isPresent());
-        assertTrue(
-                IO.print(featureModel.get(), new GraphVizFeatureModelFormat()).startsWith("digraph {"));
+        assertTrue(IO.print(featureModel.get(), new GraphVizFeatureModelFormat()).startsWith("digraph {"));
     }
 }

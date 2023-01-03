@@ -23,8 +23,10 @@ package de.featjar.feature.model;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotEquals;
 
-import de.featjar.base.data.IIdentifiable;
-import de.featjar.base.data.AIdentifier;
+import de.featjar.base.data.identifier.IIdentifiable;
+import de.featjar.base.data.identifier.AIdentifier;
+import de.featjar.base.data.identifier.IIdentifier;
+import de.featjar.base.data.identifier.Identifiers;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -39,12 +41,12 @@ public class IdentifierTest {
 
     @BeforeEach
     public void createFeatureModel() {
-        featureModel = new FeatureModel(AIdentifier.newCounter());
+        featureModel = new FeatureModel(Identifiers.newCounterIdentifier());
     }
 
     @Test
     void identifierCounter() {
-        AIdentifier identifier = AIdentifier.newCounter();
+        IIdentifier identifier = Identifiers.newCounterIdentifier();
         assertEquals("1", identifier.toString());
         assertEquals("2", identifier.getNewIdentifier().toString());
         assertEquals("3", identifier.getNewIdentifier().toString());
@@ -54,14 +56,14 @@ public class IdentifierTest {
 
     @Test
     void identifierUUID() {
-        AIdentifier identifier = AIdentifier.newUUID();
+        IIdentifier identifier = Identifiers.newUUIDIdentifier();
         assertNotEquals(identifier.toString(), identifier.getNewIdentifier().toString());
         assertEquals(identifier, identifier.getFactory().parse(identifier.toString()));
     }
 
     @Test
     void identifiable() {
-        AIdentifier identifier = AIdentifier.newCounter();
+        IIdentifier identifier = Identifiers.newCounterIdentifier();
         featureModel = new FeatureModel(identifier);
         assertEquals("1", featureModel.getIdentifier().toString());
         Assertions.assertEquals(
@@ -76,6 +78,6 @@ public class IdentifierTest {
         assertEquals("7", featureModel.getNewIdentifier().toString());
         assertEquals(
                 "3",
-                new FeatureModel(AIdentifier.newCounter()).getNewIdentifier().toString());
+                new FeatureModel(Identifiers.newCounterIdentifier()).getNewIdentifier().toString());
     }
 }

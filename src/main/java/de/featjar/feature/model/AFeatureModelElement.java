@@ -20,45 +20,47 @@
  */
 package de.featjar.feature.model;
 
-import de.featjar.base.data.IAttributable;
 import de.featjar.base.data.Attribute;
-import de.featjar.base.data.IIdentifiable;
-import de.featjar.base.data.AIdentifier;
+import de.featjar.base.data.IAttribute;
+import de.featjar.base.data.Maps;
+import de.featjar.base.data.Sets;
+import de.featjar.base.data.identifier.AIdentifier;
+import de.featjar.base.data.identifier.IIdentifier;
+
 import java.util.*;
 
 /**
  * Implements identification and attribute valuation.
  * Each {@link FeatureModel} and all its {@link Feature features} and {@link Constraint constraints} are
- * uniquely identified by an {@link AIdentifier}.
+ * uniquely identified by some {@link AIdentifier}.
  * Also, each element can be annotated with arbitrary {@link Attribute attributes}.
  *
  * @author Elias Kuiter
  */
-public abstract class Element implements IIdentifiable, IAttributable {
-    protected final AIdentifier identifier;
-    protected final LinkedHashMap<Attribute, Object> attributeToValueMap = new LinkedHashMap<>();
+public abstract class AFeatureModelElement implements IFeatureModelElement {
+    protected final IIdentifier identifier;
+    protected final LinkedHashMap<IAttribute, Object> attributeValues = Maps.empty();
 
-    public Element(AIdentifier identifier) {
+    public AFeatureModelElement(IIdentifier identifier) {
         Objects.requireNonNull(identifier);
         this.identifier = identifier;
     }
 
-    public AIdentifier getIdentifier() {
+    @Override
+    public IIdentifier getIdentifier() {
         return identifier;
     }
 
-    public abstract FeatureModel getFeatureModel();
-
     @Override
-    public LinkedHashMap<Attribute, Object> getAttributeToValueMap() {
-        return attributeToValueMap;
+    public LinkedHashMap<IAttribute, Object> getAttributeValues() {
+        return attributeValues;
     }
 
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
-        Element that = (Element) o;
+        AFeatureModelElement that = (AFeatureModelElement) o;
         return getIdentifier().equals(that.getIdentifier());
     }
 

@@ -21,25 +21,25 @@
 package de.featjar.feature.model.mixins;
 
 import de.featjar.base.data.*;
-import de.featjar.feature.model.Feature;
-import de.featjar.feature.model.FeatureModel;
-import de.featjar.feature.model.FeatureTree;
+import de.featjar.base.data.identifier.AIdentifier;
+import de.featjar.base.data.identifier.IIdentifier;
+import de.featjar.feature.model.*;
 import de.featjar.base.tree.Trees;
 
 import java.util.LinkedHashSet;
 import java.util.Objects;
 
 /**
- * Implements a {@link FeatureModel} mixin for common operations on the {@link FeatureTree}.
+ * Implements a {@link IFeatureModel} mixin for common operations on the {@link IFeatureTree}.
  *
  * @author Elias Kuiter
  */
-public interface FeatureModelFeatureTreeMixin {
-    FeatureTree getFeatureTree();
+public interface IHasFeatureTree {
+    IFeatureTree getFeatureTree();
 
-    default LinkedHashSet<Feature> getFeatures() {
+    default LinkedHashSet<IFeature> getFeatures() {
         return Trees.preOrderStream(getFeatureTree())
-                .map(FeatureTree::getFeature)
+                .map(IFeatureTree::getFeature)
                 .collect(Sets.toSet());
     }
 
@@ -47,11 +47,11 @@ public interface FeatureModelFeatureTreeMixin {
         return getFeatures().size();
     }
 
-    default Feature getRootFeature() {
+    default IFeature getRootFeature() {
         return getFeatureTree().getRoot().getFeature();
     }
 
-    default Result<Feature> getFeature(AIdentifier identifier) {
+    default Result<IFeature> getFeature(IIdentifier identifier) {
         Objects.requireNonNull(identifier);
         return Result.ofOptional(
                 getFeatures().stream()
@@ -59,7 +59,7 @@ public interface FeatureModelFeatureTreeMixin {
                         .findFirst());
     }
 
-    default Result<Feature> getFeature(String name) {
+    default Result<IFeature> getFeature(String name) {
         Objects.requireNonNull(name);
         return Result.ofOptional(
                 getFeatures().stream()
@@ -67,16 +67,18 @@ public interface FeatureModelFeatureTreeMixin {
                         .findFirst());
     }
 
-    default boolean hasFeature(AIdentifier identifier) {
+    default boolean hasFeature(IIdentifier identifier) {
         return getFeature(identifier).isPresent();
     }
 
-    default boolean hasFeature(Feature feature) {
+    default boolean hasFeature(IFeature feature) {
         return hasFeature(feature.getIdentifier());
     }
 
-    interface Mutator extends IMutator<FeatureModel> {
-        default void addFeatureBelow(Feature newFeature, Feature parentFeature, int index) {
+    interface Mutator extends IMutator<IFeatureModel> {
+        IFeature newFeature();
+
+        default void addFeatureBelow(IFeature newFeature, IFeature parentFeature, int index) {
             Objects.requireNonNull(newFeature);
             Objects.requireNonNull(parentFeature);
             if (getMutable().hasFeature(newFeature) || !getMutable().hasFeature(parentFeature)) {
@@ -85,14 +87,14 @@ public interface FeatureModelFeatureTreeMixin {
             parentFeature.getFeatureTree().addChild(index, newFeature.getFeatureTree());
         }
 
-        default void addFeatureBelow(Feature newFeature, Feature parentFeature) {
+        default void addFeatureBelow(IFeature newFeature, IFeature parentFeature) {
             Objects.requireNonNull(newFeature);
             Objects.requireNonNull(parentFeature);
             addFeatureBelow(
                     newFeature, parentFeature, parentFeature.getFeatureTree().getChildrenCount());
         }
 
-        default void addFeatureNextTo(Feature newFeature, Feature siblingFeature) {
+        default void addFeatureNextTo(IFeature newFeature, IFeature siblingFeature) {
             Objects.requireNonNull(newFeature);
             Objects.requireNonNull(siblingFeature);
             if (!siblingFeature.getFeatureTree().hasParent() || !getMutable().hasFeature(siblingFeature)) {
@@ -104,32 +106,31 @@ public interface FeatureModelFeatureTreeMixin {
                     siblingFeature.getFeatureTree().getIndex().get() + 1);
         }
 
-        default Feature createFeatureBelow(Feature parentFeature, int index) {
-            Feature newFeature = new Feature(getMutable());
+        default IFeature createFeatureBelow(IFeature parentFeature, int index) {
+            IFeature newFeature = newFeature();
             addFeatureBelow(newFeature, parentFeature, index);
             return newFeature;
         }
 
-        default Feature createFeatureBelow(Feature parentFeature) {
-            Feature newFeature = new Feature(getMutable());
+        default IFeature createFeatureBelow(IFeature parentFeature) {
+            IFeature newFeature = newFeature();
             addFeatureBelow(newFeature, parentFeature);
             return newFeature;
         }
 
-        default Feature createFeatureNextTo(Feature siblingFeature) {
-            Feature newFeature = new Feature(getMutable());
+        default IFeature createFeatureNextTo(IFeature siblingFeature) {
+            IFeature newFeature = newFeature();
             addFeatureNextTo(newFeature, siblingFeature);
             return newFeature;
         }
 
-        default void removeFeature(Feature feature) { // TODO what about the containing constraints?
+        default void removeFeature(IFeature feature) { // TODO what about the containing constraints?
             Objects.requireNonNull(feature);
             if (feature.equals(getMutable().getRootFeature()) || !getMutable().hasFeature(feature)) {
                 throw new IllegalArgumentException();
             }
 
-            final FeatureTree parentFeatureTree =
-                    feature.getFeatureTree().getParent().get();
+            final IFeatureTree parentFeatureTree = feature.getFeatureTree().getParent().get();
 
             if (parentFeatureTree.getChildrenCount() == 1) {
                 parentFeatureTree.mutate(mutator -> {
@@ -153,42 +154,5 @@ public interface FeatureModelFeatureTreeMixin {
 
             parentFeatureTree.removeChild(feature.getFeatureTree());
         }
-    }
-
-    /*
-     * FeatureModel fm = IO.load(path);
-     *
-     * the default analyzer chooses an arbitrary concrete analyzer
-     * sout(fm.analyze().isVoid());
-     *   sout(fm.analyze().count());
-     *   sout(fm.analyze().getCoreFeatures());
-     *   sout(fm.analyze().getCommonality(f));
-     *
-     * fm.analyze(Ext.D4, analyzer ->
-     *   sout(analyzer.isVoid());
-     *   sout(analyzer.count());
-     *   sout(analyzer.getCoreFeatures());
-     *   sout(analyzer.getCommonality(f));
-     * ;
-     */
-    // TODO: make Analyzer an extension point
-    interface Analyzer extends IAnalyzer<FeatureModel> {
-        default boolean isCoreFeature(Feature f) {
-            return false; // go through all registered extensions, if none succeeds, call getCoreFeatures()
-        }
-
-        default LinkedHashSet<Feature> getCoreFeatures() {
-            return Sets.empty();
-        }
-
-        default LinkedHashSet<Feature> getDeadFeatures() {
-            return Sets.empty(); // use extensions: use an extension point for dead features
-        }
-
-        default int countValidConfigurations() {
-            return -1;
-        }
-
-        // ...
     }
 }

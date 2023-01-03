@@ -21,9 +21,7 @@
 package de.featjar.feature.model.io.xml;
 
 import de.featjar.base.data.Result;
-import de.featjar.feature.model.Feature;
-import de.featjar.feature.model.FeatureModel;
-import de.featjar.feature.model.FeatureTree;
+import de.featjar.feature.model.*;
 import de.featjar.base.io.IO;
 import de.featjar.base.io.format.IFormat;
 
@@ -40,8 +38,8 @@ import java.util.stream.Collectors;
  *
  * @author Elias Kuiter
  */
-public class GraphVizFeatureModelFormat implements IFormat<FeatureModel> {
-    public static void openInBrowser(FeatureModel featureModel) {
+public class GraphVizFeatureModelFormat implements IFormat<IFeatureModel> {
+    public static void openInBrowser(IFeatureModel featureModel) {
         try {
             String dot = IO.print(featureModel, new GraphVizFeatureModelFormat());
             URI uri = new URI("https", "edotor.net", "", "engine=dot", dot);
@@ -67,11 +65,11 @@ public class GraphVizFeatureModelFormat implements IFormat<FeatureModel> {
     }
 
     @Override
-    public Result<String> serialize(FeatureModel featureModel) {
-        List<Feature> features = featureModel.getFeatureTree().getDescendantsAsLevelOrder().stream()
-                .map(FeatureTree::getFeature)
+    public Result<String> serialize(IFeatureModel featureModel) {
+        List<IFeature> features = featureModel.getFeatureTree().getDescendantsAsLevelOrder().stream()
+                .map(IFeatureTree::getFeature)
                 .collect(Collectors.toList());
-        return String.format(
+        return Result.of(String.format(
                 "digraph {\n  graph%s;\n  node%s;\n  edge%s;\n%s\n%s\n}",
                 options(option("splines", "false"), option("ranksep", "0.2")),
                 options(
@@ -81,10 +79,10 @@ public class GraphVizFeatureModelFormat implements IFormat<FeatureModel> {
                         option("shape", "box")),
                 options(option("arrowhead", "none")),
                 features.stream().map(this::getNode).collect(Collectors.joining("\n")),
-                features.stream().map(this::getEdge).filter(s -> !s.isEmpty()).collect(Collectors.joining("\n")));
+                features.stream().map(this::getEdge).filter(s -> !s.isEmpty()).collect(Collectors.joining("\n"))));
     }
 
-    public String getNode(Feature feature) {
+    public String getNode(IFeature feature) {
         String nodeString = "";
         nodeString += String.format(
                 "  %s%s;",
@@ -109,7 +107,7 @@ public class GraphVizFeatureModelFormat implements IFormat<FeatureModel> {
         return nodeString;
     }
 
-    public String getEdge(Feature feature) {
+    public String getEdge(IFeature feature) {
         String edgeString = "";
         if (feature.getFeatureTree().hasParent()) {
             String parentNode = feature.getFeatureTree()
@@ -136,7 +134,7 @@ public class GraphVizFeatureModelFormat implements IFormat<FeatureModel> {
         return edgeString;
     }
 
-    public String getEdge(String parentNode, Feature childFeature, String option) {
+    public String getEdge(String parentNode, IFeature childFeature, String option) {
         return String.format(
                 "  %s:s -> %s:n%s;\n",
                 quote(parentNode),
