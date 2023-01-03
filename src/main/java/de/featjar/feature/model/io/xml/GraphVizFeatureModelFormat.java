@@ -39,16 +39,6 @@ import java.util.stream.Collectors;
  * @author Elias Kuiter
  */
 public class GraphVizFeatureModelFormat implements IFormat<IFeatureModel> {
-    public static void openInBrowser(IFeatureModel featureModel) {
-        try {
-            String dot = IO.print(featureModel, new GraphVizFeatureModelFormat());
-            URI uri = new URI("https", "edotor.net", "", "engine=dot", dot);
-            Desktop.getDesktop().browse(uri);
-        } catch (IOException | URISyntaxException e) {
-            throw new RuntimeException(e);
-        }
-    }
-
     @Override
     public String getFileExtension() {
         return "dot";
