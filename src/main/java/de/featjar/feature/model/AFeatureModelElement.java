@@ -23,10 +23,8 @@ package de.featjar.feature.model;
 import de.featjar.base.data.Attribute;
 import de.featjar.base.data.IAttribute;
 import de.featjar.base.data.Maps;
-import de.featjar.base.data.Sets;
 import de.featjar.base.data.identifier.AIdentifier;
 import de.featjar.base.data.identifier.IIdentifier;
-
 import java.util.*;
 
 /**

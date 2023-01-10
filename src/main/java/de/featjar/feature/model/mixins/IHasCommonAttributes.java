@@ -20,11 +20,11 @@
  */
 package de.featjar.feature.model.mixins;
 
+import de.featjar.base.data.Attribute;
+import de.featjar.base.data.IAttributable;
 import de.featjar.base.data.IMutable;
 import de.featjar.base.data.Result;
 import de.featjar.feature.model.*;
-import de.featjar.base.data.IAttributable;
-import de.featjar.base.data.Attribute;
 
 /**
  * Implements accessors for commonly used {@link Attribute attributes}.

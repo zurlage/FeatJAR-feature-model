@@ -21,25 +21,21 @@
 package de.featjar.feature.model.io.xml;
 
 import de.featjar.base.data.Maps;
+import de.featjar.base.data.Problem;
+import de.featjar.base.data.Result;
 import de.featjar.base.data.identifier.IIdentifier;
 import de.featjar.base.data.identifier.Identifiers;
+import de.featjar.base.io.format.ParseException;
+import de.featjar.base.io.input.AInputMapper;
 import de.featjar.feature.model.*;
 import de.featjar.feature.model.io.AttributeIO;
-import de.featjar.feature.model.order.AFeatureOrder;
 import de.featjar.feature.model.order.ListFeatureOrder;
 import de.featjar.formula.io.xml.AXMLFeatureModelFormat;
 import de.featjar.formula.structure.formula.IFormula;
-import de.featjar.base.data.identifier.AIdentifier;
-import de.featjar.base.data.Problem;
-import de.featjar.base.data.Result;
-import de.featjar.base.io.input.AInputMapper;
-import de.featjar.base.io.format.ParseException;
-
 import java.util.*;
 import java.util.function.Supplier;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
-
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.NamedNodeMap;
@@ -294,8 +290,8 @@ public class XMLFeatureModelFormat extends AXMLFeatureModelFormat<IFeatureModel,
             final String namespace = e.hasAttribute(NAMESPACE_TAG) ? e.getAttribute(NAMESPACE_TAG) : fallbackNamespace;
             final String name = e.getAttribute(KEY);
             final String valueString = e.getAttribute(VALUE);
-            parseProblems.addAll(
-                    AttributeIO.parseAndSetAttributeValue(featureModelElement, namespace, name, typeString, valueString));
+            parseProblems.addAll(AttributeIO.parseAndSetAttributeValue(
+                    featureModelElement, namespace, name, typeString, valueString));
         }
     }
 

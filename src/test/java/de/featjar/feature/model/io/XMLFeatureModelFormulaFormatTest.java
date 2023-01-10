@@ -20,19 +20,17 @@
  */
 package de.featjar.feature.model.io;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
 import de.featjar.base.data.Result;
 import de.featjar.base.data.Sets;
 import de.featjar.base.io.IO;
-import de.featjar.base.io.graphviz.GraphVizTreeFormat;
 import de.featjar.feature.model.IFeature;
 import de.featjar.feature.model.IFeatureModel;
 import de.featjar.feature.model.io.xml.XMLFeatureModelFormat;
-import org.junit.jupiter.api.Test;
-
 import java.nio.file.Paths;
-
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import org.junit.jupiter.api.Test;
 
 public class XMLFeatureModelFormulaFormatTest {
     @Test

@@ -26,13 +26,10 @@ import de.featjar.base.data.Result;
 import de.featjar.base.data.identifier.CounterIdentifier;
 import de.featjar.base.data.identifier.Identifiers;
 import de.featjar.feature.model.mixins.IHasFeatureTree;
-
-import java.util.*;
-
-import de.featjar.feature.model.order.AFeatureOrder;
 import de.featjar.feature.model.order.ComparatorFeatureOrder;
 import de.featjar.feature.model.order.ListFeatureOrder;
 import de.featjar.formula.structure.Expressions;
+import java.util.*;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;

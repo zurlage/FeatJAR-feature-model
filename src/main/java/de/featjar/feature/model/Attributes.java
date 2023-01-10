@@ -23,7 +23,6 @@ package de.featjar.feature.model;
 import de.featjar.base.data.Attribute;
 import de.featjar.base.data.Sets;
 import de.featjar.base.data.identifier.IIdentifiable;
-
 import java.util.LinkedHashSet;
 
 /**
@@ -38,20 +37,20 @@ public class Attributes {
     public static final Attribute NAME = new Attribute(NAMESPACE, "name", String.class)
             .setDefaultValueFunction(identifiable ->
                     "@" + ((IIdentifiable) identifiable).getIdentifier().toString())
-            .setValidator((element, name) -> // todo: can also be name of feature model or constraint, but this validates only feature name uniqueness
-                    ((AFeatureModelElement) element).getFeatureModel().getFeature((String) name).isEmpty());
+            .setValidator(
+                    (element, name) -> // todo: can also be name of feature model or constraint, but this validates only
+                            // feature name uniqueness
+                            ((AFeatureModelElement) element)
+                                    .getFeatureModel()
+                                    .getFeature((String) name)
+                                    .isEmpty());
 
     public static final Attribute DESCRIPTION = new Attribute(NAMESPACE, "description", String.class);
 
     public static final Attribute TAGS =
-            new Attribute(NAMESPACE, "tags", LinkedHashSet.class)
-                    .setDefaultValueFunction(attributable -> Sets.empty());
+            new Attribute(NAMESPACE, "tags", LinkedHashSet.class).setDefaultValueFunction(attributable -> Sets.empty());
 
-    public static final Attribute HIDDEN =
-            new Attribute(NAMESPACE, "hidden", Boolean.class)
-                    .setDefaultValue(false);
+    public static final Attribute HIDDEN = new Attribute(NAMESPACE, "hidden", Boolean.class).setDefaultValue(false);
 
-    public static final Attribute ABSTRACT =
-            new Attribute(NAMESPACE, "abstract", Boolean.class)
-                    .setDefaultValue(false);
+    public static final Attribute ABSTRACT = new Attribute(NAMESPACE, "abstract", Boolean.class).setDefaultValue(false);
 }

@@ -2,7 +2,6 @@ package de.featjar.feature.model.order;
 
 import de.featjar.feature.model.IFeature;
 import de.featjar.feature.model.mixins.IHasFeatureTree;
-
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;

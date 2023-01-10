@@ -23,8 +23,8 @@ package de.featjar.feature.model;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotEquals;
 
-import de.featjar.base.data.identifier.IIdentifiable;
 import de.featjar.base.data.identifier.AIdentifier;
+import de.featjar.base.data.identifier.IIdentifiable;
 import de.featjar.base.data.identifier.IIdentifier;
 import de.featjar.base.data.identifier.Identifiers;
 import org.junit.jupiter.api.Assertions;
@@ -78,6 +78,8 @@ public class IdentifierTest {
         assertEquals("7", featureModel.getNewIdentifier().toString());
         assertEquals(
                 "3",
-                new FeatureModel(Identifiers.newCounterIdentifier()).getNewIdentifier().toString());
+                new FeatureModel(Identifiers.newCounterIdentifier())
+                        .getNewIdentifier()
+                        .toString());
     }
 }

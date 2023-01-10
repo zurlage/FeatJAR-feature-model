@@ -20,13 +20,12 @@
  */
 package de.featjar.feature.model.io;
 
-import de.featjar.feature.model.FeatureModel;
 import de.featjar.base.io.format.AFormats;
+import de.featjar.feature.model.FeatureModel;
 
 /**
  * Manages all formats for {@link FeatureModel feature models}.
  *
  * @author Sebastian Krieter
  */
-public class FeatureModelFormats extends AFormats<FeatureModel> {
-}
+public class FeatureModelFormats extends AFormats<FeatureModel> {}

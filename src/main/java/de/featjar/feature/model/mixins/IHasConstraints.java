@@ -21,14 +21,10 @@
 package de.featjar.feature.model.mixins;
 
 import de.featjar.base.data.*;
-import de.featjar.base.data.identifier.AIdentifier;
 import de.featjar.base.data.identifier.IIdentifier;
-import de.featjar.feature.model.Constraint;
-import de.featjar.feature.model.FeatureModel;
 import de.featjar.feature.model.IConstraint;
 import de.featjar.feature.model.IFeatureModel;
 import de.featjar.formula.structure.formula.IFormula;
-
 import java.util.*;
 
 /**
@@ -41,10 +37,9 @@ public interface IHasConstraints {
 
     default Result<IConstraint> getConstraint(IIdentifier identifier) {
         Objects.requireNonNull(identifier);
-        return Result.ofOptional(
-                getConstraints().stream()
-                        .filter(constraint -> constraint.getIdentifier().equals(identifier))
-                        .findFirst());
+        return Result.ofOptional(getConstraints().stream()
+                .filter(constraint -> constraint.getIdentifier().equals(identifier))
+                .findFirst());
     }
 
     default boolean hasConstraint(IIdentifier identifier) {

@@ -21,7 +21,6 @@
 package de.featjar.feature.model.io;
 
 import de.featjar.base.data.*;
-
 import java.util.ArrayList;
 import java.util.List;
 

@@ -21,11 +21,9 @@
 package de.featjar.feature.model.mixins;
 
 import de.featjar.base.data.*;
-import de.featjar.base.data.identifier.AIdentifier;
 import de.featjar.base.data.identifier.IIdentifier;
-import de.featjar.feature.model.*;
 import de.featjar.base.tree.Trees;
-
+import de.featjar.feature.model.*;
 import java.util.LinkedHashSet;
 import java.util.Objects;
 
@@ -53,18 +51,16 @@ public interface IHasFeatureTree {
 
     default Result<IFeature> getFeature(IIdentifier identifier) {
         Objects.requireNonNull(identifier);
-        return Result.ofOptional(
-                getFeatures().stream()
-                        .filter(feature -> feature.getIdentifier().equals(identifier))
-                        .findFirst());
+        return Result.ofOptional(getFeatures().stream()
+                .filter(feature -> feature.getIdentifier().equals(identifier))
+                .findFirst());
     }
 
     default Result<IFeature> getFeature(String name) {
         Objects.requireNonNull(name);
-        return Result.ofOptional(
-                getFeatures().stream()
-                        .filter(feature -> feature.getName().equals(name))
-                        .findFirst());
+        return Result.ofOptional(getFeatures().stream()
+                .filter(feature -> feature.getName().equals(name))
+                .findFirst());
     }
 
     default boolean hasFeature(IIdentifier identifier) {
@@ -130,7 +126,8 @@ public interface IHasFeatureTree {
                 throw new IllegalArgumentException();
             }
 
-            final IFeatureTree parentFeatureTree = feature.getFeatureTree().getParent().get();
+            final IFeatureTree parentFeatureTree =
+                    feature.getFeatureTree().getParent().get();
 
             if (parentFeatureTree.getChildrenCount() == 1) {
                 parentFeatureTree.mutate(mutator -> {

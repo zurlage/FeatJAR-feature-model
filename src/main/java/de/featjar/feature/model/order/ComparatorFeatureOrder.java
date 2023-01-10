@@ -2,7 +2,6 @@ package de.featjar.feature.model.order;
 
 import de.featjar.feature.model.IFeature;
 import de.featjar.feature.model.mixins.IHasFeatureTree;
-
 import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -16,8 +15,6 @@ public class ComparatorFeatureOrder extends AFeatureOrder {
 
     @Override
     public List<IFeature> apply(IHasFeatureTree featureModel) {
-        return featureModel.getFeatures().stream()
-                .sorted(featureComparator)
-                .collect(Collectors.toList());
+        return featureModel.getFeatures().stream().sorted(featureComparator).collect(Collectors.toList());
     }
 }

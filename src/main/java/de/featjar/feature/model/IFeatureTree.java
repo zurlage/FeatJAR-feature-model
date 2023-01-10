@@ -12,9 +12,7 @@ import de.featjar.base.tree.structure.IRootedTree;
  *
  * @author Elias Kuiter
  */
-public interface IFeatureTree extends
-        IRootedTree<IFeatureTree>,
-        IMutable<IFeatureTree, IFeatureTree.Mutator> {
+public interface IFeatureTree extends IRootedTree<IFeatureTree>, IMutable<IFeatureTree, IFeatureTree.Mutator> {
     IFeature getFeature();
 
     boolean isMandatory();

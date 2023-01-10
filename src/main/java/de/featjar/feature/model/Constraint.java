@@ -23,7 +23,6 @@ package de.featjar.feature.model;
 import de.featjar.base.data.*;
 import de.featjar.formula.structure.Expressions;
 import de.featjar.formula.structure.formula.IFormula;
-
 import java.util.*;
 
 public class Constraint extends AFeatureModelElement implements IConstraint {

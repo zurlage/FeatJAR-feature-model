@@ -21,14 +21,9 @@
 package de.featjar.feature.model.io.xml;
 
 import de.featjar.base.data.Result;
-import de.featjar.feature.model.*;
-import de.featjar.base.io.IO;
 import de.featjar.base.io.format.IFormat;
-
+import de.featjar.feature.model.*;
 import java.awt.*;
-import java.io.IOException;
-import java.net.URI;
-import java.net.URISyntaxException;
 import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;

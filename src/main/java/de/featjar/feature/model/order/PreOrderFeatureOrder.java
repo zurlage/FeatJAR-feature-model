@@ -4,7 +4,6 @@ import de.featjar.base.tree.Trees;
 import de.featjar.feature.model.IFeature;
 import de.featjar.feature.model.IFeatureTree;
 import de.featjar.feature.model.mixins.IHasFeatureTree;
-
 import java.util.List;
 import java.util.stream.Collectors;
 

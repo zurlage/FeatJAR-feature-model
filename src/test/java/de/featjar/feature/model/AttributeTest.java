@@ -22,15 +22,12 @@ package de.featjar.feature.model;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-import de.featjar.base.data.IAttributable;
 import de.featjar.base.data.Attribute;
-
-import java.util.LinkedHashMap;
-import java.util.Optional;
-
+import de.featjar.base.data.IAttributable;
 import de.featjar.base.data.IAttribute;
 import de.featjar.base.data.Result;
 import de.featjar.base.data.identifier.Identifiers;
+import java.util.LinkedHashMap;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;

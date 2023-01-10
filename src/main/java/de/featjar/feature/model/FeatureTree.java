@@ -23,7 +23,6 @@ package de.featjar.feature.model;
 import de.featjar.base.data.Range;
 import de.featjar.base.tree.structure.ARootedTree;
 import de.featjar.base.tree.structure.ITree;
-
 import java.util.Objects;
 
 public class FeatureTree extends ARootedTree<IFeatureTree> implements IFeatureTree {
@@ -40,7 +39,8 @@ public class FeatureTree extends ARootedTree<IFeatureTree> implements IFeatureTr
     /**
      * Range of how many child features may be selected.
      */
-    // TODO: use attribute (and move to Feature class, or merge Feature+FeatureTree)? add dynamic attributes "isSelected/automatic"?
+    // TODO: use attribute (and move to Feature class, or merge Feature+FeatureTree)? add dynamic attributes
+    // "isSelected/automatic"?
     protected Range groupRange = Range.open();
 
     protected IFeatureTree.Mutator mutator;
@@ -77,7 +77,7 @@ public class FeatureTree extends ARootedTree<IFeatureTree> implements IFeatureTr
 
     @Override
     public int hashCodeNode() {
-        return 0; //todo
+        return 0; // todo
     }
 
     @Override

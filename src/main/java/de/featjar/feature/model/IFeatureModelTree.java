@@ -2,7 +2,6 @@ package de.featjar.feature.model;
 
 import de.featjar.base.data.Result;
 import de.featjar.base.tree.structure.ITree;
-
 import java.util.function.Predicate;
 
 public interface IFeatureModelTree extends ITree<IFeatureModelTree> {
@@ -15,9 +14,11 @@ public interface IFeatureModelTree extends ITree<IFeatureModelTree> {
     default Predicate<IFeatureModelTree> getChildValidator() {
         return featureModelTree -> {
             // todo
-            Result<IFeature> featureInParent =
-                    getFeatureModel().getFeature(featureModelTree.getFeatureModel().getRootFeature().getIdentifier());
-            return featureInParent.isPresent() && !featureInParent.get().getFeatureTree().hasChildren();
+            Result<IFeature> featureInParent = getFeatureModel()
+                    .getFeature(
+                            featureModelTree.getFeatureModel().getRootFeature().getIdentifier());
+            return featureInParent.isPresent()
+                    && !featureInParent.get().getFeatureTree().hasChildren();
         };
     }
 }

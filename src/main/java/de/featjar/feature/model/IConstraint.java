@@ -4,7 +4,6 @@ import de.featjar.base.data.*;
 import de.featjar.feature.model.mixins.IHasCommonAttributes;
 import de.featjar.formula.structure.formula.IFormula;
 import de.featjar.formula.structure.term.value.Variable;
-
 import java.util.LinkedHashSet;
 
 /**
@@ -14,16 +13,13 @@ import java.util.LinkedHashSet;
  *
  * @author Elias Kuiter
  */
-public interface IConstraint extends
-        IFeatureModelElement,
-        IHasCommonAttributes,
-        IMutable<IConstraint, IConstraint.Mutator> {
+public interface IConstraint
+        extends IFeatureModelElement, IHasCommonAttributes, IMutable<IConstraint, IConstraint.Mutator> {
 
     IFormula getFormula();
 
     static LinkedHashSet<IFeature> getReferencedFeatures(IFormula formula, IFeatureModel featureModel) {
-        return formula
-                .getVariableStream()
+        return formula.getVariableStream()
                 .map(Variable::getName)
                 .map(featureModel.getIdentifier().getFactory()::parse)
                 .map(identifier -> {
@@ -44,9 +40,7 @@ public interface IConstraint extends
         return (LinkedHashSet<String>) getAttributeValue(Attributes.TAGS).get();
     }
 
-    interface Mutator extends
-            IMutator<IConstraint>,
-            IHasCommonAttributes.Mutator<IConstraint> {
+    interface Mutator extends IMutator<IConstraint>, IHasCommonAttributes.Mutator<IConstraint> {
         void setFormula(IFormula formula);
 
         default void remove() {

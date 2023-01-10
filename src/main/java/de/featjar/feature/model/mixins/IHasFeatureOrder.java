@@ -20,12 +20,8 @@
  */
 package de.featjar.feature.model.mixins;
 
-import de.featjar.base.data.IAttribute;
-import de.featjar.base.data.identifier.IIdentifier;
 import de.featjar.feature.model.*;
 import de.featjar.feature.model.order.IFeatureOrder;
-
-import java.util.LinkedHashMap;
 import java.util.List;
 
 /**

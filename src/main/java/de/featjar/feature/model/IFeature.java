@@ -5,7 +5,6 @@ import de.featjar.base.data.IMutator;
 import de.featjar.base.data.Sets;
 import de.featjar.base.data.identifier.AIdentifier;
 import de.featjar.feature.model.mixins.IHasCommonAttributes;
-
 import java.util.LinkedHashSet;
 
 /**
@@ -19,10 +18,7 @@ import java.util.LinkedHashSet;
  *
  * @author Elias Kuiter
  */
-public interface IFeature extends
-        IFeatureModelElement,
-        IHasCommonAttributes,
-        IMutable<IFeature, IFeature.Mutator> {
+public interface IFeature extends IFeatureModelElement, IHasCommonAttributes, IMutable<IFeature, IFeature.Mutator> {
     IFeatureTree getFeatureTree();
 
     default boolean isAbstract() {
@@ -43,13 +39,12 @@ public interface IFeature extends
 
     default LinkedHashSet<IConstraint> getReferencingConstraints() {
         return getFeatureModel().getConstraints().stream()
-                .filter(constraint -> constraint.getReferencedFeatures().stream().anyMatch(this::equals))
+                .filter(constraint ->
+                        constraint.getReferencedFeatures().stream().anyMatch(this::equals))
                 .collect(Sets.toSet());
     }
 
-    interface Mutator extends
-            IMutator<IFeature>,
-            IHasCommonAttributes.Mutator<IFeature> {
+    interface Mutator extends IMutator<IFeature>, IHasCommonAttributes.Mutator<IFeature> {
         default void setAbstract(boolean value) {
             setAttributeValue(Attributes.ABSTRACT, value);
         }

@@ -20,12 +20,9 @@
  */
 package de.featjar.feature.model;
 
-import de.featjar.base.data.Result;
-import de.featjar.base.tree.structure.ITree;
 import de.featjar.base.tree.structure.ATree;
-
+import de.featjar.base.tree.structure.ITree;
 import java.util.Objects;
-import java.util.function.Predicate;
 
 public class FeatureModelTree extends ATree<IFeatureModelTree> implements IFeatureModelTree {
     protected final FeatureModel featureModel;

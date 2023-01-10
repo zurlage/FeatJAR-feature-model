@@ -21,13 +21,10 @@
 package de.featjar.feature.model;
 
 import de.featjar.base.data.*;
-import de.featjar.base.data.identifier.AIdentifier;
 import de.featjar.base.data.identifier.IIdentifier;
 import de.featjar.feature.model.mixins.*;
-import de.featjar.feature.model.order.AFeatureOrder;
 import de.featjar.feature.model.order.IFeatureOrder;
 import de.featjar.feature.model.order.PreOrderFeatureOrder;
-
 import java.util.*;
 import java.util.stream.Stream;
 
@@ -91,8 +88,7 @@ public class FeatureModel extends AFeatureModelElement implements IFeatureModel 
     public Result<IFeature> getFeature(IIdentifier identifier) {
         Objects.requireNonNull(identifier);
         IFeatureModelElement featureModelElement = elementCache.get(identifier);
-        if (!(featureModelElement instanceof Feature))
-            return Result.empty();
+        if (!(featureModelElement instanceof Feature)) return Result.empty();
         return Result.of((IFeature) featureModelElement);
     }
 
@@ -105,8 +101,7 @@ public class FeatureModel extends AFeatureModelElement implements IFeatureModel 
     public Result<IConstraint> getConstraint(IIdentifier identifier) {
         Objects.requireNonNull(identifier);
         IFeatureModelElement featureModelElement = elementCache.get(identifier);
-        if (!(featureModelElement instanceof Constraint))
-            return Result.empty();
+        if (!(featureModelElement instanceof Constraint)) return Result.empty();
         return Result.of((IConstraint) featureModelElement);
     }
 
