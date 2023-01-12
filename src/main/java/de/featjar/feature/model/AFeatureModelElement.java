@@ -22,7 +22,6 @@ package de.featjar.feature.model;
 
 import de.featjar.base.data.Attribute;
 import de.featjar.base.data.IAttribute;
-import de.featjar.base.data.IHashable;
 import de.featjar.base.data.Maps;
 import de.featjar.base.data.identifier.AIdentifier;
 import de.featjar.base.data.identifier.IIdentifier;
@@ -36,7 +35,7 @@ import java.util.*;
  *
  * @author Elias Kuiter
  */
-public abstract class AFeatureModelElement implements IFeatureModelElement, IHashable {
+public abstract class AFeatureModelElement implements IFeatureModelElement {
     protected final IIdentifier identifier;
     protected final LinkedHashMap<IAttribute, Object> attributeValues = Maps.empty();
 
