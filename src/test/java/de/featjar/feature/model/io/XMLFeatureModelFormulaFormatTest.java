@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2023 Elias Kuiter
+ * Copyright (C) 2024 FeatJAR-Development-Team
  *
  * This file is part of FeatJAR-feature-model.
  *
@@ -16,7 +16,7 @@
  * You should have received a copy of the GNU Lesser General Public License
  * along with feature-model. If not, see <https://www.gnu.org/licenses/>.
  *
- * See <https://github.com/FeatureIDE/FeatJAR-model> for further information.
+ * See <https://github.com/FeatJAR> for further information.
  */
 package de.featjar.feature.model.io;
 
@@ -59,6 +59,9 @@ public class XMLFeatureModelFormulaFormatTest {
         };
         assertEquals(
                 Sets.of(featureNames),
-                featureModel.getFeatures().stream().map(IFeature::getName).collect(Sets.toSet()));
+                featureModel.getFeatures().stream()
+                        .map(IFeature::getName)
+                        .map(Result::get)
+                        .collect(Sets.toSet()));
     }
 }

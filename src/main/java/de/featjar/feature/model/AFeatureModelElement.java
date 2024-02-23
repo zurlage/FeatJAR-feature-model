@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2023 Elias Kuiter
+ * Copyright (C) 2024 FeatJAR-Development-Team
  *
  * This file is part of FeatJAR-feature-model.
  *
@@ -16,16 +16,20 @@
  * You should have received a copy of the GNU Lesser General Public License
  * along with feature-model. If not, see <https://www.gnu.org/licenses/>.
  *
- * See <https://github.com/FeatureIDE/FeatJAR-model> for further information.
+ * See <https://github.com/FeatJAR> for further information.
  */
 package de.featjar.feature.model;
 
 import de.featjar.base.data.Attribute;
+import de.featjar.base.data.IAttributable.IMutatableAttributable;
 import de.featjar.base.data.IAttribute;
-import de.featjar.base.data.Maps;
 import de.featjar.base.data.identifier.AIdentifier;
 import de.featjar.base.data.identifier.IIdentifier;
-import java.util.*;
+import java.util.Collections;
+import java.util.LinkedHashMap;
+import java.util.Map;
+import java.util.Objects;
+import java.util.Optional;
 
 /**
  * Implements identification and attribute valuation.
@@ -35,13 +39,21 @@ import java.util.*;
  *
  * @author Elias Kuiter
  */
-public abstract class AFeatureModelElement implements IFeatureModelElement {
+public abstract class AFeatureModelElement implements IFeatureModelElement, IMutatableAttributable {
+    protected final IFeatureModel featureModel;
     protected final IIdentifier identifier;
-    protected final LinkedHashMap<IAttribute, Object> attributeValues = Maps.empty();
+    protected final LinkedHashMap<IAttribute<?>, Object> attributeValues;
 
-    public AFeatureModelElement(IIdentifier identifier) {
-        Objects.requireNonNull(identifier);
-        this.identifier = identifier;
+    public AFeatureModelElement(IFeatureModel featureModel) {
+        this.featureModel = Objects.requireNonNull(featureModel);
+        identifier = featureModel.getNewIdentifier();
+        attributeValues = new LinkedHashMap<>(4);
+    }
+
+    protected AFeatureModelElement(AFeatureModelElement otherElement, IFeatureModel featureModel) {
+        this.featureModel = featureModel;
+        identifier = otherElement.getNewIdentifier();
+        attributeValues = otherElement.cloneAttributes();
     }
 
     @Override
@@ -50,16 +62,37 @@ public abstract class AFeatureModelElement implements IFeatureModelElement {
     }
 
     @Override
-    public LinkedHashMap<IAttribute, Object> getAttributeValues() {
-        return attributeValues;
+    public Optional<Map<IAttribute<?>, Object>> getAttributes() {
+        return Optional.of(Collections.unmodifiableMap(attributeValues));
+    }
+
+    @Override
+    public <S> void setAttributeValue(Attribute<S> attribute, S value) {
+        if (value == null) {
+            removeAttributeValue(attribute);
+            return;
+        }
+        checkType(attribute, value);
+        validate(attribute, value);
+        attributeValues.put(attribute, value);
+    }
+
+    @Override
+    @SuppressWarnings("unchecked")
+    public <S> S removeAttributeValue(Attribute<S> attribute) {
+        return (S) attributeValues.remove(attribute);
+    }
+
+    @Override
+    public IFeatureModel getFeatureModel() {
+        return featureModel;
     }
 
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
-        AFeatureModelElement that = (AFeatureModelElement) o;
-        return getIdentifier().equals(that.getIdentifier());
+        return getIdentifier().equals(((AFeatureModelElement) o).getIdentifier());
     }
 
     @Override

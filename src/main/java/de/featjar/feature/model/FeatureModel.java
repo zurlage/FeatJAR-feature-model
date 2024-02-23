@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2023 Elias Kuiter
+ * Copyright (C) 2024 FeatJAR-Development-Team
  *
  * This file is part of FeatJAR-feature-model.
  *
@@ -16,37 +16,75 @@
  * You should have received a copy of the GNU Lesser General Public License
  * along with feature-model. If not, see <https://www.gnu.org/licenses/>.
  *
- * See <https://github.com/FeatureIDE/FeatJAR-model> for further information.
+ * See <https://github.com/FeatJAR> for further information.
  */
 package de.featjar.feature.model;
 
-import de.featjar.base.data.*;
+import de.featjar.base.data.Attribute;
+import de.featjar.base.data.IAttributable.IMutatableAttributable;
+import de.featjar.base.data.IAttribute;
+import de.featjar.base.data.Maps;
+import de.featjar.base.data.Result;
 import de.featjar.base.data.identifier.IIdentifier;
-import de.featjar.feature.model.mixins.*;
-import de.featjar.feature.model.order.IFeatureOrder;
-import de.featjar.feature.model.order.PreOrderFeatureOrder;
-import java.util.*;
-import java.util.stream.Stream;
+import de.featjar.base.data.identifier.UUIDIdentifier;
+import de.featjar.base.tree.Trees;
+import de.featjar.base.tree.visitor.TreePrinter;
+import de.featjar.feature.model.IFeatureModel.IMutableFeatureModel;
+import de.featjar.formula.structure.formula.IFormula;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Iterator;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
+import java.util.Optional;
 
-public class FeatureModel extends AFeatureModelElement implements IFeatureModel {
-    protected final IFeatureModelTree featureModelTree;
-    protected final IFeatureTree featureTree;
-    protected final List<IConstraint> constraints = Collections.synchronizedList(new ArrayList<>());
-    protected IFeatureOrder featureOrder = new PreOrderFeatureOrder();
-    protected final LinkedHashMap<IIdentifier, IFeatureModelElement> elementCache = Maps.empty();
-    protected final LinkedHashSet<IFeature> featureCache = Sets.empty();
-    protected IFeatureModel.Mutator mutator;
+public class FeatureModel implements IMutableFeatureModel, IMutatableAttributable {
 
-    public FeatureModel(IIdentifier identifier) {
-        super(identifier);
-        featureModelTree = new FeatureModelTree(this);
-        final Feature root = new Feature(this);
-        featureTree = root.getFeatureTree();
-        finishInternalMutation();
+    protected final IIdentifier identifier;
+
+    protected final List<IFeatureTree> featureTreeRoots;
+    protected final LinkedHashMap<IIdentifier, IFeature> features;
+    protected final LinkedHashMap<IIdentifier, IConstraint> constraints;
+
+    protected final LinkedHashMap<IAttribute<?>, Object> attributeValues;
+
+    public FeatureModel() {
+        this(UUIDIdentifier.newInstance());
     }
 
-    public FeatureModelTree getFeatureModelTree() {
-        return null;
+    public FeatureModel(IIdentifier identifier) {
+        this.identifier = Objects.requireNonNull(identifier);
+        featureTreeRoots = new ArrayList<>(1);
+        features = Maps.empty();
+        constraints = Maps.empty();
+        attributeValues = new LinkedHashMap<>(4);
+    }
+
+    protected FeatureModel(FeatureModel otherFeatureModel) {
+        identifier = otherFeatureModel.getNewIdentifier();
+
+        featureTreeRoots = new ArrayList<>(otherFeatureModel.featureTreeRoots.size());
+        otherFeatureModel.featureTreeRoots.stream().forEach(t -> featureTreeRoots.add(Trees.clone(t)));
+
+        features = new LinkedHashMap<>((int) (otherFeatureModel.features.size() * 1.5));
+        otherFeatureModel.features.entrySet().stream()
+                .map(e -> e.getValue().clone(this))
+                .forEach(f -> features.put(f.getIdentifier(), f));
+
+        constraints = new LinkedHashMap<>((int) (otherFeatureModel.constraints.size() * 1.5));
+        otherFeatureModel.constraints.entrySet().stream()
+                .map(e -> e.getValue().clone(this))
+                .forEach(c -> constraints.put(c.getIdentifier(), c));
+
+        attributeValues = otherFeatureModel.cloneAttributes();
+    }
+
+    @Override
+    public FeatureModel clone() {
+        return new FeatureModel(this);
     }
 
     @Override
@@ -55,136 +93,182 @@ public class FeatureModel extends AFeatureModelElement implements IFeatureModel 
     }
 
     @Override
-    public IFeatureTree getFeatureTree() {
-        return featureTree;
+    public List<IFeatureTree> getRoots() {
+        return featureTreeRoots;
     }
 
     @Override
-    public IFeatureOrder getFeatureOrder() {
-        return featureOrder;
-    }
-
-    @Override
-    public void finishInternalMutation() {
-        LinkedHashSet<IFeature> features = IFeatureModel.super.getFeatures();
-
-        elementCache.clear();
-        Stream.concat(features.stream(), getConstraints().stream()).forEach(element -> {
-            if (elementCache.get(element.getIdentifier()) != null)
-                throw new RuntimeException("duplicate identifier " + element.getIdentifier());
-            elementCache.put(element.getIdentifier(), element);
-        });
-
-        featureCache.clear();
-        featureCache.addAll(features);
-    }
-
-    @Override
-    public LinkedHashSet<IFeature> getFeatures() {
-        return featureCache;
+    public Collection<IFeature> getFeatures() {
+        return Collections.unmodifiableCollection(features.values());
     }
 
     @Override
     public Result<IFeature> getFeature(IIdentifier identifier) {
-        Objects.requireNonNull(identifier);
-        IFeatureModelElement featureModelElement = elementCache.get(identifier);
-        if (!(featureModelElement instanceof Feature)) return Result.empty();
-        return Result.of((IFeature) featureModelElement);
+        return Result.of(features.get(Objects.requireNonNull(identifier)));
     }
 
     @Override
-    public List<IConstraint> getConstraints() {
-        return constraints;
+    public Collection<IConstraint> getConstraints() {
+        return Collections.unmodifiableCollection(constraints.values());
     }
 
     @Override
     public Result<IConstraint> getConstraint(IIdentifier identifier) {
-        Objects.requireNonNull(identifier);
-        IFeatureModelElement featureModelElement = elementCache.get(identifier);
-        if (!(featureModelElement instanceof Constraint)) return Result.empty();
-        return Result.of((IConstraint) featureModelElement);
+        return Result.of(constraints.get(Objects.requireNonNull(identifier)));
     }
 
     @Override
-    public IFeatureModel.Mutator getMutator() {
-        return mutator == null ? (mutator = new Mutator()) : mutator;
+    public boolean hasConstraint(IIdentifier identifier) {
+        return constraints.containsKey(identifier);
     }
 
     @Override
-    public void setMutator(IFeatureModel.Mutator mutator) {
-        this.mutator = mutator;
+    public boolean hasConstraint(IConstraint constraint) {
+        return constraints.containsKey(constraint.getIdentifier());
+    }
+
+    @Override
+    public int getNumberOfConstraints() {
+        return constraints.size();
+    }
+
+    @Override
+    public IIdentifier getIdentifier() {
+        return identifier;
+    }
+
+    @Override
+    public Optional<Map<IAttribute<?>, Object>> getAttributes() {
+        return Optional.of(Collections.unmodifiableMap(attributeValues));
+    }
+
+    @Override
+    public <S> void setAttributeValue(Attribute<S> attribute, S value) {
+        if (value == null) {
+            removeAttributeValue(attribute);
+            return;
+        }
+        checkType(attribute, value);
+        validate(attribute, value);
+        attributeValues.put(attribute, value);
+    }
+
+    @Override
+    @SuppressWarnings("unchecked")
+    public <S> S removeAttributeValue(Attribute<S> attribute) {
+        return (S) attributeValues.remove(attribute);
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        return getIdentifier().equals(((FeatureModel) o).getIdentifier());
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(getIdentifier());
     }
 
     @Override
     public String toString() {
-        return String.format("FeatureModel{features=%s, constraints=%s}", getFeatures(), constraints);
+        StringBuilder featureString = new StringBuilder();
+        for (IFeatureTree root : featureTreeRoots) {
+            featureString.append(Trees.traverse(root, new TreePrinter()).get());
+            featureString.append('\n');
+        }
+        return String.format(
+                "FeatureModel{features=%s, constraints=%s}", featureString.toString(), constraints.toString());
     }
 
     @Override
-    protected Object clone() throws CloneNotSupportedException {
-        throw new CloneNotSupportedException(); // TODO
+    public void setName(String name) {
+        attributeValues.put(Attributes.NAME, name);
     }
 
-    public class Mutator implements IFeatureModel.Mutator {
-        @Override
-        public FeatureModel getMutable() {
-            return FeatureModel.this;
-        }
+    @Override
+    public void setDescription(String description) {
+        attributeValues.put(Attributes.DESCRIPTION, description);
+    }
 
-        @Override
-        public void setFeatureOrder(IFeatureOrder featureOrder) {
-            FeatureModel.this.featureOrder = featureOrder;
-        }
+    @Override
+    public IFeatureTree addFeatureTreeRoot(IFeature feature) {
+        FeatureTree newTree = new FeatureTree(feature);
+        featureTreeRoots.add(newTree);
+        return newTree;
+    }
 
-        @Override
-        public IFeature newFeature() {
-            return new Feature(getMutable());
-        }
+    @Override
+    public void addFeatureTreeRoot(IFeatureTree featureTree) {
+        featureTreeRoots.add(featureTree);
+    }
 
-        @Override
-        public IConstraint newConstraint() {
-            return new Constraint(getMutable());
+    @Override
+    public void removeFeatureTreeRoot(IFeature feature) {
+        for (Iterator<IFeatureTree> it = featureTreeRoots.listIterator(); it.hasNext(); ) {
+            if (it.next().getFeature().equals(feature)) {
+                it.remove();
+            }
         }
+    }
 
-        @Override
-        public void addFeatureBelow(IFeature newFeature, IFeature parentFeature, int index) {
-            IFeatureModel.Mutator.super.addFeatureBelow(newFeature, parentFeature, index);
-            getMutable().featureCache.add(newFeature);
-            getMutable().elementCache.put(newFeature.getIdentifier(), newFeature);
+    @Override
+    public void removeFeatureTreeRoot(IFeatureTree featureTree) {
+        for (Iterator<IFeatureTree> it = featureTreeRoots.listIterator(); it.hasNext(); ) {
+            if (it.next() == featureTree) {
+                it.remove();
+            }
         }
+    }
 
-        @Override
-        public void removeFeature(IFeature feature) {
-            IFeatureModel.Mutator.super.removeFeature(feature);
-            getMutable().featureCache.remove(feature);
-            getMutable().elementCache.remove(feature.getIdentifier());
-        }
+    @Override
+    public IConstraint addConstraint(IFormula formula) {
+        IConstraint newConstraint = new Constraint(this, Trees.clone(formula));
+        constraints.put(newConstraint.getIdentifier(), newConstraint);
+        return newConstraint;
+    }
 
-        @Override
-        public void setConstraint(int index, IConstraint constraint) {
-            IConstraint oldConstraint = getMutable().getConstraints().get(index);
-            IFeatureModel.Mutator.super.setConstraint(index, constraint);
-            getMutable().elementCache.remove(oldConstraint.getIdentifier());
-            getMutable().elementCache.put(constraint.getIdentifier(), constraint);
-        }
+    @Override
+    public boolean removeConstraint(IConstraint constraint) {
+        Objects.requireNonNull(constraint);
+        return constraints.remove(constraint.getIdentifier()) != null;
+    }
 
-        @Override
-        public void addConstraint(IConstraint newConstraint, int index) {
-            IFeatureModel.Mutator.super.addConstraint(newConstraint, index);
-            getMutable().elementCache.put(newConstraint.getIdentifier(), newConstraint);
-        }
+    @Override
+    public IFeature addFeature(String name) {
+        Objects.requireNonNull(name);
+        Feature feature = new Feature(this);
+        feature.setName(name);
+        features.put(feature.getIdentifier(), feature);
+        return feature;
+    }
 
-        @Override
-        public void removeConstraint(IConstraint constraint) {
-            IFeatureModel.Mutator.super.removeConstraint(constraint);
-            getMutable().elementCache.remove(constraint.getIdentifier());
-        }
+    @Override
+    public boolean removeFeature(IFeature feature) {
+        return features.remove(feature.getIdentifier()) != null;
+    }
 
-        @Override
-        public IConstraint removeConstraint(int index) {
-            IConstraint constraint = IFeatureModel.Mutator.super.removeConstraint(index);
-            getMutable().elementCache.remove(constraint.getIdentifier());
-            return constraint;
-        }
+    @Override
+    public int getNumberOfFeatures() {
+        return features.size();
+    }
+
+    @Override
+    public Result<IFeature> getFeature(String name) {
+        return Result.ofOptional(features.entrySet().stream()
+                .map(e -> e.getValue())
+                .filter(f -> f.getName().valueEquals(name))
+                .findFirst());
+    }
+
+    @Override
+    public boolean hasFeature(IIdentifier identifier) {
+        return features.containsKey(identifier);
+    }
+
+    @Override
+    public boolean hasFeature(IFeature feature) {
+        return features.containsKey(feature.getIdentifier());
     }
 }

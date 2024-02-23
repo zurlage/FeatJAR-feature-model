@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2023 Elias Kuiter
+ * Copyright (C) 2024 FeatJAR-Development-Team
  *
  * This file is part of FeatJAR-feature-model.
  *
@@ -16,53 +16,66 @@
  * You should have received a copy of the GNU Lesser General Public License
  * along with feature-model. If not, see <https://www.gnu.org/licenses/>.
  *
- * See <https://github.com/FeatureIDE/FeatJAR-model> for further information.
+ * See <https://github.com/FeatJAR> for further information.
  */
 package de.featjar.feature.model;
 
-import java.util.Objects;
+import de.featjar.base.data.Result;
+import de.featjar.feature.model.IFeature.IMutableFeature;
 
-public class Feature extends AFeatureModelElement implements IFeature {
-    protected final IFeatureModel featureModel;
-    protected final IFeatureTree featureTree;
-    protected IFeature.Mutator mutator;
+public class Feature extends AFeatureModelElement implements IMutableFeature {
+    protected Class<?> type;
 
-    public Feature(IFeatureModel featureModel) {
-        super(featureModel.getNewIdentifier());
-        Objects.requireNonNull(featureModel);
-        this.featureModel = featureModel;
-        featureTree = new FeatureTree(this);
+    protected Feature(IFeatureModel featureModel) {
+        super(featureModel);
+    }
+
+    protected Feature(Feature otherFeature) {
+        this(otherFeature, otherFeature.featureModel);
+    }
+
+    protected Feature(Feature otherFeature, IFeatureModel newFeatureModel) {
+        super(otherFeature, newFeatureModel);
+        type = otherFeature.type;
     }
 
     @Override
-    public IFeatureModel getFeatureModel() {
-        return featureModel;
+    public Feature clone() {
+        return new Feature(this);
     }
 
     @Override
-    public IFeatureTree getFeatureTree() {
-        return featureTree;
+    public Feature clone(IFeatureModel newFeatureModel) {
+        return new Feature(this);
     }
 
     @Override
-    public IFeature.Mutator getMutator() {
-        return mutator == null ? (mutator = new Mutator()) : mutator;
+    public Class<?> getType() {
+        return type;
     }
 
     @Override
-    public void setMutator(IFeature.Mutator mutator) {
-        this.mutator = mutator;
+    public Result<IFeatureTree> getFeatureTree() {
+        return featureModel.getFeatureTree(this);
+    }
+
+    @Override
+    public void setType(Class<?> type) {
+        this.type = type;
     }
 
     @Override
     public String toString() {
-        return String.format("Feature{name=%s}", getName());
+        return String.format("Feature{name=%s}", getName().orElse(""));
     }
 
-    public class Mutator implements IFeature.Mutator {
-        @Override
-        public Feature getMutable() {
-            return Feature.this;
-        }
+    @Override
+    public void setName(String name) {
+        attributeValues.put(Attributes.NAME, name);
+    }
+
+    @Override
+    public void setDescription(String description) {
+        attributeValues.put(Attributes.DESCRIPTION, description);
     }
 }

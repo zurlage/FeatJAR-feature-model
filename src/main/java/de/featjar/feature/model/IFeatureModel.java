@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2023 Elias Kuiter
+ * Copyright (C) 2024 FeatJAR-Development-Team
  *
  * This file is part of FeatJAR-feature-model.
  *
@@ -16,32 +16,29 @@
  * You should have received a copy of the GNU Lesser General Public License
  * along with feature-model. If not, see <https://www.gnu.org/licenses/>.
  *
- * See <https://github.com/FeatureIDE/FeatJAR-model> for further information.
+ * See <https://github.com/FeatJAR> for further information.
  */
 package de.featjar.feature.model;
 
-import de.featjar.base.data.IMutable;
-import de.featjar.base.data.IMutator;
-import de.featjar.feature.model.mixins.*;
+import de.featjar.base.data.Result;
+import de.featjar.base.data.identifier.IIdentifier;
+import de.featjar.feature.model.mixins.IHasCommonAttributes;
+import de.featjar.feature.model.mixins.IHasConstraints;
+import de.featjar.feature.model.mixins.IHasFeatureTree;
+import de.featjar.formula.structure.formula.IFormula;
+import java.util.Collection;
 
 /**
  * A feature model represents the configuration space of a software system.
  * We equate feature models with feature diagrams
  * (i.e., a {@link FeatureTree} labeled with features and a list of {@link Constraint constraints}).
- * For safe mutation, rely only on the methods of {@link IMutable}.
+ * For safe mutation, rely only on the methods of {@link IMutableFeatureModel}.
  *
  * cache assumes that features/constraints are only added/deleted through the mutator, not manually
  *
  * @author Elias Kuiter
  */
-public interface IFeatureModel
-        extends IFeatureModelElement,
-                IHasCommonAttributes,
-                IHasFeatureTree,
-                IHasConstraints,
-                IHasFeatureOrder,
-                // IHasElementCache, //todo: ?
-                IMutable<IFeatureModel, IFeatureModel.Mutator> {
+public interface IFeatureModel extends IFeatureModelElement, IHasCommonAttributes, IHasFeatureTree, IHasConstraints {
     // TODO put flattened fm into store (maybe dispatch mutators of flattened model to original models)
 
     // TODO: we allow all kinds of modeling constructs, but not all analyses/computations support all constructs.
@@ -54,14 +51,40 @@ public interface IFeatureModel
     // every plugin defines a feature model (uvl) that restricts what its extensions can and cannot do (replacing
     // extensions.xml)
 
-    FeatureModelTree getFeatureModelTree();
+    IFeatureModel clone();
 
-    interface Mutator
-            extends IMutator<IFeatureModel>,
-                    IHasFeatureTree.Mutator,
-                    IHasConstraints.Mutator,
-                    IHasFeatureOrder.Mutator,
-                    IHasCommonAttributes.Mutator<IFeatureModel> {
-        // IHasElementCache.Mutator { todo
+    Collection<IFeature> getFeatures();
+
+    int getNumberOfFeatures();
+
+    Result<IFeature> getFeature(IIdentifier identifier);
+
+    Result<IFeature> getFeature(String name);
+
+    boolean hasFeature(IIdentifier identifier);
+
+    boolean hasFeature(IFeature feature);
+
+    default IMutableFeatureModel mutate() {
+        return (IMutableFeatureModel) this;
+    }
+
+    static interface IMutableFeatureModel extends IFeatureModel, IHasMutableCommonAttributes {
+
+        IFeature addFeature(String name);
+
+        boolean removeFeature(IFeature feature);
+
+        IConstraint addConstraint(IFormula formula);
+
+        boolean removeConstraint(IConstraint constraint);
+
+        IFeatureTree addFeatureTreeRoot(IFeature feature);
+
+        void addFeatureTreeRoot(IFeatureTree featureTree);
+
+        void removeFeatureTreeRoot(IFeatureTree featureTree);
+
+        void removeFeatureTreeRoot(IFeature feature);
     }
 }

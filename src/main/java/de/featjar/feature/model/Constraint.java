@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2023 Elias Kuiter
+ * Copyright (C) 2024 FeatJAR-Development-Team
  *
  * This file is part of FeatJAR-feature-model.
  *
@@ -16,31 +16,42 @@
  * You should have received a copy of the GNU Lesser General Public License
  * along with feature-model. If not, see <https://www.gnu.org/licenses/>.
  *
- * See <https://github.com/FeatureIDE/FeatJAR-model> for further information.
+ * See <https://github.com/FeatJAR> for further information.
  */
 package de.featjar.feature.model;
 
-import de.featjar.base.data.*;
-import de.featjar.formula.structure.Expressions;
+import de.featjar.base.data.Sets;
+import de.featjar.base.tree.Trees;
+import de.featjar.feature.model.IConstraint.IMutableConstraint;
 import de.featjar.formula.structure.formula.IFormula;
-import java.util.*;
+import java.util.LinkedHashSet;
 
-public class Constraint extends AFeatureModelElement implements IConstraint {
-    protected final IFeatureModel featureModel;
+public class Constraint extends AFeatureModelElement implements IMutableConstraint {
     protected IFormula formula;
     protected final LinkedHashSet<IFeature> containedFeaturesCache = Sets.empty();
-    protected IConstraint.Mutator mutator;
 
-    public Constraint(IFeatureModel featureModel) {
-        super(featureModel.getNewIdentifier());
-        Objects.requireNonNull(featureModel);
-        this.featureModel = featureModel;
-        this.formula = Expressions.True;
+    protected Constraint(IFeatureModel featureModel, IFormula formula) {
+        super(featureModel);
+        setFormula(formula);
+    }
+
+    protected Constraint(Constraint otherConstraint) {
+        this(otherConstraint, otherConstraint.featureModel);
+    }
+
+    protected Constraint(Constraint otherConstraint, IFeatureModel newFeatureModel) {
+        super(otherConstraint, newFeatureModel);
+        setFormula(Trees.clone(otherConstraint.formula));
     }
 
     @Override
-    public IFeatureModel getFeatureModel() {
-        return featureModel;
+    public Constraint clone() {
+        return new Constraint(this);
+    }
+
+    @Override
+    public Constraint clone(IFeatureModel newFeatureModel) {
+        return new Constraint(this);
     }
 
     @Override
@@ -54,31 +65,24 @@ public class Constraint extends AFeatureModelElement implements IConstraint {
     }
 
     @Override
-    public IConstraint.Mutator getMutator() {
-        return mutator == null ? (mutator = new Mutator()) : mutator;
-    }
-
-    @Override
-    public void setMutator(IConstraint.Mutator mutator) {
-        this.mutator = mutator;
-    }
-
-    @Override
     public String toString() {
         return String.format("Constraint{formula=%s}", formula);
     }
 
-    public class Mutator implements IConstraint.Mutator {
-        @Override
-        public Constraint getMutable() {
-            return Constraint.this;
-        }
+    @Override
+    public void setFormula(IFormula formula) {
+        containedFeaturesCache.clear();
+        containedFeaturesCache.addAll(IConstraint.getReferencedFeatures(formula, featureModel));
+        Constraint.this.formula = formula;
+    }
 
-        @Override
-        public void setFormula(IFormula formula) {
-            containedFeaturesCache.clear();
-            containedFeaturesCache.addAll(IConstraint.getReferencedFeatures(formula, featureModel));
-            Constraint.this.formula = formula;
-        }
+    @Override
+    public void setName(String name) {
+        attributeValues.put(Attributes.NAME, name);
+    }
+
+    @Override
+    public void setDescription(String description) {
+        attributeValues.put(Attributes.DESCRIPTION, description);
     }
 }

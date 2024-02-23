@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2023 Elias Kuiter
+ * Copyright (C) 2024 FeatJAR-Development-Team
  *
  * This file is part of FeatJAR-feature-model.
  *
@@ -16,7 +16,7 @@
  * You should have received a copy of the GNU Lesser General Public License
  * along with feature-model. If not, see <https://www.gnu.org/licenses/>.
  *
- * See <https://github.com/FeatureIDE/FeatJAR-model> for further information.
+ * See <https://github.com/FeatJAR> for further information.
  */
 package de.featjar.feature.model;
 
@@ -29,23 +29,24 @@ import java.util.LinkedHashSet;
 /**
  * A constraint describes some restriction on the valid configurations represented by a {@link FeatureModel}.
  * It is attached to a {@link FeatureModel} and represented as a {@link IFormula} over {@link Feature} variables.
- * For safe mutation, rely only on the methods of {@link IMutable}.
+ * For safe mutation, rely only on the methods of {@link IMutableConstraint}.
  *
  * @author Elias Kuiter
  */
-public interface IConstraint
-        extends IFeatureModelElement, IHasCommonAttributes, IMutable<IConstraint, IConstraint.Mutator> {
+public interface IConstraint extends IFeatureModelElement, IHasCommonAttributes {
+
+    IConstraint clone();
+
+    IConstraint clone(IFeatureModel newFeatureModel);
 
     IFormula getFormula();
 
     static LinkedHashSet<IFeature> getReferencedFeatures(IFormula formula, IFeatureModel featureModel) {
         return formula.getVariableStream()
                 .map(Variable::getName)
-                .map(featureModel.getIdentifier().getFactory()::parse)
-                .map(identifier -> {
-                    Result<IFeature> feature = featureModel.getFeature(identifier);
-                    if (feature.isEmpty())
-                        throw new RuntimeException("encountered unknown feature identifier " + identifier);
+                .map(name -> {
+                    Result<IFeature> feature = featureModel.getFeature(name);
+                    if (feature.isEmpty()) throw new RuntimeException("encountered unknown feature " + name);
                     return feature.get();
                 })
                 .collect(Sets.toSet());
@@ -55,16 +56,19 @@ public interface IConstraint
         return getReferencedFeatures(getFormula(), getFeatureModel());
     }
 
-    @SuppressWarnings({"unchecked"})
     default LinkedHashSet<String> getTags() {
-        return (LinkedHashSet<String>) getAttributeValue(Attributes.TAGS).get();
+        return getAttributeValue(Attributes.TAGS).get();
     }
 
-    interface Mutator extends IMutator<IConstraint>, IHasCommonAttributes.Mutator<IConstraint> {
+    default IMutableConstraint mutate() {
+        return (IMutableConstraint) this;
+    }
+
+    static interface IMutableConstraint extends IConstraint, IHasMutableCommonAttributes {
         void setFormula(IFormula formula);
 
         default void remove() {
-            getMutable().getFeatureModel().mutate().removeConstraint(getMutable());
+            getFeatureModel().mutate().removeConstraint(this);
         }
 
         default void setTags(LinkedHashSet<String> tags) {
@@ -72,11 +76,11 @@ public interface IConstraint
         }
 
         default boolean addTag(String tag) {
-            return getMutable().getTags().add(tag);
+            return getTags().add(tag);
         }
 
         default boolean removeTag(String tag) {
-            return getMutable().getTags().remove(tag);
+            return getTags().remove(tag);
         }
     }
 }

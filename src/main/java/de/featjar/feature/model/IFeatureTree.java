@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2023 Elias Kuiter
+ * Copyright (C) 2024 FeatJAR-Development-Team
  *
  * This file is part of FeatJAR-feature-model.
  *
@@ -16,15 +16,18 @@
  * You should have received a copy of the GNU Lesser General Public License
  * along with feature-model. If not, see <https://www.gnu.org/licenses/>.
  *
- * See <https://github.com/FeatureIDE/FeatJAR-model> for further information.
+ * See <https://github.com/FeatJAR> for further information.
  */
 package de.featjar.feature.model;
 
-import de.featjar.base.data.IMutable;
-import de.featjar.base.data.IMutator;
+import de.featjar.base.data.IAttributable;
 import de.featjar.base.data.Range;
+import de.featjar.base.data.Result;
 import de.featjar.base.tree.structure.ARootedTree;
 import de.featjar.base.tree.structure.IRootedTree;
+import de.featjar.feature.model.FeatureTree.Group;
+import de.featjar.feature.model.mixins.IHasFeatureTree;
+import java.util.List;
 
 /**
  * An ordered {@link ARootedTree} labeled with {@link Feature features}.
@@ -32,53 +35,91 @@ import de.featjar.base.tree.structure.IRootedTree;
  *
  * @author Elias Kuiter
  */
-public interface IFeatureTree extends IRootedTree<IFeatureTree>, IMutable<IFeatureTree, IFeatureTree.Mutator> {
+public interface IFeatureTree extends IRootedTree<IFeatureTree>, IAttributable, IHasFeatureTree {
+
     IFeature getFeature();
 
-    boolean isMandatory();
+    List<Group> getGroups();
+
+    Group getGroup();
+
+    List<IFeatureTree> getGroupFeatures();
+
+    int getFeatureRangeLowerBound();
+
+    int getFeatureRangeUpperBound();
+
+    default boolean isMandatory() {
+        return getFeatureRangeLowerBound() > 0;
+    }
 
     default boolean isOptional() {
-        return !isMandatory();
+        return getFeatureRangeLowerBound() == 0;
     }
 
-    Range getGroupRange();
-
-    default boolean isGroupRange(Range other) {
-        return getGroupRange().equals(other);
+    default IMutableFeatureTree mutate() {
+        return (IMutableFeatureTree) this;
     }
 
-    default boolean isAnd() {
-        return isGroupRange(Range.open());
-    }
+    static interface IMutableFeatureTree extends IFeatureTree, IMutatableAttributable {
 
-    default boolean isAlternative() {
-        return isGroupRange(Range.exactly(1));
-    }
-
-    default boolean isOr() {
-        return isGroupRange(Range.atLeast(1));
-    }
-
-    default boolean isGroup() {
-        return !isAnd();
-    }
-
-    interface Mutator extends IMutator<IFeatureTree> {
-        void setMandatory(boolean isMandatory);
-
-        default boolean toggleMandatory() {
-            boolean isMandatory = getMutable().isMandatory();
-            setMandatory(!isMandatory);
-            return !isMandatory;
+        default IFeatureTree addFeatureBelow(IFeature newFeature) {
+            return addFeatureBelow(newFeature, getChildrenCount(), 0);
         }
 
-        default void setOptional() {
-            setMandatory(false);
+        default IFeatureTree addFeatureBelow(IFeature newFeature, int index) {
+            return addFeatureBelow(newFeature, index, 0);
         }
 
-        default void setMandatory() {
-            setMandatory(true);
+        default IFeatureTree addFeatureBelow(IFeature newFeature, int index, int groupID) {
+            FeatureTree newTree = new FeatureTree(newFeature);
+            addChild(index, newTree);
+            newTree.setGroupID(groupID);
+            return newTree;
         }
+
+        default IFeatureTree addFeatureAbove(IFeature newFeature) {
+            FeatureTree newTree = new FeatureTree(newFeature);
+            Result<IFeatureTree> parent = getParent();
+            if (parent.isPresent()) {
+                parent.get().replaceChild(this, newTree);
+                newTree.setGroupID(this.getGroupID());
+            }
+            newTree.addChild(this);
+            this.setGroupID(0);
+            return newTree;
+        }
+
+        default void removeFromTree() { // TODO what about the containing constraints?
+            Result<IFeatureTree> parent = getParent();
+            if (parent.isPresent()) {
+                int childIndex = parent.get().getChildIndex(this).orElseThrow();
+                parent.get().removeChild(this);
+                int groupID = parent.get().getGroups().size();
+                // TODO improve group handling, probably needs slicing
+                for (Group group : getGroups()) {
+                    parent.get().mutate().addGroup(group.getLowerBound(), group.getUpperBound());
+                }
+                for (IFeatureTree child : getChildren()) {
+                    parent.get().mutate().addChild(childIndex++, child);
+                    child.mutate().setGroupID(groupID + child.getGroupID());
+                }
+            }
+        }
+
+        void setFeatureRange(Range featureRange);
+
+        void addGroup(int lowerBound, int upperBound);
+
+        void addGroup(Range groupRange);
+
+        void setGroups(List<Group> groups);
+
+        void setGroupID(int groupID);
+
+        void setMandatory();
+
+        void setOptional();
 
         void setGroupRange(Range groupRange);
 
@@ -94,4 +135,6 @@ public interface IFeatureTree extends IRootedTree<IFeatureTree>, IMutable<IFeatu
             setGroupRange(Range.atLeast(1));
         }
     }
+
+    int getGroupID();
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2023 Elias Kuiter
+ * Copyright (C) 2024 FeatJAR-Development-Team
  *
  * This file is part of FeatJAR-feature-model.
  *
@@ -16,7 +16,7 @@
  * You should have received a copy of the GNU Lesser General Public License
  * along with feature-model. If not, see <https://www.gnu.org/licenses/>.
  *
- * See <https://github.com/FeatureIDE/FeatJAR-model> for further information.
+ * See <https://github.com/FeatJAR> for further information.
  */
 package de.featjar.feature.model.mixins;
 
@@ -25,7 +25,10 @@ import de.featjar.base.data.identifier.IIdentifier;
 import de.featjar.base.tree.Trees;
 import de.featjar.feature.model.*;
 import java.util.LinkedHashSet;
+import java.util.List;
 import java.util.Objects;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 /**
  * Implements a {@link IFeatureModel} mixin for common operations on the {@link IFeatureTree}.
@@ -33,123 +36,61 @@ import java.util.Objects;
  * @author Elias Kuiter
  */
 public interface IHasFeatureTree {
-    IFeatureTree getFeatureTree();
+    List<IFeatureTree> getRoots();
 
-    default LinkedHashSet<IFeature> getFeatures() {
-        return Trees.preOrderStream(getFeatureTree())
-                .map(IFeatureTree::getFeature)
-                .collect(Sets.toSet());
+    default Stream<IFeatureTree> getFeatureTreeStream() {
+        return getRoots().stream().flatMap(Trees::preOrderStream);
     }
 
-    default int getNumberOfFeatures() {
-        return getFeatures().size();
+    default LinkedHashSet<IFeature> getTreeFeatures() {
+        LinkedHashSet<IFeature> featureSet = new LinkedHashSet<>();
+        getFeatureTreeStream().map(IFeatureTree::getFeature).forEach(featureSet::add);
+        return featureSet;
     }
 
-    default IFeature getRootFeature() {
-        return getFeatureTree().getRoot().getFeature();
+    default int getNumberOfTreeFeatures() {
+        return getTreeFeatures().size();
     }
 
-    default Result<IFeature> getFeature(IIdentifier identifier) {
+    default List<IFeature> getRootFeatures() {
+        return getRoots().stream().map(IFeatureTree::getFeature).collect(Collectors.toList());
+    }
+
+    default Result<IFeature> getTreeFeature(IIdentifier identifier) {
         Objects.requireNonNull(identifier);
-        return Result.ofOptional(getFeatures().stream()
+        return Result.ofOptional(getFeatureTreeStream()
+                .map(IFeatureTree::getFeature)
                 .filter(feature -> feature.getIdentifier().equals(identifier))
                 .findFirst());
     }
 
-    default Result<IFeature> getFeature(String name) {
+    default Result<IFeature> getTreeFeature(String name) {
         Objects.requireNonNull(name);
-        return Result.ofOptional(getFeatures().stream()
-                .filter(feature -> feature.getName().equals(name))
+        return Result.ofOptional(getFeatureTreeStream()
+                .map(IFeatureTree::getFeature)
+                .filter(feature -> feature.getName().valueEquals(name))
                 .findFirst());
     }
 
-    default boolean hasFeature(IIdentifier identifier) {
-        return getFeature(identifier).isPresent();
+    default Result<IFeatureTree> getFeatureTree(String name) {
+        Objects.requireNonNull(name);
+        return Result.ofOptional(getFeatureTreeStream()
+                .filter(tree -> tree.getFeature().getName().valueEquals(name))
+                .findFirst());
     }
 
-    default boolean hasFeature(IFeature feature) {
-        return hasFeature(feature.getIdentifier());
+    default Result<IFeatureTree> getFeatureTree(IFeature feature) {
+        Objects.requireNonNull(feature);
+        return Result.ofOptional(getFeatureTreeStream()
+                .filter(tree -> tree.getFeature().equals(feature))
+                .findFirst());
     }
 
-    interface Mutator extends IMutator<IFeatureModel> {
-        IFeature newFeature();
+    default boolean hasTreeFeature(IIdentifier identifier) {
+        return getTreeFeature(identifier).isPresent();
+    }
 
-        default void addFeatureBelow(IFeature newFeature, IFeature parentFeature, int index) {
-            Objects.requireNonNull(newFeature);
-            Objects.requireNonNull(parentFeature);
-            if (getMutable().hasFeature(newFeature) || !getMutable().hasFeature(parentFeature)) {
-                throw new IllegalArgumentException();
-            }
-            parentFeature.getFeatureTree().addChild(index, newFeature.getFeatureTree());
-        }
-
-        default void addFeatureBelow(IFeature newFeature, IFeature parentFeature) {
-            Objects.requireNonNull(newFeature);
-            Objects.requireNonNull(parentFeature);
-            addFeatureBelow(
-                    newFeature, parentFeature, parentFeature.getFeatureTree().getChildrenCount());
-        }
-
-        default void addFeatureNextTo(IFeature newFeature, IFeature siblingFeature) {
-            Objects.requireNonNull(newFeature);
-            Objects.requireNonNull(siblingFeature);
-            if (!siblingFeature.getFeatureTree().hasParent() || !getMutable().hasFeature(siblingFeature)) {
-                throw new IllegalArgumentException();
-            }
-            addFeatureBelow(
-                    newFeature,
-                    siblingFeature.getFeatureTree().getParent().get().getFeature(),
-                    siblingFeature.getFeatureTree().getIndex().get() + 1);
-        }
-
-        default IFeature createFeatureBelow(IFeature parentFeature, int index) {
-            IFeature newFeature = newFeature();
-            addFeatureBelow(newFeature, parentFeature, index);
-            return newFeature;
-        }
-
-        default IFeature createFeatureBelow(IFeature parentFeature) {
-            IFeature newFeature = newFeature();
-            addFeatureBelow(newFeature, parentFeature);
-            return newFeature;
-        }
-
-        default IFeature createFeatureNextTo(IFeature siblingFeature) {
-            IFeature newFeature = newFeature();
-            addFeatureNextTo(newFeature, siblingFeature);
-            return newFeature;
-        }
-
-        default void removeFeature(IFeature feature) { // TODO what about the containing constraints?
-            Objects.requireNonNull(feature);
-            if (feature.equals(getMutable().getRootFeature()) || !getMutable().hasFeature(feature)) {
-                throw new IllegalArgumentException();
-            }
-
-            final IFeatureTree parentFeatureTree =
-                    feature.getFeatureTree().getParent().get();
-
-            if (parentFeatureTree.getChildrenCount() == 1) {
-                parentFeatureTree.mutate(mutator -> {
-                    if (feature.getFeatureTree().isAnd()) {
-                        mutator.setAnd();
-                    } else if (feature.getFeatureTree().isAlternative()) {
-                        mutator.setAlternative();
-                    } else {
-                        mutator.setOr();
-                    }
-                });
-            }
-
-            final int index = feature.getFeatureTree().getIndex().get();
-            while (feature.getFeatureTree().hasChildren()) {
-                parentFeatureTree.addChild(
-                        index,
-                        feature.getFeatureTree()
-                                .removeChild(feature.getFeatureTree().getChildrenCount() - 1));
-            }
-
-            parentFeatureTree.removeChild(feature.getFeatureTree());
-        }
+    default boolean hasTreeFeature(IFeature feature) {
+        return hasTreeFeature(feature.getIdentifier());
     }
 }

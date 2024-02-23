@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2023 Elias Kuiter
+ * Copyright (C) 2024 FeatJAR-Development-Team
  *
  * This file is part of FeatJAR-feature-model.
  *
@@ -16,7 +16,7 @@
  * You should have received a copy of the GNU Lesser General Public License
  * along with feature-model. If not, see <https://www.gnu.org/licenses/>.
  *
- * See <https://github.com/FeatureIDE/FeatJAR-model> for further information.
+ * See <https://github.com/FeatJAR> for further information.
  */
 package de.featjar.feature.model;
 
@@ -37,7 +37,7 @@ import org.junit.jupiter.api.Test;
  * @author Elias Kuiter
  */
 public class IdentifierTest {
-    FeatureModel featureModel;
+    IFeatureModel featureModel;
 
     @BeforeEach
     public void createFeatureModel() {
@@ -66,18 +66,20 @@ public class IdentifierTest {
         IIdentifier identifier = Identifiers.newCounterIdentifier();
         featureModel = new FeatureModel(identifier);
         assertEquals("1", featureModel.getIdentifier().toString());
+        featureModel.mutate().addFeatureTreeRoot(featureModel.mutate().addFeature("root"));
         Assertions.assertEquals(
-                "2", featureModel.getRootFeature().getIdentifier().toString());
+                "2", featureModel.getRootFeatures().get(0).getIdentifier().toString());
         Assertions.assertEquals("3", identifier.getFactory().get().toString());
         Assertions.assertEquals(
-                "4", featureModel.getRootFeature().getNewIdentifier().toString());
+                "4", featureModel.getRootFeatures().get(0).getNewIdentifier().toString());
         featureModel = new FeatureModel(identifier.getNewIdentifier());
+        featureModel.mutate().addFeatureTreeRoot(featureModel.mutate().addFeature("root"));
         assertEquals("5", featureModel.getIdentifier().toString());
         Assertions.assertEquals(
-                "6", featureModel.getRootFeature().getIdentifier().toString());
+                "6", featureModel.getRootFeatures().get(0).getIdentifier().toString());
         assertEquals("7", featureModel.getNewIdentifier().toString());
         assertEquals(
-                "3",
+                "2",
                 new FeatureModel(Identifiers.newCounterIdentifier())
                         .getNewIdentifier()
                         .toString());

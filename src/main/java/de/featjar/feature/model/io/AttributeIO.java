@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2023 Elias Kuiter
+ * Copyright (C) 2024 FeatJAR-Development-Team
  *
  * This file is part of FeatJAR-feature-model.
  *
@@ -16,7 +16,7 @@
  * You should have received a copy of the GNU Lesser General Public License
  * along with feature-model. If not, see <https://www.gnu.org/licenses/>.
  *
- * See <https://github.com/FeatureIDE/FeatJAR-model> for further information.
+ * See <https://github.com/FeatJAR> for further information.
  */
 package de.featjar.feature.model.io;
 
@@ -67,8 +67,8 @@ public class AttributeIO {
         return Result.empty();
     }
 
-    public static Result<Attribute> parseAttribute(String namespace, String name, String typeString) {
-        return getType(typeString).map(type -> new Attribute(namespace, name, type));
+    public static Result<Attribute<?>> parseAttribute(String namespace, String name, String typeString) {
+        return getType(typeString).map(type -> new Attribute<>(namespace, name, type));
     }
 
     public static Result<Object> parseAttributeValue(Class<?> type, String valueString) {
@@ -92,10 +92,11 @@ public class AttributeIO {
         return getType(typeString).flatMap(type -> parseAttributeValue(type, valueString));
     }
 
+    @SuppressWarnings("unchecked")
     public static List<Problem> parseAndSetAttributeValue(
             IAttributable attributable, String namespace, String name, String typeString, String valueString) {
         List<Problem> problems = new ArrayList<>();
-        Result<Attribute> attribute = AttributeIO.parseAttribute(namespace, name, typeString);
+        Result<Attribute<?>> attribute = AttributeIO.parseAttribute(namespace, name, typeString);
         Result<?> value = parseAttributeValue(typeString, valueString);
         if (attribute.isEmpty()) {
             problems.add(new Problem("invalid type for attribute " + name, Problem.Severity.WARNING));
@@ -104,7 +105,7 @@ public class AttributeIO {
         } else if (attributable.hasAttributeValue(attribute.get())) {
             problems.add(new Problem("already has value for attribute " + name, Problem.Severity.WARNING));
         } else {
-            IAttributable.createMutator(attributable).setAttributeValue(attribute.get(), value.get());
+            attributable.mutate().setAttributeValue((Attribute<Object>) attribute.get(), value.get());
         }
         return problems;
     }

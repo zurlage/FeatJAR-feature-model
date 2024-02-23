@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2023 Elias Kuiter
+ * Copyright (C) 2024 FeatJAR-Development-Team
  *
  * This file is part of FeatJAR-feature-model.
  *
@@ -16,13 +16,12 @@
  * You should have received a copy of the GNU Lesser General Public License
  * along with feature-model. If not, see <https://www.gnu.org/licenses/>.
  *
- * See <https://github.com/FeatureIDE/FeatJAR-model> for further information.
+ * See <https://github.com/FeatJAR> for further information.
  */
 package de.featjar.feature.model.mixins;
 
 import de.featjar.base.data.Attribute;
 import de.featjar.base.data.IAttributable;
-import de.featjar.base.data.IMutable;
 import de.featjar.base.data.Result;
 import de.featjar.feature.model.*;
 
@@ -34,22 +33,17 @@ import de.featjar.feature.model.*;
  * @author Elias Kuiter
  */
 public interface IHasCommonAttributes extends IAttributable {
-    default String getName() {
-        return (String) getAttributeValue(Attributes.NAME).get();
+    default Result<String> getName() {
+        return getAttributeValue(Attributes.NAME);
     }
 
-    @SuppressWarnings({"unchecked", "rawtypes"})
     default Result<String> getDescription() {
-        return (Result) getAttributeValue(Attributes.DESCRIPTION);
+        return getAttributeValue(Attributes.DESCRIPTION);
     }
 
-    interface Mutator<T extends IAttributable & IMutable<T, ?>> extends IAttributable.Mutator<T> {
-        default void setName(String name) {
-            setAttributeValue(Attributes.NAME, name);
-        }
+    public static interface IHasMutableCommonAttributes extends IMutatableAttributable {
+        void setName(String name);
 
-        default void setDescription(String description) {
-            setAttributeValue(Attributes.DESCRIPTION, description);
-        }
+        void setDescription(String description);
     }
 }

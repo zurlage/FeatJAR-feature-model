@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2023 Elias Kuiter
+ * Copyright (C) 2024 FeatJAR-Development-Team
  *
  * This file is part of FeatJAR-feature-model.
  *
@@ -16,18 +16,14 @@
  * You should have received a copy of the GNU Lesser General Public License
  * along with feature-model. If not, see <https://www.gnu.org/licenses/>.
  *
- * See <https://github.com/FeatureIDE/FeatJAR-model> for further information.
+ * See <https://github.com/FeatJAR> for further information.
  */
 package de.featjar.feature.model;
 
 import static org.junit.jupiter.api.Assertions.*;
 
 import de.featjar.base.data.Result;
-import de.featjar.base.data.identifier.CounterIdentifier;
 import de.featjar.base.data.identifier.Identifiers;
-import de.featjar.feature.model.mixins.IHasFeatureTree;
-import de.featjar.feature.model.order.ComparatorFeatureOrder;
-import de.featjar.feature.model.order.ListFeatureOrder;
 import de.featjar.formula.structure.Expressions;
 import java.util.*;
 import org.junit.jupiter.api.Assertions;
@@ -40,7 +36,7 @@ import org.junit.jupiter.api.Test;
  * @author Elias Kuiter
  */
 public class FeatureModelTest {
-    FeatureModel featureModel;
+    IFeatureModel featureModel;
 
     @BeforeEach
     public void createFeatureModel() {
@@ -50,124 +46,57 @@ public class FeatureModelTest {
     @Test
     public void featureModel() {
         Assertions.assertEquals("1", featureModel.getIdentifier().toString());
-        assertTrue(featureModel.getFeatureTree().getChildren().isEmpty());
+        assertTrue(featureModel.getRoots().isEmpty());
+        assertTrue(featureModel.getFeatures().isEmpty());
         assertTrue(featureModel.getConstraints().isEmpty());
-        assertNotNull(featureModel.getFeatureOrder());
-        assertEquals(1, featureModel.featureCache.size());
-        assertEquals(1, featureModel.elementCache.size());
     }
 
     @Test
     public void commonAttributesMixin() {
-        Assertions.assertEquals("@1", featureModel.getName());
+        Assertions.assertEquals("@1", featureModel.getName().get());
         Assertions.assertEquals(Result.empty(), featureModel.getDescription());
-        featureModel.mutate(m -> {
-            m.setName("My Model");
-            m.setDescription("awesome description");
-        });
-        Assertions.assertEquals("My Model", featureModel.getName());
+        featureModel.mutate().setName("My Model");
+        featureModel.mutate().setDescription("awesome description");
+        Assertions.assertEquals(Result.of("My Model"), featureModel.getName());
         Assertions.assertEquals(Result.of("awesome description"), featureModel.getDescription());
-    }
-
-    @Test
-    public void featureModelCacheMixin() {
-        featureModel.mutate().createFeatureBelow(featureModel.getRootFeature());
-        assertEquals(2, featureModel.featureCache.size());
-        featureModel.mutate().createFeatureBelow(featureModel.getRootFeature());
-        assertEquals(3, featureModel.featureCache.size());
-        IHasFeatureTree.Mutator uncachedMutator = new IHasFeatureTree.Mutator() {
-            @Override
-            public IFeature newFeature() {
-                return new Feature(featureModel);
-            }
-
-            @Override
-            public IFeatureModel getMutable() {
-                return featureModel;
-            }
-        };
-        uncachedMutator.createFeatureBelow(featureModel.getRootFeature());
-        assertEquals(3, featureModel.featureCache.size());
-        featureModel.mutateInternal(() -> uncachedMutator.createFeatureBelow(featureModel.getRootFeature()));
-        assertEquals(5, featureModel.featureCache.size());
     }
 
     @Test
     public void featureModelConstraintMixin() {
         Assertions.assertEquals(0, featureModel.getNumberOfConstraints());
-        IConstraint constraint1 = featureModel.mutate().createConstraint(Expressions.True);
-        IConstraint constraint2 = featureModel.mutate().createConstraint(Expressions.True);
-        IConstraint constraint3 = featureModel.mutate().createConstraint(Expressions.False);
+        IConstraint constraint1 = featureModel.mutate().addConstraint(Expressions.True);
+        IConstraint constraint2 = featureModel.mutate().addConstraint(Expressions.True);
+        IConstraint constraint3 = featureModel.mutate().addConstraint(Expressions.False);
         Assertions.assertEquals(3, featureModel.getNumberOfConstraints());
         Assertions.assertEquals(Result.of(constraint1), featureModel.getConstraint(constraint1.getIdentifier()));
         Assertions.assertTrue(featureModel.hasConstraint(constraint2.getIdentifier()));
-        Assertions.assertEquals(Result.of(0), featureModel.getConstraintIndex(constraint1));
-        Assertions.assertEquals(Result.of(1), featureModel.getConstraintIndex(constraint2));
-        assertSame(
-                constraint3,
-                featureModel
-                        .getConstraints()
-                        .get(featureModel.getConstraintIndex(constraint3).get()));
         constraint2.mutate().remove();
-        Assertions.assertEquals(Result.of(0), featureModel.getConstraintIndex(constraint1));
-        Assertions.assertEquals(Result.empty(), featureModel.getConstraintIndex(constraint2));
-        Assertions.assertEquals(Result.of(1), featureModel.getConstraintIndex(constraint3));
-        assertSame(
-                constraint3,
-                featureModel
-                        .getConstraints()
-                        .get(featureModel.getConstraintIndex(constraint3).get()));
-    }
-
-    @Test
-    public void featureModelFeatureOrderMixin() {
-        IFeature rootFeature = featureModel.getRootFeature();
-        IFeature childFeature = rootFeature.mutate().createFeatureBelow();
-        Assertions.assertEquals(Arrays.asList(rootFeature, childFeature), featureModel.getOrderedFeatures());
-        featureModel.mutate().setFeatureOrder(new ListFeatureOrder(Arrays.asList(childFeature, rootFeature)));
-        Assertions.assertEquals(Arrays.asList(childFeature, rootFeature), featureModel.getOrderedFeatures());
-        featureModel.mutate().setFeatureOrder(new ListFeatureOrder(Collections.singletonList(childFeature)));
-        Assertions.assertEquals(Arrays.asList(childFeature, rootFeature), featureModel.getOrderedFeatures());
-        featureModel.mutate().setFeatureOrder(new ListFeatureOrder(Collections.singletonList(rootFeature)));
-        Assertions.assertEquals(Arrays.asList(rootFeature, childFeature), featureModel.getOrderedFeatures());
-        Comparator<IFeature> comparator =
-                Comparator.comparingLong(f -> ((CounterIdentifier) f.getIdentifier()).getCounter());
-        featureModel.mutate().setFeatureOrder(new ComparatorFeatureOrder(comparator));
-        Assertions.assertEquals(Arrays.asList(rootFeature, childFeature), featureModel.getOrderedFeatures());
-        featureModel.mutate().setFeatureOrder(new ComparatorFeatureOrder(comparator.reversed()));
-        Assertions.assertEquals(Arrays.asList(childFeature, rootFeature), featureModel.getOrderedFeatures());
-        IFeature anotherChildFeature = rootFeature.mutate().createFeatureBelow();
-        Assertions.assertEquals(
-                Arrays.asList(anotherChildFeature, childFeature, rootFeature), featureModel.getOrderedFeatures());
-        featureModel.mutate().removeFeature(childFeature);
-        featureModel.mutate().removeFeature(anotherChildFeature);
-        Assertions.assertEquals(List.of(rootFeature), featureModel.getOrderedFeatures());
+        Assertions.assertFalse(featureModel.hasConstraint(constraint2.getIdentifier()));
+        Assertions.assertTrue(featureModel.hasConstraint(constraint3));
     }
 
     @Test
     public void featureModelFeatureTreeMixin() {
-        IFeature rootFeature = featureModel.getRootFeature();
+        IFeature rootFeature = featureModel.mutate().addFeature("root");
         Assertions.assertEquals(1, featureModel.getNumberOfFeatures());
-        final IFeature childFeature = rootFeature.mutate().createFeatureBelow();
-        assertSame(childFeature, childFeature.getFeatureTree().getFeature());
-        assertSame(rootFeature, childFeature.getFeatureTree().getParent().get().getFeature());
-        assertSame(childFeature.getFeatureTree().getParent().get(), rootFeature.getFeatureTree());
+        IFeatureTree rootTree = featureModel.mutate().addFeatureTreeRoot(rootFeature);
+        IFeature childFeature = featureModel.mutate().addFeature("child1");
+        final IFeatureTree childTree = rootTree.mutate().addFeatureBelow(childFeature);
+        assertSame(childFeature, childTree.getFeature());
+        assertSame(childTree, childFeature.getFeatureTree().get());
+        assertSame(childFeature, childTree.getFeature());
+        assertSame(rootFeature, childTree.getParent().get().getFeature());
+        assertSame(childTree.getParent().get(), rootFeature.getFeatureTree().get());
         assertSame(featureModel.getFeature(childFeature.getIdentifier()).get(), childFeature);
         Assertions.assertEquals(2, featureModel.getNumberOfFeatures());
         Assertions.assertEquals(Result.of(childFeature), featureModel.getFeature(childFeature.getIdentifier()));
         Assertions.assertTrue(featureModel.hasFeature(childFeature.getIdentifier()));
-        Assertions.assertTrue(featureModel.getFeature("root").isEmpty());
-        rootFeature.mutate().setName("root");
-        Assertions.assertEquals(Result.of(rootFeature), featureModel.getFeature("root"));
-        assertEquals(
-                List.of(childFeature.getFeatureTree()),
-                rootFeature.getFeatureTree().getChildren());
-        assertEquals(
-                Result.of(rootFeature.getFeatureTree()),
-                childFeature.getFeatureTree().getParent());
-        assertThrows(IllegalArgumentException.class, () -> rootFeature.mutate().remove());
-        assertDoesNotThrow(() -> childFeature.mutate().remove());
-        assertEquals(List.of(), rootFeature.getFeatureTree().getChildren());
-        assertEquals(Result.empty(), childFeature.getFeatureTree().getParent());
+        Assertions.assertTrue(featureModel.getFeature("root2").isEmpty());
+        rootFeature.mutate().setName("root2");
+        Assertions.assertEquals(Result.of(rootFeature), featureModel.getFeature("root2"));
+        assertEquals(List.of(childTree), rootFeature.getFeatureTree().get().getChildren());
+        assertEquals(rootFeature.getFeatureTree(), childTree.getParent());
+        childTree.mutate().removeFromTree();
+        assertEquals(List.of(), rootFeature.getFeatureTree().get().getChildren());
     }
 }

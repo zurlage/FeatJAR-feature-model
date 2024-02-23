@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2023 Elias Kuiter
+ * Copyright (C) 2024 FeatJAR-Development-Team
  *
  * This file is part of FeatJAR-feature-model.
  *
@@ -16,14 +16,13 @@
  * You should have received a copy of the GNU Lesser General Public License
  * along with feature-model. If not, see <https://www.gnu.org/licenses/>.
  *
- * See <https://github.com/FeatureIDE/FeatJAR-model> for further information.
+ * See <https://github.com/FeatJAR> for further information.
  */
 package de.featjar.feature.model.io.xml;
 
 import de.featjar.base.data.Result;
 import de.featjar.base.io.format.IFormat;
 import de.featjar.feature.model.*;
-import java.awt.*;
 import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -51,9 +50,8 @@ public class GraphVizFeatureModelFormat implements IFormat<IFeatureModel> {
 
     @Override
     public Result<String> serialize(IFeatureModel featureModel) {
-        List<IFeature> features = featureModel.getFeatureTree().getDescendantsAsLevelOrder().stream()
-                .map(IFeatureTree::getFeature)
-                .collect(Collectors.toList());
+        // TODO take multiple roots into account
+        List<IFeatureTree> features = featureModel.getFeatureTreeStream().collect(Collectors.toList());
         return Result.of(String.format(
                 "digraph {\n  graph%s;\n  node%s;\n  edge%s;\n%s\n%s\n}",
                 options(option("splines", "false"), option("ranksep", "0.2")),
@@ -67,69 +65,63 @@ public class GraphVizFeatureModelFormat implements IFormat<IFeatureModel> {
                 features.stream().map(this::getEdge).filter(s -> !s.isEmpty()).collect(Collectors.joining("\n"))));
     }
 
-    public String getNode(IFeature feature) {
+    public String getNode(IFeatureTree feature) {
         String nodeString = "";
         nodeString += String.format(
                 "  %s%s;",
-                quote(feature.getIdentifier().toString()),
+                quote(feature.getFeature().getIdentifier().toString()),
                 options(
-                        option("label", feature.getName()),
-                        option("fillcolor", feature.isAbstract() ? "#f2f2ff" : null)));
+                        option("label", feature.getFeature().getName().orElse("")),
+                        option("fillcolor", feature.getFeature().isAbstract() ? "#f2f2ff" : null)));
         nodeString += String.format(
                 "\n  %s%s;",
-                quote(feature.getIdentifier().toString() + "_group"),
+                quote(feature.getFeature().getIdentifier().toString() + "_group"),
                 options(
                         option("shape", "diamond"),
                         option(
                                 "style",
-                                !feature.getFeatureTree().isGroup()
+                                !feature.getGroup().isAnd()
                                         ? "invis"
-                                        : feature.getFeatureTree().isAlternative() ? "" : null),
-                        option("fillcolor", feature.getFeatureTree().isOr() ? "#000000" : null),
+                                        : feature.getGroup().isAlternative() ? "" : null),
+                        option("fillcolor", feature.getGroup().isOr() ? "#000000" : null),
                         option("label", ""),
                         option("width", ".15"),
                         option("height", ".15")));
         return nodeString;
     }
 
-    public String getEdge(IFeature feature) {
+    public String getEdge(IFeatureTree feature) {
         String edgeString = "";
-        if (feature.getFeatureTree().hasParent()) {
-            String parentNode = feature.getFeatureTree()
-                    .getParent()
-                    .get()
-                    .getFeature()
-                    .getIdentifier()
-                    .toString();
+        if (feature.hasParent()) {
+            String parentNode =
+                    feature.getParent().get().getFeature().getIdentifier().toString();
             edgeString += getEdge(
                     parentNode + "_group",
                     feature,
-                    option("style", feature.getFeatureTree().getParent().get().isGroup() ? null : "invis"));
-            if (!feature.getFeatureTree().getParent().get().isGroup())
+                    option("style", feature.getParent().get().getGroup().isAnd() ? null : "invis"));
+            if (!feature.getParent().get().getGroup().isAnd())
                 edgeString += getEdge(
-                        parentNode + (feature.getFeatureTree().getParent().get().isGroup() ? "_group" : ""),
-                        feature,
-                        "");
+                        parentNode + (feature.getParent().get().getGroup().isAnd() ? "_group" : ""), feature, "");
         }
         edgeString += String.format(
                 "  %s:s -> %s:n%s;",
-                quote(feature.getIdentifier().toString()),
-                quote(feature.getIdentifier().toString() + "_group"),
-                options(option("style", feature.getFeatureTree().isGroup() ? null : "invis")));
+                quote(feature.getFeature().getIdentifier().toString()),
+                quote(feature.getFeature().getIdentifier().toString() + "_group"),
+                options(option("style", feature.getGroup().isAnd() ? null : "invis")));
         return edgeString;
     }
 
-    public String getEdge(String parentNode, IFeature childFeature, String option) {
+    public String getEdge(String parentNode, IFeatureTree childFeature, String option) {
         return String.format(
                 "  %s:s -> %s:n%s;\n",
                 quote(parentNode),
-                quote(childFeature.getIdentifier().toString()),
+                quote(childFeature.getFeature().getIdentifier().toString()),
                 options(
                         option(
                                 "arrowhead",
-                                childFeature.getFeatureTree().getParent().get().isGroup()
+                                childFeature.getParent().get().getGroup().isAnd()
                                         ? null
-                                        : childFeature.getFeatureTree().isMandatory() ? "dot" : "odot"),
+                                        : childFeature.isMandatory() ? "dot" : "odot"),
                         option));
     }
 

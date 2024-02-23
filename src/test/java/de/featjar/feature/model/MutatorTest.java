@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2023 Elias Kuiter
+ * Copyright (C) 2024 FeatJAR-Development-Team
  *
  * This file is part of FeatJAR-feature-model.
  *
@@ -16,14 +16,10 @@
  * You should have received a copy of the GNU Lesser General Public License
  * along with feature-model. If not, see <https://www.gnu.org/licenses/>.
  *
- * See <https://github.com/FeatureIDE/FeatJAR-model> for further information.
+ * See <https://github.com/FeatJAR> for further information.
  */
 package de.featjar.feature.model;
 
-import static org.junit.jupiter.api.Assertions.assertSame;
-
-import de.featjar.base.data.IMutable;
-import de.featjar.base.data.IMutator;
 import de.featjar.base.data.identifier.Identifiers;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -42,11 +38,5 @@ public class MutatorTest {
     }
 
     @Test
-    public void mutable() {
-        assertSame(featureModel.mutate(), featureModel.getMutator());
-        assertSame(featureModel, featureModel.mutate().getMutable());
-        FeatureModel.Mutator mutator = featureModel.new Mutator();
-        featureModel.setMutator(mutator);
-        assertSame(mutator, featureModel.getMutator());
-    }
+    public void mutable() {}
 }
