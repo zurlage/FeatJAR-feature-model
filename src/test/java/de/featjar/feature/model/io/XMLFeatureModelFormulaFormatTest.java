@@ -16,29 +16,25 @@
  * You should have received a copy of the GNU Lesser General Public License
  * along with feature-model. If not, see <https://www.gnu.org/licenses/>.
  *
- * See <https://github.com/FeatJAR> for further information.
+ * See <https://github.com/FeatureIDE/FeatJAR-feature-model> for further information.
  */
 package de.featjar.feature.model.io;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertTrue;
 
+import de.featjar.Common;
 import de.featjar.base.data.Result;
 import de.featjar.base.data.Sets;
-import de.featjar.base.io.IO;
 import de.featjar.feature.model.IFeature;
 import de.featjar.feature.model.IFeatureModel;
 import de.featjar.feature.model.io.xml.XMLFeatureModelFormat;
-import java.nio.file.Paths;
 import org.junit.jupiter.api.Test;
 
-public class XMLFeatureModelFormulaFormatTest {
+public class XMLFeatureModelFormulaFormatTest extends Common {
     @Test
     public void xmlFeatureModelFormat() {
-        Result<IFeatureModel> featureModelResult =
-                IO.load(Paths.get("src/test/resources/testFeatureModels/car.xml"), new XMLFeatureModelFormat());
-        assertTrue(featureModelResult.isPresent());
-        IFeatureModel featureModel = featureModelResult.get();
+        IFeatureModel featureModelResult = load("testFeatureModels/car.xml", new XMLFeatureModelFormat());
+        IFeatureModel featureModel = featureModelResult;
         String[] featureNames = new String[] {
             "Car",
             "Carbody",

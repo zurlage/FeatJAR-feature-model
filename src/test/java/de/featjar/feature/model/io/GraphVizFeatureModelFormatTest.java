@@ -16,28 +16,24 @@
  * You should have received a copy of the GNU Lesser General Public License
  * along with feature-model. If not, see <https://www.gnu.org/licenses/>.
  *
- * See <https://github.com/FeatJAR> for further information.
+ * See <https://github.com/FeatureIDE/FeatJAR-feature-model> for further information.
  */
 package de.featjar.feature.model.io;
 
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-import de.featjar.base.data.Result;
+import de.featjar.Common;
 import de.featjar.base.io.IO;
 import de.featjar.feature.model.IFeatureModel;
 import de.featjar.feature.model.io.xml.GraphVizFeatureModelFormat;
 import de.featjar.feature.model.io.xml.XMLFeatureModelFormat;
 import java.io.IOException;
-import java.nio.file.Paths;
 import org.junit.jupiter.api.Test;
 
-public class GraphVizFeatureModelFormatTest {
+public class GraphVizFeatureModelFormatTest extends Common {
     @Test
     public void graphVizFeatureModelFormat() throws IOException {
-        Result<IFeatureModel> featureModel =
-                IO.load(Paths.get("src/test/resources/testFeatureModels/car.xml"), new XMLFeatureModelFormat());
-        assertTrue(featureModel.isPresent());
-        assertTrue(
-                IO.print(featureModel.get(), new GraphVizFeatureModelFormat()).startsWith("digraph {"));
+        IFeatureModel featureModel = load("testFeatureModels/car.xml", new XMLFeatureModelFormat());
+        assertTrue(IO.print(featureModel, new GraphVizFeatureModelFormat()).startsWith("digraph {"));
     }
 }
