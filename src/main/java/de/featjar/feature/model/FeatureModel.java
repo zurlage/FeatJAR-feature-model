@@ -28,7 +28,6 @@ import de.featjar.base.data.Result;
 import de.featjar.base.data.identifier.IIdentifier;
 import de.featjar.base.data.identifier.UUIDIdentifier;
 import de.featjar.base.tree.Trees;
-import de.featjar.base.tree.visitor.TreePrinter;
 import de.featjar.feature.model.IFeatureModel.IMutableFeatureModel;
 import de.featjar.formula.structure.IFormula;
 import java.util.ArrayList;
@@ -175,7 +174,7 @@ public class FeatureModel implements IMutableFeatureModel, IMutatableAttributabl
     public String toString() {
         StringBuilder featureString = new StringBuilder();
         for (IFeatureTree root : featureTreeRoots) {
-            featureString.append(Trees.traverse(root, new TreePrinter()).get());
+            featureString.append(root.print());
             featureString.append('\n');
         }
         return String.format(
