@@ -198,7 +198,8 @@ public class XMLFeatureModelFormat extends AXMLFeatureModelFormat<IFeatureModel,
 
     @Override
     protected void addFeatureMetadata(IFeatureTree featureLabel, Element e) throws ParseException {
-        switch (e.getNodeName()) {
+        String nodeName = e.getNodeName();
+        switch (nodeName) {
             case DESCRIPTION:
                 featureLabel.getFeature().mutate().setDescription(getDescription(e));
                 break;
@@ -208,6 +209,8 @@ public class XMLFeatureModelFormat extends AXMLFeatureModelFormat<IFeatureModel,
             case PROPERTY:
                 parseProperty(featureLabel.getFeature(), e, NAMESPACE);
                 break;
+            default:
+                FeatJAR.log().warning("Unkown node name %s", nodeName);
         }
     }
 
@@ -223,7 +226,8 @@ public class XMLFeatureModelFormat extends AXMLFeatureModelFormat<IFeatureModel,
 
     @Override
     protected void addConstraintMetadata(IConstraint constraintLabel, Element e) throws ParseException {
-        switch (e.getNodeName()) {
+        String nodeName = e.getNodeName();
+        switch (nodeName) {
             case DESCRIPTION:
                 constraintLabel.mutate().setDescription(getDescription(e));
                 break;
@@ -235,6 +239,9 @@ public class XMLFeatureModelFormat extends AXMLFeatureModelFormat<IFeatureModel,
                 break;
             case TAGS:
                 constraintLabel.mutate().setTags(getTags(e));
+                break;
+            default:
+                FeatJAR.log().warning("Unkown node name %s", nodeName);
         }
     }
 
@@ -334,6 +341,8 @@ public class XMLFeatureModelFormat extends AXMLFeatureModelFormat<IFeatureModel,
                 case PROPERTY:
                     parseProperty(featureModel, propertyElement, NAMESPACE);
                     break;
+                default:
+                    FeatJAR.log().warning("Unkown node name %s", nodeName);
             }
         }
     }
@@ -567,16 +576,16 @@ public class XMLFeatureModelFormat extends AXMLFeatureModelFormat<IFeatureModel,
      */
     private void addTags(Document doc, Set<String> tags, Element fnod) {
         if ((tags != null) && !tags.isEmpty()) {
-            final Element tag = doc.createElement(TAGS);
-            String finalTags = "";
+            StringBuilder tagStrings = new StringBuilder();
             for (final String tagString : tags) {
-                if (finalTags.equals("")) {
-                    finalTags += tagString;
-                    continue;
-                }
-                finalTags += "," + tagString;
+                tagStrings.append(tagString);
+                tagStrings.append(',');
             }
-            tag.setTextContent(finalTags);
+            if (!tagStrings.isEmpty()) {
+                tagStrings.deleteCharAt(tagStrings.length() - 1);
+            }
+            final Element tag = doc.createElement(TAGS);
+            tag.setTextContent(tagStrings.toString());
             fnod.appendChild(tag);
         }
     }

@@ -56,7 +56,7 @@ public interface IFeatureTree extends IRootedTree<IFeatureTree>, IAttributable, 
     }
 
     default boolean isOptional() {
-        return getFeatureRangeLowerBound() == 0;
+        return getFeatureRangeLowerBound() <= 0;
     }
 
     default IMutableFeatureTree mutate() {

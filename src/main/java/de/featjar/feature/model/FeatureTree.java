@@ -187,16 +187,6 @@ public class FeatureTree extends ARootedTree<IFeatureTree> implements IMutableFe
     }
 
     @Override
-    public boolean isMandatory() {
-        return featureRange.is(1, 1);
-    }
-
-    @Override
-    public boolean isOptional() {
-        return featureRange.is(0, 1);
-    }
-
-    @Override
     public ITree<IFeatureTree> cloneNode() {
         return new FeatureTree(this);
     }
@@ -247,7 +237,7 @@ public class FeatureTree extends ARootedTree<IFeatureTree> implements IMutableFe
 
     @Override
     public void setFeatureRange(Range featureRange) {
-        featureRange = Range.copy(featureRange);
+        this.featureRange = Range.copy(featureRange);
     }
 
     @Override

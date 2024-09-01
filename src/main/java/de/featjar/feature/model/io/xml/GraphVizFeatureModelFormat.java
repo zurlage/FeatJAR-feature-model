@@ -53,7 +53,7 @@ public class GraphVizFeatureModelFormat implements IFormat<IFeatureModel> {
         // TODO take multiple roots into account
         List<IFeatureTree> features = featureModel.getFeatureTreeStream().collect(Collectors.toList());
         return Result.of(String.format(
-                "digraph {\n  graph%s;\n  node%s;\n  edge%s;\n%s\n%s\n}",
+                "digraph {%n  graph%s;%n  node%s;%n  edge%s;%n%s%n%s%n}",
                 options(option("splines", "false"), option("ranksep", "0.2")),
                 options(
                         option("fontname", "Arial"),
@@ -74,7 +74,7 @@ public class GraphVizFeatureModelFormat implements IFormat<IFeatureModel> {
                         option("label", feature.getFeature().getName().orElse("")),
                         option("fillcolor", feature.getFeature().isAbstract() ? "#f2f2ff" : null)));
         nodeString += String.format(
-                "\n  %s%s;",
+                "%n  %s%s;",
                 quote(feature.getFeature().getIdentifier().toString() + "_group"),
                 options(
                         option("shape", "diamond"),
@@ -113,7 +113,7 @@ public class GraphVizFeatureModelFormat implements IFormat<IFeatureModel> {
 
     public String getEdge(String parentNode, IFeatureTree childFeature, String option) {
         return String.format(
-                "  %s:s -> %s:n%s;\n",
+                "  %s:s -> %s:n%s;%n",
                 quote(parentNode),
                 quote(childFeature.getFeature().getIdentifier().toString()),
                 options(
