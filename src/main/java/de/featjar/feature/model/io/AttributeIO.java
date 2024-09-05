@@ -23,6 +23,7 @@ package de.featjar.feature.model.io;
 import de.featjar.base.data.*;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 
 /**
  * Helpers for parsing and writing attributes and attribute values.
@@ -31,7 +32,7 @@ import java.util.List;
  */
 public class AttributeIO {
     public static Result<Class<?>> getType(String typeString) {
-        switch (typeString.toLowerCase()) {
+        switch (typeString.toLowerCase(Locale.ENGLISH)) {
             case "string":
                 return Result.of(String.class);
             case "bool":
@@ -46,8 +47,9 @@ public class AttributeIO {
                 return Result.of(Float.class);
             case "double":
                 return Result.of(Double.class);
+            default:
+                return Result.empty();
         }
-        return Result.empty();
     }
 
     public static Result<String> getTypeString(Class<?> type) {
