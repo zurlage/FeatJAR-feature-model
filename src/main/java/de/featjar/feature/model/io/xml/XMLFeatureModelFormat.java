@@ -581,7 +581,7 @@ public class XMLFeatureModelFormat extends AXMLFeatureModelFormat<IFeatureModel,
                 tagStrings.append(tagString);
                 tagStrings.append(',');
             }
-            if (!tagStrings.isEmpty()) {
+            if (tagStrings.length() > 0) {
                 tagStrings.deleteCharAt(tagStrings.length() - 1);
             }
             final Element tag = doc.createElement(TAGS);
