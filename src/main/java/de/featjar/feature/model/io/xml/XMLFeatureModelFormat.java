@@ -21,32 +21,18 @@
 package de.featjar.feature.model.io.xml;
 
 import de.featjar.base.FeatJAR;
-import de.featjar.base.data.IAttribute;
-import de.featjar.base.data.Maps;
-import de.featjar.base.data.Problem;
-import de.featjar.base.data.Result;
+import de.featjar.base.data.*;
 import de.featjar.base.data.identifier.IIdentifier;
 import de.featjar.base.data.identifier.Identifiers;
 import de.featjar.base.io.format.ParseException;
 import de.featjar.base.io.input.AInputMapper;
-import de.featjar.feature.model.Attributes;
-import de.featjar.feature.model.FeatureModel;
-import de.featjar.feature.model.IConstraint;
-import de.featjar.feature.model.IFeature;
-import de.featjar.feature.model.IFeatureModel;
-import de.featjar.feature.model.IFeatureModelElement;
-import de.featjar.feature.model.IFeatureTree;
+import de.featjar.feature.model.*;
 import de.featjar.feature.model.io.AttributeIO;
 import de.featjar.formula.io.xml.AXMLFeatureModelFormat;
 import de.featjar.formula.structure.Expressions;
 import de.featjar.formula.structure.IExpression;
 import de.featjar.formula.structure.IFormula;
-import de.featjar.formula.structure.connective.And;
-import de.featjar.formula.structure.connective.AtMost;
-import de.featjar.formula.structure.connective.Implies;
-import de.featjar.formula.structure.connective.Not;
-import de.featjar.formula.structure.connective.Or;
-import de.featjar.formula.structure.predicate.Equals;
+import de.featjar.formula.structure.connective.*;
 import de.featjar.formula.structure.predicate.Literal;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -55,7 +41,6 @@ import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
-import java.util.Optional;
 import java.util.Set;
 import java.util.function.Supplier;
 import java.util.regex.Pattern;
@@ -64,7 +49,6 @@ import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.NamedNodeMap;
 import org.w3c.dom.Node;
-import org.w3c.dom.Text;
 
 /**
  * Parses and writes feature models from and to FeatureIDE XML files.
@@ -183,17 +167,23 @@ public class XMLFeatureModelFormat extends AXMLFeatureModelFormat<IFeatureModel,
 
     @Override
     protected void addAndGroup(IFeatureTree featureLabel, List<IFeatureTree> childFeatureLabels) {
-        featureLabel.mutate().setAnd();
+        ArrayList<FeatureTree.Group> list = new ArrayList<>(1);
+        list.add(new FeatureTree.Group(Range.atLeast(0)));
+        featureLabel.mutate().setGroups(list);
     }
 
     @Override
     protected void addOrGroup(IFeatureTree featureLabel, List<IFeatureTree> childFeatureLabels) {
-        featureLabel.mutate().setOr();
+        ArrayList<FeatureTree.Group> list = new ArrayList<>(1);
+        list.add(new FeatureTree.Group(Range.atLeast(1)));
+        featureLabel.mutate().setGroups(list);
     }
 
     @Override
     protected void addAlternativeGroup(IFeatureTree featureLabel, List<IFeatureTree> childFeatureLabels) {
-        featureLabel.mutate().setAlternative();
+        ArrayList<FeatureTree.Group> list = new ArrayList<>(1);
+        list.add(new FeatureTree.Group(Range.exactly(1)));
+        featureLabel.mutate().setGroups(list);
     }
 
     @Override
@@ -369,22 +359,8 @@ public class XMLFeatureModelFormat extends AXMLFeatureModelFormat<IFeatureModel,
         final Element root = doc.createElement(FEATURE_MODEL);
         doc.appendChild(root);
 
-        writeProperties(doc, root);
         writeFeatures(doc, root);
         writeConstraints(doc, root);
-        writeComments(doc, root);
-        writeFeatureOrder(doc, root);
-    }
-
-    protected void writeProperties(Document doc, final Element root) {
-        Optional<Map<IAttribute<?>, Object>> attributes = featureModel.getAttributes();
-        if (attributes.isPresent()) {
-            if (!attributes.get().isEmpty()) {
-                final Element properties = doc.createElement(PROPERTIES);
-                root.appendChild(properties);
-                addProperties(doc, attributes.get(), properties);
-            }
-        }
     }
 
     protected void writeFeatures(Document doc, final Element root) {
@@ -410,47 +386,6 @@ public class XMLFeatureModelFormat extends AXMLFeatureModelFormat<IFeatureModel,
         }
     }
 
-    protected void writeComments(Document doc, final Element root) {
-        if (featureModel
-                .getAttributeValue(Attributes.get("Comments", String.class))
-                .isPresent()) {
-            final Element comments = doc.createElement(COMMENTS);
-            root.appendChild(comments);
-            final Element c = doc.createElement(C);
-            comments.appendChild(c);
-            final Text text = doc.createTextNode(featureModel
-                    .getAttributeValue(Attributes.get("Comments", String.class))
-                    .get());
-            c.appendChild(text);
-        }
-    }
-
-    protected void writeFeatureOrder(Document doc, final Element root) {
-        if (featureModel
-                .getAttributeValue(Attributes.get("HasFeatureOrder", Boolean.class))
-                .valueEquals(true)) {
-            final Element order = doc.createElement(FEATURE_ORDER);
-            order.setAttribute(USER_DEFINED, "true");
-            root.appendChild(order);
-            List<?> featureOrderList = featureModel
-                    .getAttributeValue(Attributes.get("FeatureOrder", List.class))
-                    .get();
-
-            if (featureOrderList.isEmpty()) {
-                featureOrderList = featureModel
-                        .getFeatureTreeStream()
-                        .map(t -> t.getFeature().getName().get())
-                        .collect(Collectors.toList());
-            }
-
-            for (final Object featureName : featureOrderList) {
-                final Element feature = doc.createElement(FEATURE);
-                feature.setAttribute(NAME, String.valueOf(featureName));
-                order.appendChild(feature);
-            }
-        }
-    }
-
     /**
      * Inserts the tags concerning propositional constraints into the DOM document representation
      *
@@ -471,12 +406,12 @@ public class XMLFeatureModelFormat extends AXMLFeatureModelFormat<IFeatureModel,
                 xmlNode = opNot;
             }
             op = doc.createElement(VAR);
-            op.appendChild(doc.createTextNode(literal.getName()));
+            op.appendChild(doc.createTextNode(literal.getFirstChild().get().getName()));
             xmlNode.appendChild(op);
             return;
         } else if (node instanceof Or) {
             op = doc.createElement(DISJ);
-        } else if (node instanceof Equals) {
+        } else if (node instanceof BiImplies) {
             op = doc.createElement(EQ);
         } else if (node instanceof Implies) {
             op = doc.createElement(IMP);
@@ -516,11 +451,11 @@ public class XMLFeatureModelFormat extends AXMLFeatureModelFormat<IFeatureModel,
             fnod = doc.createElement(FEATURE);
             writeFeatureProperties(doc, node, feat, fnod);
         } else {
-            if (feat.getGroup().isAnd()) {
+            if (feat.getGroups().get(0).isAnd()) {
                 fnod = doc.createElement(AND);
-            } else if (feat.getGroup().isOr()) {
+            } else if (feat.getGroups().get(0).isOr()) {
                 fnod = doc.createElement(OR);
-            } else if (feat.getGroup().isAlternative()) {
+            } else if (feat.getGroups().get(0).isAlternative()) {
                 fnod = doc.createElement(ALT);
             } else {
                 FeatJAR.log().error("Unkown group %s", feat.getGroup());
@@ -537,7 +472,9 @@ public class XMLFeatureModelFormat extends AXMLFeatureModelFormat<IFeatureModel,
 
     protected void writeFeatureProperties(Document doc, Element node, IFeatureTree feat, final Element fnod) {
         addDescription(doc, feat.getFeature().getDescription().orElse(null), fnod);
-        addProperties(doc, feat.getAttributes().get(), fnod);
+        if (feat.getAttributes().isPresent()) {
+            addProperties(doc, feat.getAttributes().get(), fnod);
+        }
         writeAttributes(node, fnod, feat);
     }
 
@@ -595,7 +532,7 @@ public class XMLFeatureModelFormat extends AXMLFeatureModelFormat<IFeatureModel,
         if (feat.getFeature().isHidden()) {
             fnod.setAttribute(HIDDEN, TRUE);
         }
-        if (feat.isMandatory()) {
+        if (feat.isMandatory() || feat.getParent().isEmpty()) {
             if ((feat.getParent().isPresent())
                     && feat.getParent().get().getGroup().isAnd()) {
                 fnod.setAttribute(MANDATORY, TRUE);

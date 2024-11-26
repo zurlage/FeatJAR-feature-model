@@ -20,10 +20,7 @@
  */
 package de.featjar.feature.model.transformer;
 
-import de.featjar.base.computation.AComputation;
-import de.featjar.base.computation.Dependency;
-import de.featjar.base.computation.IComputation;
-import de.featjar.base.computation.Progress;
+import de.featjar.base.computation.*;
 import de.featjar.base.data.Result;
 import de.featjar.feature.model.FeatureTree.Group;
 import de.featjar.feature.model.IConstraint;
@@ -52,7 +49,7 @@ import java.util.List;
 public class ComputeFormula extends AComputation<IFormula> {
     protected static final Dependency<IFeatureModel> FEATURE_MODEL = Dependency.newDependency(IFeatureModel.class);
 
-    public ComputeFormula(IComputation<IFeatureModel> formula) {
+    public ComputeFormula(IComputation<? extends IFeatureModel> formula) {
         super(formula);
     }
 
