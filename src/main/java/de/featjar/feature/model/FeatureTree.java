@@ -44,7 +44,7 @@ public class FeatureTree extends ARootedTree<IFeatureTree> implements IMutableFe
             this.groupRange = Range.of(lowerBound, upperBound);
         }
 
-        private Group(Range groupRange) {
+        public Group(Range groupRange) {
             this.groupRange = Range.copy(groupRange);
         }
 
@@ -132,7 +132,9 @@ public class FeatureTree extends ARootedTree<IFeatureTree> implements IMutableFe
 
     @Override
     public Group getGroup() {
-        return parent == null ? new Group(Range.of(0, 1)) : parent.getGroups().get(groupID);
+        return parent == null
+                ? new Group(Range.of(0, Range.OPEN))
+                : parent.getGroups().get(groupID);
     }
 
     @Override
