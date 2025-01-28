@@ -20,8 +20,12 @@
  */
 package de.featjar.feature.model.transformer;
 
-import de.featjar.base.computation.*;
+import de.featjar.base.computation.AComputation;
+import de.featjar.base.computation.Dependency;
+import de.featjar.base.computation.IComputation;
+import de.featjar.base.computation.Progress;
 import de.featjar.base.data.Result;
+import de.featjar.feature.model.Constraint;
 import de.featjar.feature.model.FeatureTree.Group;
 import de.featjar.feature.model.IConstraint;
 import de.featjar.feature.model.IFeature;
@@ -31,9 +35,11 @@ import de.featjar.formula.structure.Expressions;
 import de.featjar.formula.structure.IFormula;
 import de.featjar.formula.structure.connective.And;
 import de.featjar.formula.structure.connective.AtLeast;
+import de.featjar.formula.structure.connective.AtMost;
 import de.featjar.formula.structure.connective.Between;
 import de.featjar.formula.structure.connective.Choose;
 import de.featjar.formula.structure.connective.Implies;
+import de.featjar.formula.structure.connective.Or;
 import de.featjar.formula.structure.connective.Reference;
 import de.featjar.formula.structure.predicate.Literal;
 import de.featjar.formula.structure.term.value.Variable;
@@ -49,7 +55,7 @@ import java.util.List;
 public class ComputeFormula extends AComputation<IFormula> {
     protected static final Dependency<IFeatureModel> FEATURE_MODEL = Dependency.newDependency(IFeatureModel.class);
 
-    public ComputeFormula(IComputation<? extends IFeatureModel> formula) {
+    public ComputeFormula(IComputation<IFeatureModel> formula) {
         super(formula);
     }
 
@@ -72,18 +78,22 @@ public class ComputeFormula extends AComputation<IFormula> {
 
             // TODO take featureRanges into Account
             Result<IFeatureTree> potentialParentTree = tree.getParent();
+            // TODO take FeatureModel format into account, currently specifically written for UVL and XML format
             if (potentialParentTree.isEmpty()) {
-                if (tree.isMandatory()) {
-                    constraints.add(Expressions.literal(featureName));
-                }
-            } else {
+            	constraints.add(Expressions.literal(featureName));
+                /*if (tree.isMandatory()) {
+                	constraints.add(Expressions.literal(featureName));
+                }*/
+            }
+            else {
                 IFeatureTree parentTree = potentialParentTree.get();
                 Literal literal = Expressions.literal(featureName);
                 Literal parentLiteral =
                         Expressions.literal(parentTree.getFeature().getName().orElse(""));
                 constraints.add(new Implies(literal, parentLiteral));
+                
                 for (Group group : parentTree.getGroups()) {
-                    if (!group.isAnd()) {
+                    if (!group.isAnd() && !tree.isMandatory()) {
                         List<IFormula> groupLiterals = new ArrayList<>();
                         for (IFeatureTree childTree : parentTree.getChildren()) {
                             if (childTree.getGroup() == group) {
@@ -92,13 +102,28 @@ public class ComputeFormula extends AComputation<IFormula> {
                             }
                         }
                         if (group.isOr()) {
-                            constraints.add(new Implies(parentLiteral, new AtLeast(1, groupLiterals)));
+                        	Implies orGroup = new Implies(parentLiteral, new Or(groupLiterals)); 
+                        	if (!constraints.contains(orGroup)){
+                        		constraints.add(orGroup);
+                        	}
                         } else if (group.isAlternative()) {
-                            constraints.add(new Implies(parentLiteral, new Choose(1, groupLiterals)));
-                        } else {
+                        	Implies alternativeGroup = new Implies(parentLiteral, new Choose(1, groupLiterals));
+                        	if (!constraints.contains(alternativeGroup)) {
+                        		constraints.add(alternativeGroup);
+                        	}
+                        }
+                        else {
                             constraints.add(new Implies(
                                     parentLiteral,
                                     new Between(group.getLowerBound(), group.getUpperBound(), groupLiterals)));
+                        }
+                    }
+                    else {
+                        if (tree.isMandatory()) {
+                        	Implies mandatoryImply = new Implies(parentLiteral, literal);
+                        	if (!constraints.contains(mandatoryImply)) {
+                        		constraints.add(mandatoryImply);
+                        	}
                         }
                     }
                 }
