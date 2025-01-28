@@ -20,20 +20,19 @@
  */
 package de.featjar.feature.model.io;
 
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import de.featjar.base.FeatJAR;
+import de.featjar.base.io.format.AFormats;
+import de.featjar.feature.model.FeatureModel;
+import de.featjar.formula.io.FormulaFormats;
+import de.featjar.formula.structure.IFormula;
 
-import de.featjar.Common;
-import de.featjar.base.io.IO;
-import de.featjar.feature.model.IFeatureModel;
-import de.featjar.feature.model.io.xml.GraphVizFeatureModelFormat;
-import de.featjar.feature.model.io.xml.XMLFeatureModelFormat;
-import java.io.IOException;
-import org.junit.jupiter.api.Test;
-
-public class GraphVizFeatureModelFormatTest extends Common {
-    @Test
-    public void graphVizFeatureModelFormat() throws IOException {
-        IFeatureModel featureModel = load("testFeatureModels/car.xml", new XMLFeatureModelFormat());
-        assertTrue(IO.print(featureModel, new GraphVizFeatureModelFormat()).startsWith("digraph {"));
+/**
+ * Extension point for {@link AFormats formats} for {@link IFormula}.
+ *
+ * @author Sebastian Krieter
+ */
+public class FeatureModelFormat extends AFormats<FeatureModel> {
+    public static FormulaFormats getInstance() {
+        return FeatJAR.extensionPoint(FormulaFormats.class);
     }
 }

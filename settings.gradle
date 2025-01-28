@@ -1,5 +1,6 @@
 pluginManagement {
     includeBuild '../gradle-plugins'
+ 
 }
 
 plugins {
@@ -7,3 +8,4 @@ plugins {
 }
 
 includeBuild '../formula'
+includeBuild '../formula-analysis-sat4j'
