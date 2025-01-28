@@ -1,20 +1,20 @@
 /*
- * Copyright (C) 2024 FeatJAR-Development-Team
+ * Copyright (C) 2025 FeatJAR-Development-Team
  *
- * This file is part of FeatJAR-feature-model.
+ * This file is part of FeatJAR-FeatJAR-formula.
  *
- * feature-model is free software: you can redistribute it and/or modify it
+ * FeatJAR-formula is free software: you can redistribute it and/or modify it
  * under the terms of the GNU Lesser General Public License as published by
  * the Free Software Foundation, either version 3.0 of the License,
  * or (at your option) any later version.
  *
- * feature-model is distributed in the hope that it will be useful,
+ * FeatJAR-formula is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
  * See the GNU Lesser General Public License for more details.
  *
  * You should have received a copy of the GNU Lesser General Public License
- * along with feature-model. If not, see <https://www.gnu.org/licenses/>.
+ * along with FeatJAR-formula. If not, see <https://www.gnu.org/licenses/>.
  *
  * See <https://github.com/FeatureIDE/FeatJAR-feature-model> for further information.
  */
@@ -25,7 +25,6 @@ import de.featjar.base.computation.Dependency;
 import de.featjar.base.computation.IComputation;
 import de.featjar.base.computation.Progress;
 import de.featjar.base.data.Result;
-import de.featjar.feature.model.Constraint;
 import de.featjar.feature.model.FeatureTree.Group;
 import de.featjar.feature.model.IConstraint;
 import de.featjar.feature.model.IFeature;
@@ -34,8 +33,6 @@ import de.featjar.feature.model.IFeatureTree;
 import de.featjar.formula.structure.Expressions;
 import de.featjar.formula.structure.IFormula;
 import de.featjar.formula.structure.connective.And;
-import de.featjar.formula.structure.connective.AtLeast;
-import de.featjar.formula.structure.connective.AtMost;
 import de.featjar.formula.structure.connective.Between;
 import de.featjar.formula.structure.connective.Choose;
 import de.featjar.formula.structure.connective.Implies;
@@ -80,18 +77,17 @@ public class ComputeFormula extends AComputation<IFormula> {
             Result<IFeatureTree> potentialParentTree = tree.getParent();
             // TODO take FeatureModel format into account, currently specifically written for UVL and XML format
             if (potentialParentTree.isEmpty()) {
-            	constraints.add(Expressions.literal(featureName));
+                constraints.add(Expressions.literal(featureName));
                 /*if (tree.isMandatory()) {
                 	constraints.add(Expressions.literal(featureName));
                 }*/
-            }
-            else {
+            } else {
                 IFeatureTree parentTree = potentialParentTree.get();
                 Literal literal = Expressions.literal(featureName);
                 Literal parentLiteral =
                         Expressions.literal(parentTree.getFeature().getName().orElse(""));
                 constraints.add(new Implies(literal, parentLiteral));
-                
+
                 for (Group group : parentTree.getGroups()) {
                     if (!group.isAnd() && !tree.isMandatory()) {
                         List<IFormula> groupLiterals = new ArrayList<>();
@@ -102,28 +98,26 @@ public class ComputeFormula extends AComputation<IFormula> {
                             }
                         }
                         if (group.isOr()) {
-                        	Implies orGroup = new Implies(parentLiteral, new Or(groupLiterals)); 
-                        	if (!constraints.contains(orGroup)){
-                        		constraints.add(orGroup);
-                        	}
+                            Implies orGroup = new Implies(parentLiteral, new Or(groupLiterals));
+                            if (!constraints.contains(orGroup)) {
+                                constraints.add(orGroup);
+                            }
                         } else if (group.isAlternative()) {
-                        	Implies alternativeGroup = new Implies(parentLiteral, new Choose(1, groupLiterals));
-                        	if (!constraints.contains(alternativeGroup)) {
-                        		constraints.add(alternativeGroup);
-                        	}
-                        }
-                        else {
+                            Implies alternativeGroup = new Implies(parentLiteral, new Choose(1, groupLiterals));
+                            if (!constraints.contains(alternativeGroup)) {
+                                constraints.add(alternativeGroup);
+                            }
+                        } else {
                             constraints.add(new Implies(
                                     parentLiteral,
                                     new Between(group.getLowerBound(), group.getUpperBound(), groupLiterals)));
                         }
-                    }
-                    else {
+                    } else {
                         if (tree.isMandatory()) {
-                        	Implies mandatoryImply = new Implies(parentLiteral, literal);
-                        	if (!constraints.contains(mandatoryImply)) {
-                        		constraints.add(mandatoryImply);
-                        	}
+                            Implies mandatoryImply = new Implies(parentLiteral, literal);
+                            if (!constraints.contains(mandatoryImply)) {
+                                constraints.add(mandatoryImply);
+                            }
                         }
                     }
                 }
