@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2024 FeatJAR-Development-Team
+ * Copyright (C) 2025 FeatJAR-Development-Team
  *
  * This file is part of FeatJAR-feature-model.
  *
@@ -527,6 +527,7 @@ public class XMLFeatureModelFormat extends AXMLFeatureModelFormat<IFeatureModel,
         }
     }
 
+    // getGroups().get(0)
     protected void writeAttributes(Element node, Element fnod, IFeatureTree feat) {
         fnod.setAttribute(NAME, feat.getFeature().getName().get());
         if (feat.getFeature().isHidden()) {
@@ -534,7 +535,7 @@ public class XMLFeatureModelFormat extends AXMLFeatureModelFormat<IFeatureModel,
         }
         if (feat.isMandatory() || feat.getParent().isEmpty()) {
             if ((feat.getParent().isPresent())
-                    && feat.getParent().get().getGroup().isAnd()) {
+                    && feat.getParent().get().getGroups().get(0).isAnd()) {
                 fnod.setAttribute(MANDATORY, TRUE);
             } else if (feat.getParent().isEmpty()) {
                 fnod.setAttribute(MANDATORY, TRUE);

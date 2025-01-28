@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2024 FeatJAR-Development-Team
+ * Copyright (C) 2025 FeatJAR-Development-Team
  *
  * This file is part of FeatJAR-feature-model.
  *
@@ -129,7 +129,6 @@ public class XMLFeatureModelFormulaFormatTest extends Common {
     @Test
     void testXMLFileToFeatureModelToXMLFile() throws IOException {
         Path xmlFile = Path.of("src", "test", "resources", "xml", "car.xml");
-
         String fileContent = new String(Files.readAllBytes(xmlFile), StandardCharsets.UTF_8);
 
         IFormat<IFeatureModel> format = new XMLFeatureModelFormat();

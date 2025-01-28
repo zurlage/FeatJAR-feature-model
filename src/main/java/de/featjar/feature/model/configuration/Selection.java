@@ -18,22 +18,20 @@
  *
  * See <https://github.com/FeatureIDE/FeatJAR-feature-model> for further information.
  */
-package de.featjar.feature.model.io;
+package de.featjar.feature.model.configuration;
 
-import static org.junit.jupiter.api.Assertions.assertTrue;
+/**
+ * Defines Selection types Selected, Unselected, Undefined. These are needed for the configuration process.
+ *
+ * @author Sebastian Krieter
+ */
+public enum Selection {
+    SELECTED(),
+    UNSELECTED(),
+    UNDEFINED();
 
-import de.featjar.Common;
-import de.featjar.base.io.IO;
-import de.featjar.feature.model.IFeatureModel;
-import de.featjar.feature.model.io.xml.GraphVizFeatureModelFormat;
-import de.featjar.feature.model.io.xml.XMLFeatureModelFormat;
-import java.io.IOException;
-import org.junit.jupiter.api.Test;
-
-public class GraphVizFeatureModelFormatTest extends Common {
-    @Test
-    public void graphVizFeatureModelFormat() throws IOException {
-        IFeatureModel featureModel = load("testFeatureModels/car.xml", new XMLFeatureModelFormat());
-        assertTrue(IO.print(featureModel, new GraphVizFeatureModelFormat()).startsWith("digraph {"));
+    @Override
+    public String toString() {
+        return super.toString();
     }
 }

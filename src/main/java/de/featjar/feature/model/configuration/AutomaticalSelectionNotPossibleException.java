@@ -18,22 +18,19 @@
  *
  * See <https://github.com/FeatureIDE/FeatJAR-feature-model> for further information.
  */
-package de.featjar.feature.model.io;
+package de.featjar.feature.model.configuration;
 
-import static org.junit.jupiter.api.Assertions.assertTrue;
+/**
+ * This exception identifies an error in the propagation of feature selections. If this occurs there might be an error in updating automatically selections.
+ *
+ * @author Thomas Thuem
+ */
+public class AutomaticalSelectionNotPossibleException extends RuntimeException {
 
-import de.featjar.Common;
-import de.featjar.base.io.IO;
-import de.featjar.feature.model.IFeatureModel;
-import de.featjar.feature.model.io.xml.GraphVizFeatureModelFormat;
-import de.featjar.feature.model.io.xml.XMLFeatureModelFormat;
-import java.io.IOException;
-import org.junit.jupiter.api.Test;
+    private static final long serialVersionUID = 1793844229871267311L;
 
-public class GraphVizFeatureModelFormatTest extends Common {
-    @Test
-    public void graphVizFeatureModelFormat() throws IOException {
-        IFeatureModel featureModel = load("testFeatureModels/car.xml", new XMLFeatureModelFormat());
-        assertTrue(IO.print(featureModel, new GraphVizFeatureModelFormat()).startsWith("digraph {"));
+    public AutomaticalSelectionNotPossibleException(String feature, Selection selection) {
+        super("The feature \"" + feature + "\" cannot be automatically "
+                + (selection == Selection.SELECTED ? "selected" : "deselected"));
     }
 }

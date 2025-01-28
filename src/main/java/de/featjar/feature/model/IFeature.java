@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2024 FeatJAR-Development-Team
+ * Copyright (C) 2025 FeatJAR-Development-Team
  *
  * This file is part of FeatJAR-feature-model.
  *
@@ -20,6 +20,7 @@
  */
 package de.featjar.feature.model;
 
+import de.featjar.base.data.Problem;
 import de.featjar.base.data.Result;
 import de.featjar.base.data.Sets;
 import de.featjar.base.data.identifier.AIdentifier;
@@ -57,6 +58,37 @@ public interface IFeature extends IFeatureModelElement, IHasCommonAttributes {
 
     default boolean isHidden() {
         return (boolean) getAttributeValue(Attributes.HIDDEN).get();
+    }
+
+    /**
+     * Checks if there is a hidden feature higher up in the hierarchy.
+     * Does not only check the parent but also the parent's parents,
+     * until arriving at the root feature.
+     * @return true if there is a hidden parent, false if there's not.
+     */
+    default boolean hasHiddenParent() {
+        IFeatureTree parentTreeElement = this.getFeatureTree()
+                .orElseThrow(Problem::getFirstException)
+                .getParent()
+                .orElse(null);
+
+        // Check all ancestors of this feature if they are hidden.
+        while (parentTreeElement != null) {
+
+            // If there is a hidden parent, we can stop and return true.
+            if (parentTreeElement.getFeature().isHidden()) {
+                return true;
+            }
+            // Update to next ancestor.
+            parentTreeElement = parentTreeElement.getParent().orElse(null);
+
+            // parentTreeElement = this.getFeatureTree().orElseThrow(problems -> new
+            // RuntimeException()).getParent().orElse(null);
+        }
+        // If parentTreeElement is none,
+        // then we travelled from this IFeature to the root, without finding a hidden parent.
+        // Therefore, we can return false
+        return false;
     }
 
     default boolean isVisible() {

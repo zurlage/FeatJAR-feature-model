@@ -18,22 +18,12 @@
  *
  * See <https://github.com/FeatureIDE/FeatJAR-feature-model> for further information.
  */
-package de.featjar.feature.model.io;
+package de.featjar.feature.model.configuration;
 
-import static org.junit.jupiter.api.Assertions.assertTrue;
+/**
+ * Exception indicating that a feature with a given name was not found.
+ */
+public class FeatureNotFoundException extends RuntimeException {
 
-import de.featjar.Common;
-import de.featjar.base.io.IO;
-import de.featjar.feature.model.IFeatureModel;
-import de.featjar.feature.model.io.xml.GraphVizFeatureModelFormat;
-import de.featjar.feature.model.io.xml.XMLFeatureModelFormat;
-import java.io.IOException;
-import org.junit.jupiter.api.Test;
-
-public class GraphVizFeatureModelFormatTest extends Common {
-    @Test
-    public void graphVizFeatureModelFormat() throws IOException {
-        IFeatureModel featureModel = load("testFeatureModels/car.xml", new XMLFeatureModelFormat());
-        assertTrue(IO.print(featureModel, new GraphVizFeatureModelFormat()).startsWith("digraph {"));
-    }
+    private static final long serialVersionUID = -4112750233088590678L;
 }

@@ -18,22 +18,19 @@
  *
  * See <https://github.com/FeatureIDE/FeatJAR-feature-model> for further information.
  */
-package de.featjar.feature.model.io;
+package de.featjar.feature.model.configuration;
 
-import static org.junit.jupiter.api.Assertions.assertTrue;
+/**
+ * Identifies that the user has selected or deselected a feature which is not possible according the underlying feature model with current manual selections.
+ *
+ * @author Thomas Thuem
+ */
+public class SelectionNotPossibleException extends RuntimeException {
 
-import de.featjar.Common;
-import de.featjar.base.io.IO;
-import de.featjar.feature.model.IFeatureModel;
-import de.featjar.feature.model.io.xml.GraphVizFeatureModelFormat;
-import de.featjar.feature.model.io.xml.XMLFeatureModelFormat;
-import java.io.IOException;
-import org.junit.jupiter.api.Test;
+    private static final long serialVersionUID = 1793844229871267311L;
 
-public class GraphVizFeatureModelFormatTest extends Common {
-    @Test
-    public void graphVizFeatureModelFormat() throws IOException {
-        IFeatureModel featureModel = load("testFeatureModels/car.xml", new XMLFeatureModelFormat());
-        assertTrue(IO.print(featureModel, new GraphVizFeatureModelFormat()).startsWith("digraph {"));
+    public SelectionNotPossibleException(String feature, Selection selection) {
+        super("The feature \"" + feature + "\" cannot be "
+                + (selection == Selection.SELECTED ? "selected" : "deselected"));
     }
 }
