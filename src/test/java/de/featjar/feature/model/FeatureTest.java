@@ -29,6 +29,11 @@ import de.featjar.formula.structure.predicate.Literal;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
+/**
+ * @author Luca zur Lage
+ * @author Werner Münch
+ * @author Tom Röhrig
+ */
 public class FeatureTest {
     private static FeatureModel featureModel;
 

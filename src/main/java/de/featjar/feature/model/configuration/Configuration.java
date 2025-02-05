@@ -34,6 +34,10 @@ import java.util.Set;
 
 /**
  * Represents a configuration and provides operations for the configuration process.
+ *
+ * @author Luca zur Lage
+ * @author Werner Münch
+ * @author Tom Röhrig
  */
 public class Configuration implements Cloneable {
 

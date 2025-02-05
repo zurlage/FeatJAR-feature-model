@@ -28,6 +28,9 @@ import java.util.*;
  * A representation of a selectable feature for the configuration process.
  *
  * @author Marcus Pinnecke (Feature Interface)
+ * @author Luca zur Lage
+ * @author Werner Münch
+ * @author Tom Röhrig
  */
 public class SelectableFeature {
 

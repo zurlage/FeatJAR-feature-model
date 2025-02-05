@@ -34,6 +34,12 @@ import java.util.stream.Collectors;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
+/**
+ * Tests {@link de.featjar.feature.model.configuration} configuration.
+ * @author Luca zur Lage
+ * @author Werner Münch
+ * @author Tom Röhrig
+ */
 public class ConfigurationTest {
 
     private static FeatureModel featureModel;
